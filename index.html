@@ -676,7 +676,7 @@
         const listaPalavras = foundWords.map(w => w.toUpperCase()).join(", ");
         let text = encontrados > 0 
             ? `Consegui descobrir ${encontrados} de ${total} fragmentos: [ ${listaPalavras} ]. Você consegue encontrar algum?`
-            : 'Consegui descobrir ${encontrados} de ${total} fragmentos: [ ${listaPalavras} ]. Você consegue encontrar algum?`;
+            : `Consegui descobrir ${encontrados} de ${total} fragmentos: [ ${listaPalavras} ]. Você consegue encontrar algum?`;;
         if (navigator.share) {
             navigator.share({ title: 'O Criador', text: text, url: url });
         } else {
