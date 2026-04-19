@@ -227,6 +227,35 @@
     from { filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.4)); }
     to { filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8)); }
 }
+.portal-footer {
+    width: 100%;
+    padding: 15px 0;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2); /* Fundo sutil */
+}
+
+.portal-footer a {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.portal-footer a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.portal-footer p {
+    margin-top: 5px;
+    font-size: 0.55rem;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
     </style>
 </head>
 <body>
@@ -269,9 +298,11 @@
 </button>
         <button id="submit-btn" onclick="processInput()" disabled>Aguardando...</button>
     </div>
+    <footer class="portal-footer">
+    <a href="privacidade.html">POLÍTICA DE PRIVACIDADE</a>
+    <p> O CRIADOR© 2026</p>
+</footer>
 
-    <div class="ad-top" style="margin-top: auto;">ANÚNCIO</div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -279,29 +310,21 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0ZGlpaHFzZnhuZ3RxeWxkZmpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1ODE2MzIsImV4cCI6MjA5MjE1NzYzMn0.Z-LmLJdYxHKoWtHYIvOV38K7e-hhiB4CdWYDZ1Stb5c';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const masterPhrase = "somente aquele que aceita o silêncio do universo consegue ouvir a voz da verdadeira sabedoria";
-    
-    function normalizeText(text) {
-        return text.toLowerCase()
-                   .normalize("NFD")
-                   .replace(/[\u0300-\u036f]/g, "")
-                   .trim();
-    }
-
-    const masterPhraseNormalized = normalizeText(masterPhrase);
-    const masterArrayNormalized = masterPhraseNormalized.split(" ");
-    const uniqueWordsInMasterCount = [...new Set(masterArrayNormalized)].length;
+    // Variáveis da Oração (agora dinâmicas)
+    let masterPhrase = ""; 
+    let masterPhraseNormalized = "";
+    let masterArrayNormalized = [];
+    let uniqueWordsInMasterCount = 0;
     
     const dialogues = [
         "Aproxime-se, mortal. Você está diante do Criador.",
         "Neste exato momento, Ele está profundamente ocupado com os assuntos do Universo.",
         "A atenção divina é um recurso escasso, mas por um breve instante, existe uma chance de você ser ouvido.",
-        "Saiba que descobrir a Oração Sagrada é quase impossível para um mero mortal.",
-        "Apenas com a união de outros mortais a Oração Sagrada pode ser descoberta, mas ele ouvirá apenas uma prece no dia de hoje, então seja rápido.",
+        "Saiba que descobrir a Oração Sagrada é quase impossível para uma alma solitária.",
+        "Apenas com a união dos mortais a Oração Sagrada pode ser construída, mas ele ouvirá apenas uma prece no dia de hoje, então seja rápido.",
         "Sua jornada terá duas etapas: Primeiro, a COLETA, onde você terá 15 chances para testar palavras isoladas.",
         "Palavras VERDES são fragmentos reais. Palavras CINZAS são apenas ruído mundano.",
         "Segundo, o MILAGRE: você deverá unir os fragmentos na ordem perfeita para formar a Oração Sagrada e ser compreendido por Ele.",
-        "Um presente: a última palavra desta oração é 'SABEDORIA'.",
         "Se falhar na organização final, seu acesso ao trono será impedido até o dia seguinte.",
         "As recompensas para quem rompe o silêncio são inestimáveis. O tempo é curto, comece!"
     ];
@@ -310,34 +333,93 @@
     let collectionCount = 0;
     let foundWords = [];
     let isTyping = false;
-    let gamePhase = "dialogue"; // Alterado para gerenciar o estado inicial
+    let gamePhase = "dialogue"; 
     let userIP = '';
 
+    // Inicialização
     window.onload = async function() {
-        await checkGlobalBlock();
+        setVh(); // Ajuste de altura para mobile
+        const fraseCarregada = await fetchDailyPhrase();
+        if (fraseCarregada) {
+            await checkGlobalBlock();
+        } else {
+            document.getElementById('angel-text').innerText = "O Trono está em silêncio profundo. Volte em outro ciclo solar.";
+        }
     };
 
-    async function checkGlobalBlock() {
+    // BUSCA A FRASE DO DIA NO SUPABASE
+    async function fetchDailyPhrase() {
         try {
-            const res = await fetch('https://api.ipify.org?format=json');
-            const data = await res.json();
-            userIP = data.ip;
+            const hoje = new Date().toISOString().split('T')[0];
+            const { data, error } = await _supabase
+                .from('oracoes_diarias')
+                .select('frase')
+                .eq('data', hoje)
+                .single();
 
-            const { data: attempts } = await _supabase
-                .from('tentativas_oracao')
-                .select('*')
-                .eq('ip_address', userIP)
-                .eq('status', 'falhou')
-                .gt('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+            if (data && !error) {
+                masterPhrase = data.frase;
+                masterPhraseNormalized = normalizeText(masterPhrase);
+                masterArrayNormalized = masterPhraseNormalized.split(" ");
+                uniqueWordsInMasterCount = [...new Set(masterArrayNormalized)].length;
+                
+                // Atualiza o contador inicial na UI
+                document.getElementById('found-count').innerText = `0 / ${uniqueWordsInMasterCount}`;
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.error("Erro ao buscar oração:", err);
+            return false;
+        }
+    }
 
-            if (attempts && attempts.length > 0) {
+    async function checkGlobalBlock() {
+    try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        userIP = data.ip;
+
+        // Busca todas as atividades do IP nas últimas 24h
+        const { data: activities } = await _supabase
+            .from('tentativas_oracao')
+            .select('status')
+            .eq('ip_address', userIP)
+            .gt('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+        if (activities) {
+            // Se houver status 'falhou' ou 'sucesso', bloqueia direto
+            const isBlocked = activities.some(a => a.status === 'falhou' || a.status === 'sucesso');
+            if (isBlocked) {
                 applyBlock();
+                return;
+            }
+
+            // Conta quantas vezes ele já fez 'coleta'
+            const pastCollections = activities.filter(a => a.status === 'coleta').length;
+            collectionCount = pastCollections;
+
+            if (collectionCount >= 15) {
+                // Se já coletou 15, pula direto para a fase final
+                gamePhase = "prayer";
+                startFinalPhase(); 
             } else {
+                // Se ainda tem tentativas, começa o diálogo
                 typeWriter(dialogues[0]); 
             }
-        } catch (err) {
-            typeWriter(dialogues[0]); 
+        } else {
+            typeWriter(dialogues[0]);
         }
+    } catch (err) {
+        typeWriter(dialogues[0]); 
+    }
+}
+
+    function normalizeText(text) {
+        return text.toLowerCase()
+                   .normalize("NFD")
+                   .replace(/[\u0300-\u036f]/g, "")
+                   .trim();
     }
 
     function typeWriter(text, i = 0) {
@@ -350,15 +432,12 @@
             setTimeout(() => typeWriter(text, i + 1), 30);
         } else {
             isTyping = false;
-            // Só mostra a dica de clique se ainda estiver na fase de diálogo
             if (hint && gamePhase === "dialogue") hint.style.display = 'block';
         }
     }
 
     function handleDialogueClick() {
-        // Trava: se estiver digitando ou se o jogo já saiu da fase de diálogo, ignora o clique
         if (isTyping || gamePhase !== "dialogue") return;
-        
         if (currentDialogueIndex < dialogues.length - 1) {
             currentDialogueIndex++;
             typeWriter(dialogues[currentDialogueIndex]);
@@ -368,19 +447,17 @@
     }
 
     function unlockControls() {
-        gamePhase = "collection"; // Muda para fase de coleta
+        gamePhase = "collection"; 
         const input = document.getElementById('prayer-input');
         const btn = document.getElementById('submit-btn');
         const hint = document.getElementById('click-hint');
-        
-        if (hint) hint.style.display = 'none'; // Esconde a dica permanentemente
+        if (hint) hint.style.display = 'none';
         document.getElementById('angel-text').innerText = "Tente encontrar os fragmentos da Oração Divina.";
-        
         input.disabled = false;
         btn.disabled = false;
         btn.innerText = "TESTAR PALAVRA";
-        input.placeholder = "Escreva aqui";
-        document.getElementById('stats').innerText = `COLETA ATIVA`;
+        input.placeholder = "A Oração de hoje tem 15 fragmentos...";
+        document.getElementById('stats').innerText = `COLETA ATIVA (15 PALAVRAS)`;
     }
 
     function applyBlock() {
@@ -388,31 +465,17 @@
         const bubble = document.getElementById('angel-text');
         const input = document.getElementById('prayer-input');
         const btn = document.getElementById('submit-btn');
-        const hint = document.getElementById('click-hint');
-        const appContainer = document.getElementById('app-container');
+        const shareBtn = document.getElementById('share-btn');
         
-        // Exibe o botão de compartilhar
-        document.getElementById('share-btn').style.display = 'inline-block';
-        
-        if (hint) hint.style.display = 'none';
-
+        if (shareBtn) shareBtn.style.display = 'inline-block';
         bubble.innerText = "O Trono está selado. O Criador não aceita mais suas súplicas por hoje.";
-        
-        // Garante o fundo preto e texto cinza
+        bubble.style.background = "transparent"; 
         bubble.style.color = "#666";
-        bubble.style.borderColor = "#333";
+        bubble.style.borderColor = "transparent";
         bubble.style.boxShadow = "none";
-        
         input.disabled = true;
-        input.style.borderColor = "#222";
-        input.style.color = "#444";
-        
         btn.disabled = true;
         btn.innerText = "ACESSO NEGADO";
-        btn.style.background = "#222";
-        btn.style.color = "#555";
-
-        appContainer.style.boxShadow = "0 0 50px #000";
     }
 
     function processInput() {
@@ -426,10 +489,18 @@
                 return;
             }
             collectionCount++;
+
+            // REGISTRO NO BANCO: Evita que o usuário burlar o limite abrindo novas abas
+            _supabase.from('tentativas_oracao').insert([
+                { ip_address: userIP, status: 'coleta', pedido: normalizedInput }
+            ]).then();
+
             document.getElementById('attempts-left').innerText = 15 - collectionCount;
+            
             const tile = document.createElement('div');
             tile.classList.add('word-tile');
             tile.innerText = rawInput;
+
             if (masterArrayNormalized.includes(normalizedInput)) {
                 tile.classList.add('correct');
                 if (!foundWords.includes(normalizedInput)) {
@@ -439,9 +510,13 @@
             } else {
                 tile.classList.add('missing');
             }
+
             document.getElementById('feedback').appendChild(tile);
             input.value = "";
-            if (collectionCount >= 15) startFinalPhase();
+
+            if (collectionCount >= 15) {
+                startFinalPhase();
+            }
         } else if (gamePhase === "prayer") {
             submitFinalPrayer();
         } else if (gamePhase === "victory") {
@@ -450,30 +525,22 @@
     }
 
     function startFinalPhase() {
-    gamePhase = "prayer";
-    const text = document.getElementById('angel-text');
-    const box = document.getElementById('fragment-box'); // Captura o box que criamos
-    const shareBtn = document.getElementById('share-btn');
-    
-    text.innerText = "A coleta encerrou. Una os fragmentos encontrados, busque ajuda com outros mortais e tente descobrir a Oração Sagrada:";
-    
-    // Limpa o box para não duplicar se a função rodar de novo
-    box.innerHTML = ""; 
-    
-    // Cria cada etiqueta visual
-    foundWords.forEach(w => {
-        const span = document.createElement('span');
-        span.className = 'sacred-fragment';
-        span.innerText = w;
-        box.appendChild(span);
-    });
-
-    document.getElementById('submit-btn').innerText = "ENVIAR ORAÇÃO SAGRADA";
-    document.getElementById('stats').innerText = "FASE FINAL";
-    
-    // Mostra o botão de compartilhar exatamente agora!
-    if (shareBtn) shareBtn.style.display = 'inline-block';
-}
+        gamePhase = "prayer";
+        const text = document.getElementById('angel-text');
+        const box = document.getElementById('fragment-box');
+        const shareBtn = document.getElementById('share-btn');
+        text.innerText = "A coleta encerrou. Una os 15 fragmentos encontrados:";
+        box.innerHTML = ""; 
+        foundWords.forEach(w => {
+            const span = document.createElement('span');
+            span.className = 'sacred-fragment';
+            span.innerText = w;
+            box.appendChild(span);
+        });
+        document.getElementById('submit-btn').innerText = "ENVIAR ORAÇÃO SAGRADA";
+        document.getElementById('stats').innerText = "FASE FINAL";
+        if (shareBtn) shareBtn.style.display = 'inline-block';
+    }
 
     async function submitFinalPrayer() {
         const input = document.getElementById('prayer-input');
@@ -483,27 +550,23 @@
 
         if (!input.value.trim()) return;
 
-        // Esconde o input e botão principal momentaneamente
+        // Interface de Confirmação Única
         input.style.display = "none";
         btn.style.display = "none";
         box.style.display = "none";
 
-        // Exibe a mensagem solene
-        bubble.innerText = "Atenção, Mortal. Você está prestes a proferir a Oração Sagrada. O Criador só ouve uma voz por dia, e esta será sua única tentativa. Se as palavras não estiverem na ordem perfeita, o silêncio será sua única resposta até o próximo dia. Deseja prosseguir?";
+        bubble.innerText = "Atenção, Mortal. Você está prestes a proferir a Oração Sagrada. O Trono só ouve uma voz por dia, e esta será sua única tentativa. Deseja prosseguir?";
 
-        // Cria os botões de escolha dentro do balão
         const confirmBox = document.createElement('div');
         confirmBox.className = 'confirm-box';
         confirmBox.id = 'confirmation-ui';
-
         confirmBox.innerHTML = `
             <button class="btn-confirm" onclick="executeFinalSubmission()">PROSSEGUIR</button>
-            <button class="btn-cancel" onclick="cancelSubmission()">REVISAR FRAGMENTOS</button>
+            <button class="btn-cancel" onclick="cancelSubmission()">REVISAR</button>
         `;
         bubble.appendChild(confirmBox);
     }
 
-    // Função que cancela e volta para a edição
     function cancelSubmission() {
         document.getElementById('prayer-input').style.display = "block";
         document.getElementById('submit-btn').style.display = "block";
@@ -512,7 +575,6 @@
         document.getElementById('angel-text').innerText = "A coleta encerrou. Una os fragmentos encontrados:";
     }
 
-    // Função que realmente envia (a lógica que você já tinha)
     async function executeFinalSubmission() {
         const input = document.getElementById('prayer-input');
         const emailInput = document.getElementById('email-input');
@@ -520,7 +582,6 @@
         const bubble = document.getElementById('angel-text');
         const userTextNormalized = normalizeText(input.value);
 
-        // Remove os botões de confirmação
         document.getElementById('confirmation-ui').remove();
 
         if (userTextNormalized === masterPhraseNormalized) {
@@ -547,22 +608,17 @@
         const btn = document.getElementById('submit-btn');
         const requestText = input.value.trim();
         const emailText = emailInput.value.trim();
-        const bubble = document.getElementById('angel-text');
-
         if (!requestText || !emailText) {
             alert("Preencha ambos os campos.");
             return;
         }
-
         btn.disabled = true;
         btn.innerText = "ENVIANDO...";
-
         const { error } = await _supabase.from('tentativas_oracao').insert([
             { ip_address: userIP, status: 'sucesso', pedido: requestText, email: emailText }
         ]);
-
         if (!error) {
-            bubble.innerText = "Seu pedido foi entregue às estrelas. Aguarde o destino.";
+            document.getElementById('angel-text').innerText = "Seu pedido foi entregue às estrelas. Aguarde o destino.";
             input.style.display = "none";
             emailInput.style.display = "none";
             btn.innerText = "PEDIDO ENTREGUE";
@@ -570,41 +626,34 @@
         } else {
             alert("Erro ao enviar.");
             btn.disabled = false;
-            btn.innerText = "ENTREGAR PEDIDO";
         }
     }
 
+    function shareProgress() {
+        const total = uniqueWordsInMasterCount;
+        const encontrados = foundWords.length;
+        const url = "https://ocriador.fun";
+        const listaPalavras = foundWords.map(w => w.toUpperCase()).join(", ");
+        let text = encontrados > 0 
+            ? `Reconstruindo a Oração em @ocriador.fun: Descobri ${encontrados} de ${total} fragmentos: [ ${listaPalavras} ]. Você consegue o restante?`
+            : `Tentei clamar ao @ocriador.fun, mas o Trono permaneceu em silêncio.`;
+        if (navigator.share) {
+            navigator.share({ title: 'O Criador', text: text, url: url });
+        } else {
+            navigator.clipboard.writeText(`${text} ${url}`);
+            alert("Copiado!");
+        }
+    }
+
+    function setVh() {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+
+    window.addEventListener('resize', setVh);
     document.getElementById('prayer-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') processInput();
     });
-    function shareProgress() {
-    const total = uniqueWordsInMasterCount;
-    const encontrados = foundWords.length;
-    const url = "https://ocriador.fun";
-    
-    // Transforma a lista de palavras em maiúsculas para dar impacto
-    const listaPalavras = foundWords.map(w => w.toUpperCase()).join(", ");
-    
-    let text = "";
-    if (encontrados > 0) {
-        text = `Reconstruindo a Oração em @ocriador.fun: Descobri ${encontrados} de ${total} fragmentos sagrados: [ ${listaPalavras} ]. Você consegue encontrar o restante?`;
-    } else {
-        text = `Tentei clamar ao @ocriador.fun, mas o Trono permaneceu em silêncio. Você consegue ser ouvido?`;
-    }
-
-    // Tenta abrir o menu de compartilhamento do celular
-    if (navigator.share) {
-        navigator.share({
-            title: 'O Criador',
-            text: text,
-            url: url,
-        }).catch((error) => console.log('Erro ao compartilhar', error));
-    } else {
-        // Se for PC, apenas copia o texto para o usuário colar onde quiser
-        navigator.clipboard.writeText(`${text} ${url}`);
-        alert("Sua jornada foi copiada para a área de transferência!");
-    }
-}
 </script>
 </body>
 </html>
