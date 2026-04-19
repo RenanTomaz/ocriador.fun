@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Criador | Trailer Ultra Particles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.3);
+            --bg-dark: #020205;
+            --anim-speed: 2.5s;
+            --transition-gap: 100ms;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background: var(--bg-dark);
+            overflow: hidden;
+            font-family: 'Cinzel', serif;
+        }
+
+        #stage {
+            position: relative;
+            width: 100vw; height: 100vh;
+            max-width: 450px; margin: auto;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* --- BACKGROUND --- */
+        .bg-container { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+        .bg-img {
+            position: absolute;
+            width: 180%; height: 120%;
+            top: -10%; left: -40%;
+            object-fit: cover;
+            filter: brightness(0.35) contrast(1.1);
+            animation: deepCinemaPan 80s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+            will-change: transform;
+        }
+
+        @keyframes deepCinemaPan {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.15) translate(5%, 3%); }
+        }
+
+        /* Partículas Douradas Intensificadas */
+        .dust-particle {
+            position: absolute;
+            background: var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            filter: blur(1.2px);
+            will-change: transform, opacity;
+        }
+
+        @keyframes floatDust {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% { transform: translateY(-110vh); opacity: 0; }
+        }
+
+        .vignette {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at center, transparent 10%, rgba(0,0,0,0.7) 60%, #000 100%);
+            z-index: 6;
+        }
+
+        /* --- MOTOR DE CENAS --- */
+        .scene {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            will-change: opacity, transform, filter;
+        }
+
+        .scene.active { opacity: 1; visibility: visible; }
+        
+        .fx-fade.active { animation: blurIn var(--anim-speed) ease-out forwards; }
+        .fx-slide.active { animation: slideIn var(--anim-speed) cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
+        .fx-zoom.active { animation: zoomIn var(--anim-speed) cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
+        .scene.exit { animation: fadeOut 0.6s ease-in forwards; }
+
+        @keyframes blurIn { from { filter: blur(40px); opacity: 0; transform: scale(0.85); } to { filter: blur(0); opacity: 1; transform: scale(1); } }
+        @keyframes slideIn { from { transform: translateX(30%); opacity: 0; filter: blur(10px); } to { transform: translateX(0); opacity: 1; filter: blur(0); } }
+        @keyframes zoomIn { from { transform: scale(1.4); filter: brightness(2) blur(10px); opacity: 0; } to { transform: scale(1); filter: brightness(1) blur(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; filter: blur(15px); transform: scale(1.05); } }
+
+        /* --- TEXTOS --- */
+        .h1 { color: var(--gold); font-size: 2rem; text-transform: uppercase; margin: 0; text-shadow: 0 0 25px var(--gold-glow); letter-spacing: 2px; opacity: 0; }
+        .h2 { font-family: 'Playfair Display', serif; color: rgba(255,255,255,0.6); font-size: 1.1rem; font-style: italic; margin-top: 20px; opacity: 0; }
+
+        .active .h1 { animation: textReveal 1.5s ease-out forwards 0.5s; }
+        .active .h2 { animation: textReveal 1.5s ease-out forwards 1.2s; }
+
+        @keyframes textReveal {
+            from { opacity: 0; transform: translateY(10px); filter: blur(8px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        .btn-final {
+            background: transparent; border: 1px solid var(--gold); color: var(--gold);
+            padding: 18px 35px; font-family: 'Cinzel', serif; font-weight: bold;
+            letter-spacing: 3px; text-transform: uppercase; cursor: pointer;
+            margin-top: 35px; opacity: 0; transform: translateY(10px);
+            transition: 0.8s;
+        }
+        .active .btn-final { opacity: 1; transform: translateY(0); transition-delay: 2s; }
+        .loader { position: absolute; bottom: 0; left: 0; height: 2px; background: var(--gold); width: 0%; z-index: 100; opacity: 0.3; }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <div class="loader" id="loader"></div>
+    <div class="bg-container" id="dust-container">
+        <img src="scene.png" class="bg-img">
+        <div class="vignette"></div>
+    </div>
+
+    <div class="scene fx-fade active" data-time="5000">
+        <h1 class="h1">O Criador não fala<br>com qualquer um</h1>
+        <p class="h2">...Ele responderá apenas a um chamado perfeito.</p>
+    </div>
+
+    <div class="scene fx-fade" data-time="4500">
+        <h1 class="h1">Há um segredo antigo</h1>
+        <p class="h2">aguardando por você.</p>
+    </div>
+
+    <div class="scene fx-slide" data-time="5500">
+        <h1 class="h1">Uma Oração Sagrada</h1>
+        <p class="h2">fragmentada pelo tempo.</p>
+    </div>
+
+    <div class="scene fx-slide" data-time="5500">
+        <h1 class="h1">Sua missão é restaurar</h1>
+        <p class="h2">a conexão com o Criador.</p>
+    </div>
+
+    <div class="scene fx-zoom" data-time="5500">
+        <h1 class="h1">Você terá apenas</h1>
+        <p class="h2">uma chance para falar com Ele.</p>
+    </div>
+
+    <div class="scene fx-fade" data-time="5500">
+        <h1 class="h1">Quem decifrar o enigma</h1>
+        <p class="h2">terá o direito sagrado...</p>
+    </div>
+
+    <div class="scene fx-zoom" data-time="15000">
+        <p class="h2">O Portal está aberto.</p>
+        <h1 class="h1" style="font-size: 2.8rem;">RECLAME SEU<br>DESTINO</h1>
+        <button class="btn-final" onclick="window.location.href='https://ocriador.fun'">JOGUE AGORA</button>
+        <p style="color: var(--gold); margin-top: 20px; font-size: 0.7rem; letter-spacing: 2px;">WWW.OCRIADOR.FUN</p>
+    </div>
+</div>
+
+<script>
+    const scenes = document.querySelectorAll('.scene');
+    const loader = document.getElementById('loader');
+    const dustContainer = document.getElementById('dust-container');
+    let currentIdx = 0;
+    let isTransitioning = false;
+
+    // AUMENTO DO NÚMERO DE PARTÍCULAS
+    function createDust() {
+        const p = document.createElement('div');
+        p.className = 'dust-particle';
+        const size = Math.random() * 3 + 1 + 'px';
+        p.style.width = size; p.style.height = size;
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = '110%';
+        p.style.opacity = '0';
+        // Variação de velocidade para profundidade
+        const speed = Math.random() * 10 + 8;
+        p.style.animation = `floatDust ${speed}s linear infinite`;
+        dustContainer.appendChild(p);
+        
+        // Limpeza de memória
+        setTimeout(() => p.remove(), speed * 1000);
+    }
+
+    // Intervalo reduzido para gerar mais partículas por segundo
+    setInterval(createDust, 150); 
+
+    function runTrailer() {
+        if (isTransitioning) return;
+        const currentScene = scenes[currentIdx];
+        const displayTime = parseInt(currentScene.getAttribute('data-time'));
+
+        loader.style.transition = 'none';
+        loader.style.width = '0%';
+        requestAnimationFrame(() => {
+            loader.style.transition = `width ${displayTime}ms linear`;
+            loader.style.width = '100%';
+        });
+
+        setTimeout(() => {
+            transitionToNext(currentScene);
+        }, displayTime);
+    }
+
+    function transitionToNext(oldScene) {
+        isTransitioning = true;
+        oldScene.classList.add('exit');
+        oldScene.classList.remove('active');
+
+        setTimeout(() => {
+            oldScene.classList.remove('exit');
+            currentIdx = (currentIdx + 1) % scenes.length;
+            scenes[currentIdx].classList.add('active');
+            isTransitioning = false;
+            runTrailer();
+        }, 650); 
+    }
+
+    window.onload = () => {
+        // População inicial para não começar vazio
+        for(let i=0; i<40; i++) {
+            createDust();
+        }
+        setTimeout(runTrailer, 500);
+    };
+</script>
+
+</body>
+</html>
