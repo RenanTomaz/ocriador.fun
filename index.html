@@ -14,7 +14,9 @@
 
         body {
             margin: 0; padding: 0;
-            background-color: #050505;
+            /* Alterado de #050505 para o gradiente azul */
+            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background-attachment: fixed; /* Mantém o fundo fixo ao rolar */
             color: var(--white);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex; justify-content: center; align-items: center;
@@ -23,6 +25,7 @@
 
         #app-container {
             width: 100%; max-width: 500px; min-height: 100vh;
+            /* O gradiente aqui pode continuar ou ficar transparente */
             background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             display: flex; flex-direction: column; align-items: center;
             position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.5);
@@ -266,10 +269,31 @@
     margin-bottom: 10px;
     flex-shrink: 0;
 }
+/* Escondido por padrão (Mobile) */
+.ad-sidebar {
+    display: none;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 160px;
+    height: 600px;
+    z-index: 1;
+}
+
+/* Aparece apenas em Monitores Grandes (Desktop) */
+@media (min-width: 1100px) {
+    .ad-sidebar {
+        display: block;
+    }
+    /* Posiciona exatamente ao lado do container de 500px */
+    .ad-left { left: calc(50% - 250px - 180px); }
+    .ad-right { right: calc(50% - 250px - 180px); }
+}
     </style>
 </head>
 <body>
-
+<div class="ad-sidebar ad-left" id="ad-slot-left"></div>
+<div class="ad-sidebar ad-right" id="ad-slot-right"></div>
 <div id="app-container">
     <div class="ad-container-top">
         <div id="ad-slot-top"></div>
@@ -695,6 +719,43 @@
 // Executa após o carregamento inicial para não atrasar o jogo
 window.addEventListener('load', () => {
     setTimeout(injectTopAd, 500); 
+});
+function loadSideAds() {
+    // Só executa se a tela for grande o suficiente
+    if (window.innerWidth < 1100) return;
+
+    const sideSlots = ['ad-slot-left', 'ad-slot-right'];
+    
+    sideSlots.forEach(slotId => {
+        const container = document.getElementById(slotId);
+        if (!container) return;
+
+        // Script de configuração
+        const config = document.createElement('script');
+        config.type = 'text/javascript';
+        config.text = `
+            atOptions = {
+                'key' : 'd89c05280dbb252374a897d51c51ccf7',
+                'format' : 'iframe',
+                'height' : 600,
+                'width' : 160,
+                'params' : {}
+            };
+        `;
+
+        // Script de execução
+        const invoke = document.createElement('script');
+        invoke.type = 'text/javascript';
+        invoke.src = 'https://www.highperformanceformat.com/d89c05280dbb252374a897d51c51ccf7/invoke.js';
+
+        container.appendChild(config);
+        container.appendChild(invoke);
+    });
+}
+
+// Inicia o carregamento 2 segundos após o jogo carregar
+window.addEventListener('load', () => {
+    setTimeout(loadSideAds, 500);
 });
 </script>
 </body>
