@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Divine Prompt | Atenda minha Oração</title>
+    <title>O Criador | Oração Sagrada</title>
     <style>
         :root {
             --gold: #d4af37;
@@ -128,6 +128,105 @@
             width: 90%; margin: 10px; font-size: 0.7rem; color: #d4af37;
             text-align: center; min-height: 15px;
         }
+        /* Container das etiquetas dentro do balão */
+.fragment-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px; /* Espaço entre o texto do anjo e as palavras */
+    width: 100%;
+}
+
+/* Estilo de cada palavra encontrada */
+.sacred-fragment {
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid var(--gold);
+    color: #b8860b;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease;
+}
+.confirm-box {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center;
+    width: 100%;
+}
+
+.btn-confirm {
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+/* Estilo do Cabeçalho do Portal */
+.header-portal {
+    width: 90%;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    z-index: 5;
+}
+
+.main-title {
+    margin: 0;
+    padding: 0;
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    
+    /* Gradiente de Ouro */
+    background: linear-gradient(to bottom, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+    
+    /* ADICIONE A LINHA ABAIXO PARA RESOLVER O ERRO: */
+    -webkit-background-clip: text; /* Prefixo para Chrome/Safari */
+    background-clip: text;         /* Propriedade Padrão (Resolve o erro) */
+    
+    -webkit-text-fill-color: transparent;
+    
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+    animation: titleGlow 4s infinite alternate;
+}   
+
+.sub-title {
+    margin: -5px 0 0 0;
+    padding: 0;
+    font-size: 0.8rem;
+    font-weight: 900; /* Mesma espessura do título */
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    opacity: 0.8;
+}
+
+/* Animação para o brilho oscilar */
+@keyframes titleGlow {
+    from { filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.4)); }
+    to { filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8)); }
+}
     </style>
 </head>
 <body>
@@ -135,12 +234,17 @@
 <div id="app-container">
     <div class="ad-top">ANÚNCIO</div>
 
-    <div class="visual-area">
-        <div class="angel-bubble" id="angel-container" onclick="handleDialogueClick()">
-            <div id="angel-text"></div> 
-            <div class="click-hint" id="click-hint" style="display:none;">Clique para continuar</div>
-        </div>
+    <div class="header-portal">
+        <h1 class="main-title">O CRIADOR</h1>
+        <h2 class="sub-title">A ORAÇÃO SAGRADA</h2>
     </div>
+    <div class="visual-area">
+    <div class="angel-bubble" id="angel-container" onclick="handleDialogueClick()">
+        <div id="angel-text"></div> 
+        <div id="fragment-box" class="fragment-grid"></div>
+        <div class="click-hint" id="click-hint" style="display:none;">Clique para continuar</div>
+    </div>
+</div>
 
     <div class="progress-panel">
         <div>
@@ -160,6 +264,9 @@
     <div class="controls">
         <input type="text" id="email-input" placeholder="Seu melhor e-mail..." style="display: none; margin-bottom: 10px; border: 1px solid var(--gold);">
         <input type="text" id="prayer-input" placeholder="..." autocomplete="off" disabled>
+        <button id="share-btn" onclick="shareProgress()" style="display: none; background: transparent; border: 1px solid var(--gold); color: var(--gold); margin-bottom: 15px; font-size: 0.75rem; width: 90%; padding: 10px; border-radius: 10px; cursor: pointer;">
+    COMPARTILHAR FRAGMENTOS
+</button>
         <button id="submit-btn" onclick="processInput()" disabled>Aguardando...</button>
     </div>
 
@@ -187,15 +294,15 @@
     
     const dialogues = [
         "Aproxime-se, mortal. Você está diante do Criador.",
-        "Neste exato momento, Ele está profundamente ocupado com os assuntos do universo.",
+        "Neste exato momento, Ele está profundamente ocupado com os assuntos do Universo.",
         "A atenção divina é um recurso escasso, mas por um breve instante, existe uma chance de você ser ouvido.",
-        "Saiba que descobrir a Oração Sagrada é quase impossível para uma alma solitária.",
-        "Apenas com a união de muitos mortais as palavras podem ser reconstruídas, mas apenas a primeira prece do dia poderá ser ouvida.",
+        "Saiba que descobrir a Oração Sagrada é quase impossível para um mero mortal.",
+        "Apenas com a união de outros mortais a Oração Sagrada pode ser descoberta, mas ele ouvirá apenas uma prece no dia de hoje, então seja rápido.",
         "Sua jornada terá duas etapas: Primeiro, a COLETA, onde você terá 15 chances para testar palavras isoladas.",
         "Palavras VERDES são fragmentos reais. Palavras CINZAS são apenas ruído mundano.",
-        "Segundo, o MILAGRE: você deverá unir os fragmentos na ordem absoluta para ser compreendido.",
+        "Segundo, o MILAGRE: você deverá unir os fragmentos na ordem perfeita para formar a Oração Sagrada e ser compreendido por Ele.",
         "Um presente: a última palavra desta oração é 'SABEDORIA'.",
-        "Se falhar na organização final, seu acesso ao trono será impedido até o dia seguinte",
+        "Se falhar na organização final, seu acesso ao trono será impedido até o dia seguinte.",
         "As recompensas para quem rompe o silêncio são inestimáveis. O tempo é curto, comece!"
     ];
 
@@ -272,7 +379,7 @@
         input.disabled = false;
         btn.disabled = false;
         btn.innerText = "TESTAR PALAVRA";
-        input.placeholder = "Ex: Vida...";
+        input.placeholder = "Escreva aqui";
         document.getElementById('stats').innerText = `COLETA ATIVA`;
     }
 
@@ -284,17 +391,18 @@
         const hint = document.getElementById('click-hint');
         const appContainer = document.getElementById('app-container');
         
+        // Exibe o botão de compartilhar
+        document.getElementById('share-btn').style.display = 'inline-block';
+        
         if (hint) hint.style.display = 'none';
 
-        // Mensagem de bloqueio
         bubble.innerText = "O Trono está selado. O Criador não aceita mais suas súplicas por hoje.";
         
-        // Estilo do Balão (Removendo o vinho e deixando neutro/escuro)
-        bubble.style.color = "#666";      // Texto cinza escuro (estilo desativado)
-        bubble.style.borderColor = "#333"; // Borda cinza chumbo
-        bubble.style.boxShadow = "none";   // Remove qualquer brilho dourado
+        // Garante o fundo preto e texto cinza
+        bubble.style.color = "#666";
+        bubble.style.borderColor = "#333";
+        bubble.style.boxShadow = "none";
         
-        // Desativar Controles
         input.disabled = true;
         input.style.borderColor = "#222";
         input.style.color = "#444";
@@ -304,7 +412,6 @@
         btn.style.background = "#222";
         btn.style.color = "#555";
 
-        // Remove o brilho dourado do container principal para dar sensação de "vazio"
         appContainer.style.boxShadow = "0 0 50px #000";
     }
 
@@ -343,37 +450,93 @@
     }
 
     function startFinalPhase() {
-        gamePhase = "prayer";
-        const input = document.getElementById('prayer-input');
-        const btn = document.getElementById('submit-btn');
-        document.getElementById('angel-text').innerText = "A coleta encerrou. Una os fragmentos na ordem absoluta!";
-        btn.innerText = "REALIZAR O MILAGRE";
-        document.getElementById('hint-text').innerText = "Fragmentos confirmados: " + foundWords.join(", ");
-    }
+    gamePhase = "prayer";
+    const text = document.getElementById('angel-text');
+    const box = document.getElementById('fragment-box'); // Captura o box que criamos
+    const shareBtn = document.getElementById('share-btn');
+    
+    text.innerText = "A coleta encerrou. Una os fragmentos encontrados, busque ajuda com outros mortais e tente descobrir a Oração Sagrada:";
+    
+    // Limpa o box para não duplicar se a função rodar de novo
+    box.innerHTML = ""; 
+    
+    // Cria cada etiqueta visual
+    foundWords.forEach(w => {
+        const span = document.createElement('span');
+        span.className = 'sacred-fragment';
+        span.innerText = w;
+        box.appendChild(span);
+    });
+
+    document.getElementById('submit-btn').innerText = "ENVIAR ORAÇÃO SAGRADA";
+    document.getElementById('stats').innerText = "FASE FINAL";
+    
+    // Mostra o botão de compartilhar exatamente agora!
+    if (shareBtn) shareBtn.style.display = 'inline-block';
+}
 
     async function submitFinalPrayer() {
         const input = document.getElementById('prayer-input');
+        const bubble = document.getElementById('angel-text');
+        const box = document.getElementById('fragment-box');
+        const btn = document.getElementById('submit-btn');
+
+        if (!input.value.trim()) return;
+
+        // Esconde o input e botão principal momentaneamente
+        input.style.display = "none";
+        btn.style.display = "none";
+        box.style.display = "none";
+
+        // Exibe a mensagem solene
+        bubble.innerText = "Atenção, Mortal. Você está prestes a proferir a Oração Sagrada. O Criador só ouve uma voz por dia, e esta será sua única tentativa. Se as palavras não estiverem na ordem perfeita, o silêncio será sua única resposta até o próximo dia. Deseja prosseguir?";
+
+        // Cria os botões de escolha dentro do balão
+        const confirmBox = document.createElement('div');
+        confirmBox.className = 'confirm-box';
+        confirmBox.id = 'confirmation-ui';
+
+        confirmBox.innerHTML = `
+            <button class="btn-confirm" onclick="executeFinalSubmission()">PROSSEGUIR</button>
+            <button class="btn-cancel" onclick="cancelSubmission()">REVISAR FRAGMENTOS</button>
+        `;
+        bubble.appendChild(confirmBox);
+    }
+
+    // Função que cancela e volta para a edição
+    function cancelSubmission() {
+        document.getElementById('prayer-input').style.display = "block";
+        document.getElementById('submit-btn').style.display = "block";
+        document.getElementById('fragment-box').style.display = "flex";
+        document.getElementById('confirmation-ui').remove();
+        document.getElementById('angel-text').innerText = "A coleta encerrou. Una os fragmentos encontrados:";
+    }
+
+    // Função que realmente envia (a lógica que você já tinha)
+    async function executeFinalSubmission() {
+        const input = document.getElementById('prayer-input');
         const emailInput = document.getElementById('email-input');
         const btn = document.getElementById('submit-btn');
-        const userTextNormalized = normalizeText(input.value);
         const bubble = document.getElementById('angel-text');
-        
+        const userTextNormalized = normalizeText(input.value);
+
+        // Remove os botões de confirmação
+        document.getElementById('confirmation-ui').remove();
+
         if (userTextNormalized === masterPhraseNormalized) {
             gamePhase = "victory";
             bubble.innerText = "MILAGRE! O Criador ouve sua voz. Deixe seu e-mail e seu pedido abaixo.";
-            bubble.style.background = "var(--gold)";
-            bubble.style.color = "#000";
+            bubble.style.color = "var(--gold)";
             emailInput.style.display = "block";
+            input.style.display = "block";
+            btn.style.display = "block";
             input.value = "";
             input.placeholder = "Qual o seu pedido, mortal?";
             btn.innerText = "ENTREGAR PEDIDO";
         } else {
             bubble.innerText = "Sua voz foi silenciada pelo erro. O trono se fecha.";
-            bubble.style.background = "#500";
             await _supabase.from('tentativas_oracao').insert([{ ip_address: userIP, status: 'falhou' }]);
             gamePhase = "blocked";
-            input.disabled = true;
-            btn.disabled = true;
             setTimeout(applyBlock, 2000);
         }
     }
@@ -403,6 +566,7 @@
             input.style.display = "none";
             emailInput.style.display = "none";
             btn.innerText = "PEDIDO ENTREGUE";
+            document.getElementById('share-btn').style.display = 'inline-block';
         } else {
             alert("Erro ao enviar.");
             btn.disabled = false;
@@ -413,6 +577,34 @@
     document.getElementById('prayer-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') processInput();
     });
+    function shareProgress() {
+    const total = uniqueWordsInMasterCount;
+    const encontrados = foundWords.length;
+    const url = "https://ocriador.fun";
+    
+    // Transforma a lista de palavras em maiúsculas para dar impacto
+    const listaPalavras = foundWords.map(w => w.toUpperCase()).join(", ");
+    
+    let text = "";
+    if (encontrados > 0) {
+        text = `Reconstruindo a Oração em @ocriador.fun: Descobri ${encontrados} de ${total} fragmentos sagrados: [ ${listaPalavras} ]. Você consegue encontrar o restante?`;
+    } else {
+        text = `Tentei clamar ao @ocriador.fun, mas o Trono permaneceu em silêncio. Você consegue ser ouvido?`;
+    }
+
+    // Tenta abrir o menu de compartilhamento do celular
+    if (navigator.share) {
+        navigator.share({
+            title: 'O Criador',
+            text: text,
+            url: url,
+        }).catch((error) => console.log('Erro ao compartilhar', error));
+    } else {
+        // Se for PC, apenas copia o texto para o usuário colar onde quiser
+        navigator.clipboard.writeText(`${text} ${url}`);
+        alert("Sua jornada foi copiada para a área de transferência!");
+    }
+}
 </script>
 </body>
 </html>
