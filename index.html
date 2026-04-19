@@ -675,7 +675,7 @@
         const url = "https://ocriador.fun";
         const listaPalavras = foundWords.map(w => w.toUpperCase()).join(", ");
         let text = encontrados > 0 
-            ? `Descobrindo a Oração Sagrada em www.ocriador.fun: Descobri ${encontrados} de ${total} fragmentos: [ ${listaPalavras} ]. Você consegue encontrar algum?`
+            ? `Consegui descobrir ${encontrados} de ${total} fragmentos: [ ${listaPalavras} ]. Você consegue encontrar algum?`
             : `Tentei clamar ao Criador, mas Ele permaneceu em silêncio.`;
         if (navigator.share) {
             navigator.share({ title: 'O Criador', text: text, url: url });
