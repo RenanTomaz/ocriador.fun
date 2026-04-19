@@ -359,14 +359,14 @@
     const dialogues = [
         "Aproxime-se, mortal. Você está diante do Criador.",
         "Neste exato momento, Ele está profundamente ocupado com os assuntos do Universo.",
-        "A atenção divina é um recurso escasso, mas por um breve instante, existe uma chance de você ser ouvido.",
-        "Saiba que descobrir a Oração Sagrada é quase impossível para uma alma solitária.",
-        "Apenas com a união dos mortais a Oração Sagrada pode ser construída, mas ele ouvirá apenas uma prece no dia de hoje, então seja rápido.",
+        "A atenção divina é um recurso escasso, porém existe uma chance de você ser ouvido.",
+        "Saiba que descobrir sozinho a Oração Sagrada é praticamente impossível.",
+        "Apenas com a união dos mortais a Oração Sagrada pode ser construída, mas ele ouvirá apenas uma prece por dia, então seja o primeiro a descobrir.",
         "Sua jornada terá duas etapas: Primeiro, a COLETA, onde você terá 15 chances para testar palavras isoladas.",
-        "Palavras VERDES são fragmentos reais. Palavras CINZAS são apenas ruído mundano.",
-        "Segundo, o MILAGRE: você deverá unir os fragmentos na ordem perfeita para formar a Oração Sagrada e ser compreendido por Ele.",
-        "Se falhar na organização final, seu acesso ao trono será impedido até o dia seguinte.",
-        "As recompensas para quem rompe o silêncio são inestimáveis. O tempo é curto, comece!"
+        "Palavras VERDES são fragmentos reais. Palavras CINZAS são apenas ruídos mundanos.",
+        "Segundo, o MILAGRE: você deverá unir os fragmentos reais na ordem perfeita para formar a Oração Sagrada e ser compreendido por Ele.",
+        "Se falhar a sua Oração estiver errada, seu acesso ao Criador será impedido até o dia seguinte.",
+        "As recompensas para quem rompe o silêncio são inestimáveis. O tempo é curto, tente descobrir a Oração Sagrada!"
     ];
 
     let currentDialogueIndex = 0;
@@ -569,7 +569,7 @@
         const text = document.getElementById('angel-text');
         const box = document.getElementById('fragment-box');
         const shareBtn = document.getElementById('share-btn');
-        text.innerText = "A coleta encerrou. Una os 15 fragmentos encontrados:";
+        text.innerText = "A busca pelos fragmentos foi encerrada. Use-os com sabedoria:";
         box.innerHTML = ""; 
         foundWords.forEach(w => {
             const span = document.createElement('span');
@@ -595,14 +595,14 @@
         btn.style.display = "none";
         box.style.display = "none";
 
-        bubble.innerText = "Atenção, Mortal. Você está prestes a proferir a Oração Sagrada. O Trono só ouve uma voz por dia, e esta será sua única tentativa. Deseja prosseguir?";
+        bubble.innerText = "Atenção, Mortal. Você está prestes a proferir a Oração Sagrada. O Criador só ouve uma voz por dia, e esta será sua única tentativa. Deseja prosseguir?";
 
         const confirmBox = document.createElement('div');
         confirmBox.className = 'confirm-box';
         confirmBox.id = 'confirmation-ui';
         confirmBox.innerHTML = `
             <button class="btn-confirm" onclick="executeFinalSubmission()">PROSSEGUIR</button>
-            <button class="btn-cancel" onclick="cancelSubmission()">REVISAR</button>
+            <button class="btn-cancel" onclick="cancelSubmission()">VOLTAR</button>
         `;
         bubble.appendChild(confirmBox);
     }
@@ -612,7 +612,7 @@
         document.getElementById('submit-btn').style.display = "block";
         document.getElementById('fragment-box').style.display = "flex";
         document.getElementById('confirmation-ui').remove();
-        document.getElementById('angel-text').innerText = "A coleta encerrou. Una os fragmentos encontrados:";
+        document.getElementById('angel-text').innerText = "A busca pelos fragmentos foi encerrada. Use-os com sabedoria:";
     }
 
     async function executeFinalSubmission() {
@@ -626,16 +626,16 @@
 
         if (userTextNormalized === masterPhraseNormalized) {
             gamePhase = "victory";
-            bubble.innerText = "MILAGRE! O Criador ouve sua voz. Deixe seu e-mail e seu pedido abaixo.";
+            bubble.innerText = "MILAGRE! O Criador ouve sua voz. Deixe seu e-mail e sua prece abaixo.";
             bubble.style.color = "var(--gold)";
             emailInput.style.display = "block";
             input.style.display = "block";
             btn.style.display = "block";
             input.value = "";
-            input.placeholder = "Qual o seu pedido, mortal?";
+            input.placeholder = "Qual a sua prece, mortal?";
             btn.innerText = "ENTREGAR PEDIDO";
         } else {
-            bubble.innerText = "Sua voz foi silenciada pelo erro. O trono se fecha.";
+            bubble.innerText = "Sua voz foi silenciada pelo erro. O Criador permanece ocupado.";
             await _supabase.from('tentativas_oracao').insert([{ ip_address: userIP, status: 'falhou' }]);
             gamePhase = "blocked";
             setTimeout(applyBlock, 2000);
@@ -658,7 +658,7 @@
             { ip_address: userIP, status: 'sucesso', pedido: requestText, email: emailText }
         ]);
         if (!error) {
-            document.getElementById('angel-text').innerText = "Seu pedido foi entregue às estrelas. Aguarde o destino.";
+            document.getElementById('angel-text').innerText = "Sua prece foi entregue ao Criador. Aguarde o destino.";
             input.style.display = "none";
             emailInput.style.display = "none";
             btn.innerText = "PEDIDO ENTREGUE";
@@ -675,8 +675,8 @@
         const url = "https://ocriador.fun";
         const listaPalavras = foundWords.map(w => w.toUpperCase()).join(", ");
         let text = encontrados > 0 
-            ? `Reconstruindo a Oração em @ocriador.fun: Descobri ${encontrados} de ${total} fragmentos: [ ${listaPalavras} ]. Você consegue o restante?`
-            : `Tentei clamar ao @ocriador.fun, mas o Trono permaneceu em silêncio.`;
+            ? `Descobrindo a Oração Sagrada em www.ocriador.fun: Descobri ${encontrados} de ${total} fragmentos: [ ${listaPalavras} ]. Você consegue encontrar algum?`
+            : `Tentei clamar ao Criador, mas Ele permaneceu em silêncio.`;
         if (navigator.share) {
             navigator.share({ title: 'O Criador', text: text, url: url });
         } else {
