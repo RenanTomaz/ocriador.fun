@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Divine Prompt | Atenda minha Oração</title>
+    <style>
+        :root {
+            --gold: #d4af37;
+            --correct: #27ae60;
+            --missing: #7f8c8d;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: #050505;
+            color: var(--white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        #app-container {
+            width: 100%; max-width: 500px; min-height: 100vh;
+            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .ad-top {
+            width: 100%; height: 60px; background: rgba(255,255,255,0.05);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 10px; color: #555; margin-bottom: 10px;
+        }
+
+        .visual-area {
+            width: 90%; height: 350px; margin-top: 20px;
+            border-radius: 20px;
+            background-image: url('scene.png'); 
+            background-size: cover; background-position: center;
+            position: relative; border: 2px solid var(--gold);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .angel-bubble {
+            position: absolute; bottom: -20px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.98); color: #111;
+            padding: 15px 20px; border-radius: 12px;
+            font-size: 0.85rem; font-weight: bold; width: 85%;
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            cursor: pointer; border: 2px solid var(--gold); z-index: 10;
+            min-height: 60px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+
+        .click-hint {
+            font-size: 9px; color: var(--gold); margin-top: 8px;
+            text-transform: uppercase; letter-spacing: 1px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; }
+        }
+
+        .progress-panel {
+            width: 90%;
+            background: rgba(0, 0, 0, 0.4);
+            margin-top: 40px;
+            padding: 10px;
+            border-radius: 10px;
+            border-left: 4px solid var(--gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .progress-title { font-size: 0.65rem; color: var(--gold); text-transform: uppercase; font-weight: bold; }
+        .progress-value { font-size: 1.2rem; font-weight: 900; color: #fff; }
+
+        .feedback-container {
+            flex-grow: 1; width: 90%; margin: 15px 0 10px 0;
+            display: flex; flex-wrap: wrap; justify-content: center;
+            align-content: flex-start; gap: 8px;
+        }
+
+        .word-tile {
+            padding: 8px 12px; border-radius: 5px; font-weight: bold;
+            text-transform: uppercase; font-size: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .controls {
+            width: 100%; padding: 25px; background: rgba(0,0,0,0.5);
+            border-radius: 30px 30px 0 0; box-sizing: border-box; text-align: center;
+        }
+
+        input[type="text"] {
+            width: 90%; padding: 15px; border-radius: 10px;
+            border: 1px solid var(--gold); background: rgba(0,0,0,0.3);
+            color: white; font-size: 1rem; margin-bottom: 12px; outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus { box-shadow: 0 0 10px var(--gold); }
+
+        button {
+            width: 90%; padding: 15px; background: var(--gold);
+            border: none; border-radius: 10px; font-weight: 900;
+            font-size: 1rem; cursor: pointer; color: #000;
+            text-transform: uppercase; transition: transform 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:disabled { background: #444; color: #777; cursor: not-allowed; }
+
+        .stats { margin-top: 5px; font-size: 0.7rem; color: var(--gold); font-weight: bold; }
+        .correct { background-color: var(--correct) !important; color: white; border-color: #1b5e20; }
+        .missing { background-color: var(--missing) !important; color: white; border-color: #424242; }
+        
+        #hint-text {
+            width: 90%; margin: 10px; font-size: 0.7rem; color: #d4af37;
+            text-align: center; min-height: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div class="ad-top">ANÚNCIO</div>
+
+    <div class="visual-area">
+        <div class="angel-bubble" id="angel-container" onclick="handleDialogueClick()">
+            <div id="angel-text"></div> 
+            <div class="click-hint" id="click-hint" style="display:none;">Clique para continuar</div>
+        </div>
+    </div>
+
+    <div class="progress-panel">
+        <div>
+            <div class="progress-title">Fragmentos Encontrados</div>
+            <div id="found-count" class="progress-value">0 / 15</div>
+        </div>
+        <div style="text-align: right;">
+            <div class="progress-title">Tentativas Restantes</div>
+            <div id="attempts-left" class="progress-value">15</div>
+        </div>
+    </div>
+
+    <div id="stats" class="stats">FASE DE COLETA</div>
+    <div id="hint-text"></div>
+    <div class="feedback-container" id="feedback"></div>
+
+    <div class="controls">
+        <input type="text" id="email-input" placeholder="Seu melhor e-mail..." style="display: none; margin-bottom: 10px; border: 1px solid var(--gold);">
+        <input type="text" id="prayer-input" placeholder="..." autocomplete="off" disabled>
+        <button id="submit-btn" onclick="processInput()" disabled>Aguardando...</button>
+    </div>
+
+    <div class="ad-top" style="margin-top: auto;">ANÚNCIO</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = 'https://xtdiihqsfxngtqyldfjr.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0ZGlpaHFzZnhuZ3RxeWxkZmpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1ODE2MzIsImV4cCI6MjA5MjE1NzYzMn0.Z-LmLJdYxHKoWtHYIvOV38K7e-hhiB4CdWYDZ1Stb5c';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const masterPhrase = "somente aquele que aceita o silêncio do universo consegue ouvir a voz da verdadeira sabedoria";
+    
+    function normalizeText(text) {
+        return text.toLowerCase()
+                   .normalize("NFD")
+                   .replace(/[\u0300-\u036f]/g, "")
+                   .trim();
+    }
+
+    const masterPhraseNormalized = normalizeText(masterPhrase);
+    const masterArrayNormalized = masterPhraseNormalized.split(" ");
+    const uniqueWordsInMasterCount = [...new Set(masterArrayNormalized)].length;
+    
+    const dialogues = [
+        "Aproxime-se, mortal. Você está diante do Criador.",
+        "Neste exato momento, Ele está profundamente ocupado com os assuntos do universo.",
+        "A atenção divina é um recurso escasso, mas por um breve instante, existe uma chance de você ser ouvido.",
+        "Saiba que descobrir a Oração Sagrada é quase impossível para uma alma solitária.",
+        "Apenas com a união de muitos mortais as palavras podem ser reconstruídas, mas apenas a primeira prece do dia poderá ser ouvida.",
+        "Sua jornada terá duas etapas: Primeiro, a COLETA, onde você terá 15 chances para testar palavras isoladas.",
+        "Palavras VERDES são fragmentos reais. Palavras CINZAS são apenas ruído mundano.",
+        "Segundo, o MILAGRE: você deverá unir os fragmentos na ordem absoluta para ser compreendido.",
+        "Um presente: a última palavra desta oração é 'SABEDORIA'.",
+        "Se falhar na organização final, seu acesso ao trono será impedido até o dia seguinte",
+        "As recompensas para quem rompe o silêncio são inestimáveis. O tempo é curto, comece!"
+    ];
+
+    let currentDialogueIndex = 0;
+    let collectionCount = 0;
+    let foundWords = [];
+    let isTyping = false;
+    let gamePhase = "dialogue"; // Alterado para gerenciar o estado inicial
+    let userIP = '';
+
+    window.onload = async function() {
+        await checkGlobalBlock();
+    };
+
+    async function checkGlobalBlock() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            userIP = data.ip;
+
+            const { data: attempts } = await _supabase
+                .from('tentativas_oracao')
+                .select('*')
+                .eq('ip_address', userIP)
+                .eq('status', 'falhou')
+                .gt('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+            if (attempts && attempts.length > 0) {
+                applyBlock();
+            } else {
+                typeWriter(dialogues[0]); 
+            }
+        } catch (err) {
+            typeWriter(dialogues[0]); 
+        }
+    }
+
+    function typeWriter(text, i = 0) {
+        isTyping = true;
+        const hint = document.getElementById('click-hint');
+        if (hint) hint.style.display = 'none';
+        
+        if (i < text.length) {
+            document.getElementById('angel-text').innerHTML = text.substring(0, i+1);
+            setTimeout(() => typeWriter(text, i + 1), 30);
+        } else {
+            isTyping = false;
+            // Só mostra a dica de clique se ainda estiver na fase de diálogo
+            if (hint && gamePhase === "dialogue") hint.style.display = 'block';
+        }
+    }
+
+    function handleDialogueClick() {
+        // Trava: se estiver digitando ou se o jogo já saiu da fase de diálogo, ignora o clique
+        if (isTyping || gamePhase !== "dialogue") return;
+        
+        if (currentDialogueIndex < dialogues.length - 1) {
+            currentDialogueIndex++;
+            typeWriter(dialogues[currentDialogueIndex]);
+        } else {
+            unlockControls();
+        }
+    }
+
+    function unlockControls() {
+        gamePhase = "collection"; // Muda para fase de coleta
+        const input = document.getElementById('prayer-input');
+        const btn = document.getElementById('submit-btn');
+        const hint = document.getElementById('click-hint');
+        
+        if (hint) hint.style.display = 'none'; // Esconde a dica permanentemente
+        document.getElementById('angel-text').innerText = "Tente encontrar os fragmentos da Oração Divina.";
+        
+        input.disabled = false;
+        btn.disabled = false;
+        btn.innerText = "TESTAR PALAVRA";
+        input.placeholder = "Ex: Vida...";
+        document.getElementById('stats').innerText = `COLETA ATIVA`;
+    }
+
+    function applyBlock() {
+        gamePhase = "blocked";
+        const bubble = document.getElementById('angel-text');
+        const input = document.getElementById('prayer-input');
+        const btn = document.getElementById('submit-btn');
+        const hint = document.getElementById('click-hint');
+        const appContainer = document.getElementById('app-container');
+        
+        if (hint) hint.style.display = 'none';
+
+        // Mensagem de bloqueio
+        bubble.innerText = "O Trono está selado. O Criador não aceita mais suas súplicas por hoje.";
+        
+        // Estilo do Balão (Removendo o vinho e deixando neutro/escuro)
+        bubble.style.color = "#666";      // Texto cinza escuro (estilo desativado)
+        bubble.style.borderColor = "#333"; // Borda cinza chumbo
+        bubble.style.boxShadow = "none";   // Remove qualquer brilho dourado
+        
+        // Desativar Controles
+        input.disabled = true;
+        input.style.borderColor = "#222";
+        input.style.color = "#444";
+        
+        btn.disabled = true;
+        btn.innerText = "ACESSO NEGADO";
+        btn.style.background = "#222";
+        btn.style.color = "#555";
+
+        // Remove o brilho dourado do container principal para dar sensação de "vazio"
+        appContainer.style.boxShadow = "0 0 50px #000";
+    }
+
+    function processInput() {
+        const input = document.getElementById('prayer-input');
+        const rawInput = input.value.trim();
+        const normalizedInput = normalizeText(rawInput);
+
+        if (gamePhase === "collection") {
+            if (!normalizedInput || normalizedInput.split(/\s+/).length > 1) {
+                alert("Apenas uma palavra por vez.");
+                return;
+            }
+            collectionCount++;
+            document.getElementById('attempts-left').innerText = 15 - collectionCount;
+            const tile = document.createElement('div');
+            tile.classList.add('word-tile');
+            tile.innerText = rawInput;
+            if (masterArrayNormalized.includes(normalizedInput)) {
+                tile.classList.add('correct');
+                if (!foundWords.includes(normalizedInput)) {
+                    foundWords.push(normalizedInput);
+                    document.getElementById('found-count').innerText = `${foundWords.length} / ${uniqueWordsInMasterCount}`;
+                }
+            } else {
+                tile.classList.add('missing');
+            }
+            document.getElementById('feedback').appendChild(tile);
+            input.value = "";
+            if (collectionCount >= 15) startFinalPhase();
+        } else if (gamePhase === "prayer") {
+            submitFinalPrayer();
+        } else if (gamePhase === "victory") {
+            sendDivineRequest();
+        }
+    }
+
+    function startFinalPhase() {
+        gamePhase = "prayer";
+        const input = document.getElementById('prayer-input');
+        const btn = document.getElementById('submit-btn');
+        document.getElementById('angel-text').innerText = "A coleta encerrou. Una os fragmentos na ordem absoluta!";
+        btn.innerText = "REALIZAR O MILAGRE";
+        document.getElementById('hint-text').innerText = "Fragmentos confirmados: " + foundWords.join(", ");
+    }
+
+    async function submitFinalPrayer() {
+        const input = document.getElementById('prayer-input');
+        const emailInput = document.getElementById('email-input');
+        const btn = document.getElementById('submit-btn');
+        const userTextNormalized = normalizeText(input.value);
+        const bubble = document.getElementById('angel-text');
+        
+        if (userTextNormalized === masterPhraseNormalized) {
+            gamePhase = "victory";
+            bubble.innerText = "MILAGRE! O Criador ouve sua voz. Deixe seu e-mail e seu pedido abaixo.";
+            bubble.style.background = "var(--gold)";
+            bubble.style.color = "#000";
+            emailInput.style.display = "block";
+            input.value = "";
+            input.placeholder = "Qual o seu pedido, mortal?";
+            btn.innerText = "ENTREGAR PEDIDO";
+        } else {
+            bubble.innerText = "Sua voz foi silenciada pelo erro. O trono se fecha.";
+            bubble.style.background = "#500";
+            await _supabase.from('tentativas_oracao').insert([{ ip_address: userIP, status: 'falhou' }]);
+            gamePhase = "blocked";
+            input.disabled = true;
+            btn.disabled = true;
+            setTimeout(applyBlock, 2000);
+        }
+    }
+
+    async function sendDivineRequest() {
+        const input = document.getElementById('prayer-input');
+        const emailInput = document.getElementById('email-input');
+        const btn = document.getElementById('submit-btn');
+        const requestText = input.value.trim();
+        const emailText = emailInput.value.trim();
+        const bubble = document.getElementById('angel-text');
+
+        if (!requestText || !emailText) {
+            alert("Preencha ambos os campos.");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "ENVIANDO...";
+
+        const { error } = await _supabase.from('tentativas_oracao').insert([
+            { ip_address: userIP, status: 'sucesso', pedido: requestText, email: emailText }
+        ]);
+
+        if (!error) {
+            bubble.innerText = "Seu pedido foi entregue às estrelas. Aguarde o destino.";
+            input.style.display = "none";
+            emailInput.style.display = "none";
+            btn.innerText = "PEDIDO ENTREGUE";
+        } else {
+            alert("Erro ao enviar.");
+            btn.disabled = false;
+            btn.innerText = "ENTREGAR PEDIDO";
+        }
+    }
+
+    document.getElementById('prayer-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') processInput();
+    });
+</script>
+</body>
+</html>
