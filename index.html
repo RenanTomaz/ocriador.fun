@@ -256,12 +256,24 @@
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+.ad-container-top {
+    width: 100%;
+    min-height: 50px; /* Altura exata do anúncio solicitado */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.1); /* Um fundo bem sutil */
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
     </style>
 </head>
 <body>
 
 <div id="app-container">
-    <div class="ad-top">ANÚNCIO</div>
+    <div class="ad-container-top">
+        <div id="ad-slot-top"></div>
+    </div>
 
     <div class="header-portal">
         <h1 class="main-title">O CRIADOR</h1>
@@ -654,6 +666,36 @@
     document.getElementById('prayer-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') processInput();
     });
+    function injectTopAd() {
+    const container = document.getElementById('ad-slot-top');
+    if (!container) return;
+
+    // Injeta as configurações (atOptions)
+    const scriptConfig = document.createElement('script');
+    scriptConfig.type = 'text/javascript';
+    scriptConfig.text = `
+        atOptions = {
+            'key' : '60d42cf26d254483080b52fc8a771b1f',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+        };
+    `;
+
+    // Injeta o script carregador (invoke.js)
+    const scriptInvoke = document.createElement('script');
+    scriptInvoke.type = 'text/javascript';
+    scriptInvoke.src = 'https://www.highperformanceformat.com/60d42cf26d254483080b52fc8a771b1f/invoke.js';
+
+    container.appendChild(scriptConfig);
+    container.appendChild(scriptInvoke);
+}
+
+// Executa após o carregamento inicial para não atrasar o jogo
+window.addEventListener('load', () => {
+    setTimeout(injectTopAd, 1500); 
+});
 </script>
 </body>
 </html>
