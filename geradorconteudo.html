@@ -3,88 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FerramentasPro AI - Ultimate v11.0</title>
+    <title>FerramentasPro AI - No Distortion v11.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,900;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght=0,400;0,600;0,900;1,900&display=swap');
         body { font-family: 'Poppins', sans-serif; background: #010411; color: white; margin: 0; overflow: hidden; display: flex; }
+        
         .sidebar { width: 380px; min-width: 380px; background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; overflow-y: auto; padding: 20px; transition: all 0.4s ease; position: relative; z-index: 50; }
         .sidebar.hidden-menu { margin-left: -380px; opacity: 0; }
+        
         #toggleMenu { position: fixed; top: 20px; left: 20px; z-index: 100; background: #3b82f6; color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        
         .preview-area { flex: 1; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 20px; background: radial-gradient(circle at center, #1e293b 0%, #010411 100%); overflow: auto; }
+        
         #instagramPreview { width: 1080px; height: 1080px; min-width: 1080px; position: relative; overflow: hidden; background: #020617; border-radius: 20px; transform: scale(0.42); transform-origin: top center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
+        
         .blob { position: absolute; border-radius: 50%; z-index: 2; opacity: 0.7; pointer-events: none; }
         #matrixBackground { position: absolute; inset: 0; font-family: monospace; font-size: 22px; color: #1e293b; opacity: 0.2; line-height: 1.1; z-index: 1; }
         .fp-title { font-size: 55px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -0.05em; line-height: 1; }
-        #photoFrame { position: absolute; z-index: 10; overflow: hidden; border: 12px solid #fff; transition: all 0.5s ease; }
-        #previewPhoto { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); }
+        
+        /* Container da Foto */
+        #photoFrame { position: absolute; z-index: 10; overflow: hidden; border: 12px solid #fff; transition: all 0.5s ease; background: #0f172a; }
+        
+        /* --- CORREÇÃO AQUI --- */
+        #previewPhoto { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* Preenche sem achatar */
+            object-position: center; /* Centraliza o corte */
+            filter: grayscale(100%); 
+            transition: all 0.3s ease;
+        }
+        
         #contentArea { position: absolute; z-index: 30; transition: all 0.3s ease; }
         #viewLargeTitle { font-weight: 900; font-style: italic; text-transform: uppercase; line-height: 0.9; letter-spacing: -0.04em; }
+        
         .section-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; padding: 14px; border-radius: 12px; margin-bottom: 15px; }
         label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; }
         input, textarea, select { background: #020617 !important; border: 1px solid #334155 !important; color: white !important; padding: 8px; border-radius: 8px; width: 100%; margin-bottom: 8px; font-size: 12px; }
+        
         .slide-tab { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #334155; cursor: pointer; font-weight: 900; background: #020617; color: #475569; }
         .slide-tab.active { background: #3b82f6; color: white; }
+        
         .gallery-img { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; transition: transform 0.2s; }
         .gallery-img:hover { transform: scale(1.05); border: 2px solid #3b82f6; }
+        
+        /* Templates */
         .tpl-1 #photoFrame { top: 100px; right: 100px; width: 520px; height: 520px; border-radius: 50% 50% 50% 10px; }
         .tpl-1 #contentArea { top: 660px; left: 80px; width: 920px; }
-        .tpl-2 #photoFrame { top: 0; left: 0; width: 1080px; height: 480px; border: none; }
+        .tpl-2 #photoFrame { top: 0; left: 0; width: 1080px; height: 480px; border: none; border-radius: 0; }
         .tpl-2 #contentArea { top: 540px; left: 80px; width: 920px; }
         .tpl-4 #photoFrame { display: none; }
         .tpl-4 #contentArea { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 920px; text-align: center; }
+        
         #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
     <div id="loadingOverlay">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mb-4"></div>
-        <p class="font-bold tracking-widest uppercase text-xs text-blue-400">Roteirizando e Buscando Ativos...</p>
+        <p class="font-bold tracking-widest uppercase text-xs text-blue-400">Processando Conteúdo...</p>
     </div>
     <div id="toggleMenu" onclick="toggleSidebar()"><span>☰</span></div>
     <aside class="sidebar" id="sidebar">
         <header class="mb-4 pt-10">
             <div class="fp-title text-xl">Ferramentas<span class="text-blue-500">Pro</span></div>
-            <p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">Ultimate Engine v11.0</p>
+            <p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">No Distortion v11.1</p>
         </header>
         <div class="section-card border-amber-500/50 bg-amber-950/10">
-            <label class="text-amber-400">🔑 Chave Groq (Manual)</label>
+            <label class="text-amber-400">🔑 Chave Groq</label>
             <input type="password" id="apiKeyManual" placeholder="gsk_...">
         </div>
         <div class="section-card border-emerald-500/50 bg-emerald-900/10">
-            <label class="text-emerald-400">✨ Gerar Conteúdo</label>
-            <input type="text" id="aiTopic" placeholder="Tema (ex: Juros Compostos)">
+            <label class="text-emerald-400">✨ Gerar Carrossel</label>
+            <input type="text" id="aiTopic" placeholder="Tema (ex: Lucro Presumido)">
             <button onclick="generateWithAI()" class="w-full bg-emerald-600 font-black py-2 rounded-lg uppercase text-[10px] tracking-widest">🚀 Criar</button>
         </div>
         <div class="section-card">
-            <label>Cor Tema (Baseada no Site)</label>
-            <select id="selColor" onchange="updateData()">
-                <option value="from-blue-600 to-blue-800">Azul (Juros Compostos)</option>
-                <option value="from-emerald-600 to-emerald-800">Verde (Salário Líquido)</option>
-                <option value="from-indigo-600 to-indigo-800">Indigo (13º Salário)</option>
-                <option value="from-orange-600 to-orange-800">Laranja (ROI)</option>
-                <option value="from-rose-600 to-rose-800">Rosa (Margem de Lucro)</option>
-                <option value="from-cyan-600 to-cyan-800">Ciano (Parcelamento)</option>
-                <option value="from-violet-600 to-violet-800">Violeta (Comissão)</option>
-                <option value="from-slate-600 to-slate-800">Ardósia (Horas Extras)</option>
-                <option value="from-amber-600 to-amber-800">Âmbar (Combustível)</option>
-                <option value="from-lime-600 to-lime-800">Lima (Custo de Contratação)</option>
-            </select>
-        </div>
-        <div class="section-card">
-            <label>Galeria de Sugestões</label>
-            <div id="imageGallery" class="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
+            <label>Galeria de Ativos (Clique para usar)</label>
+            <div id="imageGallery" class="grid grid-cols-3 gap-2 max-h-44 overflow-y-auto bg-black/20 p-2 rounded-lg">
                 <p class="text-[8px] col-span-3 text-center text-slate-500">Gere um tema para ver fotos...</p>
             </div>
         </div>
         <div class="section-card">
             <div id="slideTabs" class="flex gap-2 overflow-x-auto pb-2 mb-2"></div>
+            <label>Cor Tema</label>
+            <select id="selColor" onchange="updateData()">
+                <option value="from-blue-600 to-blue-800">Azul (Padrão)</option>
+                <option value="from-emerald-600 to-emerald-800">Verde</option>
+                <option value="from-orange-600 to-orange-800">Laranja</option>
+                <option value="from-rose-600 to-rose-800">Rosa</option>
+            </select>
             <label>Título</label>
             <input type="text" id="inLargeTitle" oninput="updateData()">
             <label>Legenda</label>
             <textarea id="inSmallTitle" rows="2" oninput="updateData()"></textarea>
-            <label>Trocar Foto</label>
+            <label>Subir Foto Própria</label>
             <input type="file" id="inPhoto" accept="image/*">
         </div>
         <button onclick="downloadPNG()" class="w-full bg-blue-600 font-black py-3 rounded-xl uppercase text-xs mb-4">Baixar PNG High-Res</button>
@@ -112,21 +127,9 @@
         </div>
     </main>
     <script>
-        let slides = [{ title: "BEM-VINDO", subtitle: "Cole sua chave e crie um carrossel profissional.", template: "tpl-1", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800", theme: "from-blue-600 to-blue-800" }];
+        let slides = [{ title: "SEM DISTORÇÃO", subtitle: "Agora as fotos se ajustam e cortam automaticamente sem achatar.", template: "tpl-1", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800", theme: "from-blue-600 to-blue-800" }];
         let currentSlideIndex = 0;
-
-        const colorMap = {
-            "from-blue-600 to-blue-800": { main: "#2563eb", secondary: "#1e40af" },
-            "from-emerald-600 to-emerald-800": { main: "#059669", secondary: "#065f46" },
-            "from-indigo-600 to-indigo-800": { main: "#4f46e5", secondary: "#3730a3" },
-            "from-orange-600 to-orange-800": { main: "#ea580c", secondary: "#9a3412" },
-            "from-rose-600 to-rose-800": { main: "#e11d48", secondary: "#9f1239" },
-            "from-cyan-600 to-cyan-800": { main: "#0891b2", secondary: "#155e75" },
-            "from-violet-600 to-violet-800": { main: "#7c3aed", secondary: "#5b21b6" },
-            "from-slate-600 to-slate-800": { main: "#475569", secondary: "#1e293b" },
-            "from-amber-600 to-amber-800": { main: "#d97706", secondary: "#92400e" },
-            "from-lime-600 to-lime-800": { main: "#65a30d", secondary: "#3f6212" }
-        };
+        const colorMap = { "from-blue-600 to-blue-800": { main: "#2563eb", secondary: "#1e40af" }, "from-emerald-600 to-emerald-800": { main: "#059669", secondary: "#065f46" }, "from-orange-600 to-orange-800": { main: "#ea580c", secondary: "#9a3412" }, "from-rose-600 to-rose-800": { main: "#e11d48", secondary: "#9f1239" } };
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden-menu'); }
 
@@ -137,27 +140,20 @@
             document.getElementById('loadingOverlay').style.display = 'flex';
             const prompt = `Crie carrossel de 5 slides sobre "${topic}". Retorne JSON: {"slides": [{"title": "TITULO", "subtitle": "LEGENDA"}]}. Títulos máx 25 chars.`;
             try {
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role: "user", content: prompt}], temperature: 0.5, response_format: { type: "json_object" } })
-                });
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }, body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role: "user", content: prompt}], temperature: 0.5, response_format: { type: "json_object" } }) });
                 const data = await res.json();
                 const content = JSON.parse(data.choices[0].message.content).slides;
                 slides = content.map((s, i) => ({ title: s.title.toUpperCase(), subtitle: s.subtitle, template: i === 0 ? "tpl-1" : (i === 4 ? "tpl-4" : "tpl-2"), image: slides[0].image, theme: document.getElementById('selColor').value }));
-                loadGallery(topic);
-                currentSlideIndex = 0;
-                render();
+                loadGallery(topic); currentSlideIndex = 0; render();
             } catch (e) { alert("Erro na Groq."); }
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
         async function loadGallery(topic) {
-            const gallery = document.getElementById('imageGallery');
-            gallery.innerHTML = '';
+            const gallery = document.getElementById('imageGallery'); gallery.innerHTML = '';
             for(let i=0; i<15; i++) {
                 const img = document.createElement('img');
-                const url = `https://images.unsplash.com/photo-${1550000000000 + (i*1000000)}?q=80&w=400&auto=format&fit=crop&sig=${Math.random()}&query=${topic} finance`;
+                const url = `https://images.unsplash.com/photo-${1550000000000 + (i*10000000)}?q=80&w=400&auto=format&fit=crop&sig=${Math.random()}&query=${topic} finance technology`;
                 img.src = url; img.className = 'gallery-img';
                 img.onclick = () => { document.getElementById('previewPhoto').src = url; slides[currentSlideIndex].image = url; };
                 gallery.appendChild(img);
@@ -167,43 +163,31 @@
         function render() {
             const tabs = document.getElementById('slideTabs'); tabs.innerHTML = '';
             slides.forEach((_, i) => {
-                const b = document.createElement('div');
-                b.className = `slide-tab ${i === currentSlideIndex ? 'active' : ''}`;
-                b.innerText = (i + 1).toString().padStart(2, '0');
-                b.onclick = () => { currentSlideIndex = i; load(); };
-                tabs.appendChild(b);
+                const b = document.createElement('div'); b.className = `slide-tab ${i === currentSlideIndex ? 'active' : ''}`;
+                b.innerText = (i + 1).toString().padStart(2, '0'); b.onclick = () => { currentSlideIndex = i; load(); }; tabs.appendChild(b);
             });
             load();
         }
 
         function load() {
             const s = slides[currentSlideIndex];
-            document.getElementById('inLargeTitle').value = s.title;
-            document.getElementById('inSmallTitle').value = s.subtitle;
-            document.getElementById('selColor').value = s.theme;
-            updatePreviewUI();
+            document.getElementById('inLargeTitle').value = s.title; document.getElementById('inSmallTitle').value = s.subtitle;
+            document.getElementById('selColor').value = s.theme; updatePreviewUI();
         }
 
         function updateData() {
             const s = slides[currentSlideIndex];
-            s.title = document.getElementById('inLargeTitle').value;
-            s.subtitle = document.getElementById('inSmallTitle').value;
-            s.theme = document.getElementById('selColor').value;
-            updatePreviewUI();
+            s.title = document.getElementById('inLargeTitle').value; s.subtitle = document.getElementById('inSmallTitle').value;
+            s.theme = document.getElementById('selColor').value; updatePreviewUI();
         }
 
         function updatePreviewUI() {
             const s = slides[currentSlideIndex];
-            const titleEl = document.getElementById('viewLargeTitle');
-            const subEl = document.getElementById('viewSmallTitle');
-            const preview = document.getElementById('instagramPreview');
-            const color = colorMap[s.theme];
-            preview.className = s.template;
-            titleEl.innerText = s.title;
-            subEl.innerText = s.subtitle;
+            const titleEl = document.getElementById('viewLargeTitle'); const subEl = document.getElementById('viewSmallTitle');
+            const preview = document.getElementById('instagramPreview'); const color = colorMap[s.theme];
+            preview.className = s.template; titleEl.innerText = s.title; subEl.innerText = s.subtitle;
             let size = s.template === 'tpl-4' ? 120 : 85;
-            if(s.title.length > 20) size -= 20;
-            if(s.title.length > 40) size -= 20;
+            if(s.title.length > 20) size -= 20; if(s.title.length > 40) size -= 20;
             titleEl.style.fontSize = size + 'px';
             document.getElementById('blob1').style.background = `radial-gradient(circle, ${color.main}99 0%, transparent 70%)`;
             document.getElementById('blob2').style.background = `radial-gradient(circle, ${color.secondary}88 0%, transparent 70%)`;
@@ -213,8 +197,7 @@
         }
 
         function downloadPNG() {
-            const node = document.getElementById('instagramPreview');
-            const sc = node.style.transform;
+            const node = document.getElementById('instagramPreview'); const sc = node.style.transform;
             node.style.transform = "none";
             html2canvas(node, { scale: 2, backgroundColor: "#020617", useCORS: true }).then(canvas => {
                 const a = document.createElement('a'); a.download = `ferramentaspro-${Date.now()}.png`;
