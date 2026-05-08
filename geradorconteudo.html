@@ -3,149 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Carrossel - FerramentasPro</title>
+    <title>FerramentasPro Instagram Generator v3.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        /* Importando as fontes robustas e modernas */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,900;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
-        
-        .slide-preview {
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #010411; /* bg ultra escuro */
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* CONTAINER QUADRADO DE PRÉ-VISUALIZAÇÃO (Simulando 1080x1080) */
+        #instagramPreview {
             width: 1080px;
             height: 1080px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 80px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            transform: scale(0.4); /* Escala para caber na tela de edição */
+            background-color: #020617; /* O fundo do site */
+            border-radius: 40px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.8);
+            
+            /* Escala para caber na tela de edição, mas mantendo a proporção */
+            transform: scale(0.45); 
             transform-origin: top left;
         }
 
-        .brand-footer {
-            border-top: 2px solid rgba(255,255,255,0.2);
-            padding-top: 20px;
-            font-weight: 700;
-            font-size: 24px;
+        /* 1. FUNDO ESTILO SITE (DataStream e Central Glow) */
+        #matrixBackground {
+            position: absolute;
+            inset: 0;
+            font-family: monospace;
+            font-size: 20px;
+            color: #1e293b; /* Número escuro */
+            opacity: 0.4;
+            line-height: 1.2;
+            pointer-events: none;
+            z-index: 1;
         }
 
-        .canvas-container { height: 450px; width: 450px; }
+        #centralGlow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 900px; height: 900px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: 2;
+        }
+
+        /* 2. FORMAS ORGÂNICAS GÉOMETRICAS (Estilo Inspiração) */
+        .data-blob {
+            position: absolute;
+            z-index: 5;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 60%);
+            border: 2px solid rgba(255,255,255,0.05);
+            pointer-events: none;
+        }
+
+        /* 3. TIPOGRAFIA FERRAMENTASPRO (Do Site) */
+        .fp-title {
+            font-size: 70px;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            line-height: 1;
+            margin-top: 10px;
+        }
+
+        /* 4. MOLDURA DE FOTO GÉOMETRICA COM GRADIENTE (A Fusão) */
+        #photoFrame {
+            position: absolute;
+            top: 200px; right: 80px;
+            width: 450px;
+            height: 600px;
+            z-index: 10;
+            overflow: hidden;
+            border-radius: 200px 30px 200px 30px; /* Mistura orgânica/géo */
+            border: 10px solid #fff;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+        }
+        
+        #previewPhoto {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%); /* B&W conforme modelo */
+            z-index: 1;
+        }
+
+        /* Gradiente sobreposto à foto (O estilo do site v2.7) */
+        #photoGradOverlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            opacity: 0.6;
+        }
+
+        /* 5. TEXTO DE CONTEÚDO (Inspiração + Site) */
+        #contentArea {
+            position: absolute;
+            top: 260px; left: 80px;
+            width: 450px;
+            z-index: 15;
+        }
+
+        #viewLargeTitle {
+            font-size: 80px;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 0.95;
+            color: #fff;
+            letter-spacing: -0.03em;
+        }
+
+        #viewSmallTitle {
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 0.2em;
+            margin-bottom: 20px;
+        }
+
+        /* Painel de Controle Customization */
+        input, textarea, select {
+            background: #111827 !important;
+            border: 1px solid #1f2937 !important;
+            color: white !important;
+        }
     </style>
 </head>
-<body class="p-8">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+    <header class="mb-10 pb-4 border-b border-gray-800">
+        <div class="fp-title text-4xl">Ferramentas<span class="text-blue-500">Pro</span></div>
+        <p class="text-slate-400 uppercase text-xs tracking-widest">Gerador de Conteúdo v3.0 // Fusão Orgânica/Géo</p>
+    </header>
+
+    <div class="grid grid-cols-1 xl:grid-cols-[400px,1fr] gap-10">
         
-        <!-- PAINEL DE CONTROLE -->
-        <div class="bg-white p-6 rounded-xl shadow-lg h-fit">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Configurador de Post</h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium">Cor de Fundo</label>
-                    <input type="color" id="bgColor" value="#0057ff" class="w-full h-10 rounded-md cursor-pointer">
-                </div>
+        <div class="bg-gray-900/60 p-8 rounded-3xl border border-gray-800 h-fit space-y-5">
+            <h2 class="text-lg font-bold text-white flex items-center gap-3">
+                <span class="w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_10px_#3b82f6]"></span>
+                Editor de Post
+            </h2>
 
-                <div>
-                    <label class="block text-sm font-medium">Título Principal</label>
-                    <input type="text" id="mainTitle" placeholder="Ex: Cálculo de ROI" class="w-full p-2 border rounded-md">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium">Conteúdo do Slide</label>
-                    <textarea id="slideContent" rows="4" placeholder="Descreva o conteúdo informativo aqui..." class="w-full p-2 border rounded-md"></textarea>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium">Slide Atual / Total</label>
-                        <div class="flex items-center gap-2">
-                            <input type="number" id="currentSlide" value="1" class="w-full p-2 border rounded-md">
-                            <span>de</span>
-                            <input type="number" id="totalSlides" value="5" class="w-full p-2 border rounded-md">
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium">Texto do CTA (Rodapé)</label>
-                    <input type="text" id="ctaText" value="Acesse: ferramentaspro.net" class="w-full p-2 border rounded-md">
-                </div>
-
-                <button onclick="window.print()" class="w-full bg-black text-white font-bold py-3 rounded-md hover:bg-gray-800 transition">
-                    Exportar para PDF/Imagem
-                </button>
+            <div>
+                <label class="block text-sm text-slate-400 mb-1">Gradiente Tema (Sobre a foto)</label>
+                <select id="gradTheme" class="w-full p-3 rounded-xl">
+                    <option value="from-blue-600 to-blue-800">Azul (Juros/ROI)</option>
+                    <option value="from-emerald-600 to-emerald-800">Verde (Salário/Lucro)</option>
+                    <option value="from-indigo-600 to-indigo-800">Índigo (13º/Comissão)</option>
+                    <option value="from-orange-600 to-orange-800">Laranja (Horas Extras)</option>
+                    <option value="from-rose-600 to-rose-800">Rosa (Parcelamento)</option>
+                    <option value="from-amber-600 to-amber-800">Amarelo (Combustível)</option>
+                </select>
             </div>
+
+            <div>
+                <label class="block text-sm text-slate-400 mb-1">Foto de Stock (B&W)</label>
+                <input type="file" id="inPhoto" accept="image/*" class="w-full text-xs p-2 rounded-xl">
+            </div>
+
+            <div>
+                <label class="block text-sm text-slate-400 mb-1">Título Grande (Heavy Italic Uppercase)</label>
+                <input type="text" id="inLargeTitle" placeholder="Ex: ROI DESCOMPLICADO" class="w-full p-3 rounded-xl" value="Título do Post">
+            </div>
+
+            <div>
+                <label class="block text-sm text-slate-400 mb-1">Subtítulo (Pequeno)</label>
+                <input type="text" id="inSmallTitle" value="Educação Financeira Profissional" class="w-full p-3 rounded-xl">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Slide Atual</label>
+                    <input type="number" id="inCurrent" value="1" min="1" class="w-full p-3 rounded-xl">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Total Slides</label>
+                    <input type="number" id="inTotal" value="5" min="1" class="w-full p-3 rounded-xl">
+                </div>
+            </div>
+
+            <button onclick="window.print()" class="w-full flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] uppercase tracking-widest text-sm mt-6">
+                ⎙ Exportar para PDF/Imagem
+            </button>
         </div>
 
-        <!-- PRÉ-VISUALIZAÇÃO EM TEMPO REAL -->
-        <div class="flex flex-col items-center">
-            <h3 class="text-lg font-semibold mb-4 text-gray-600">Preview (1080x1080)</h3>
-            <div class="canvas-container">
-                <div id="previewCard" class="slide-preview text-white">
-                    <div class="header">
-                        <span id="labelSlide" class="bg-white/20 px-4 py-2 rounded-full text-xl uppercase tracking-widest">Dica #1</span>
-                        <h1 id="viewTitle" class="text-7xl font-black mt-12 leading-tight uppercase">CÁLCULO DE ROI</h1>
-                    </div>
-                    
-                    <div id="viewContent" class="text-4xl leading-relaxed font-medium">
-                        O Retorno sobre Investimento permite que você saiba exatamente quanto ganhou para cada real investido.
-                    </div>
+        <div class="flex flex-col items-center xl:items-start relative">
+            <div class="text-sm text-slate-500 mb-2 font-mono">1080x1080px Preview Area</div>
+            
+            <div id="instagramPreview">
+                
+                <div id="matrixBackground"></div>
+                <div id="centralGlow"></div>
 
-                    <div class="footer-area">
-                        <div id="viewCTA" class="brand-footer flex justify-between items-center">
-                            <span>ferramentaspro.net</span>
-                            <span id="viewPagination">01/05</span>
-                        </div>
+                <div class="data-blob w-[500px] h-[500px] rounded-full top-[-100px] left-[-150px]"></div>
+                <div class="data-blob w-[400px] h-[400px] rounded-full top-[100px] right-[-100px]"></div>
+                <div class="data-blob w-[300px] h-[300px] rounded-full bottom-[-50px] left-[-50px]"></div>
+                <div class="data-blob w-[450px] h-[450px] rounded-[30px 200px 30px 200px] bottom-[100px] right-[-150px] opacity-20"></div>
+
+                <header class="absolute top-10 left-0 w-full flex justify-between items-center px-[80px] z-20">
+                    <div>
+                        <div class="fp-title">Ferramentas<span class="text-blue-500">Pro</span></div>
+                        <div class="h-2 w-48 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.8)] mt-2"></div>
                     </div>
+                    <div class="font-mono text-xl text-slate-600 uppercase tracking-widest">v3.0</div>
+                </header>
+
+                <div id="contentArea">
+                    <p id="viewSmallTitle"></p>
+                    <h3 id="viewLargeTitle"></h3>
                 </div>
+
+                <div id="photoFrame">
+                    <img id="previewPhoto" src="https://images.unsplash.com/photo-1593062096033-9a26b09ddfe4?q=80&w=600" alt="Stock photo">
+                    <div id="photoGradOverlay" class="bg-gradient-to-br from-blue-600 to-blue-800"></div>
+                </div>
+
+                <footer class="absolute bottom-10 left-0 w-full flex justify-between items-center px-[80px] z-20 border-t border-white/5 pt-6">
+                    <span class="text-2xl font-bold text-slate-500 uppercase tracking-widest">ferramentaspro.net</span>
+                    <span id="viewPagination" style="font-family: 'Major Mono Display', monospace;" class="text-3xl text-slate-700"></span>
+                </footer>
             </div>
-            <p class="mt-4 text-sm text-gray-500 text-center">O post real terá alta resolução. <br>Use "Salvar como PDF" e corte as bordas ou use um print de alta qualidade.</p>
+            
+            <p class="mt-[-500px] xl:mt-4 text-xs text-slate-600 max-w-xl text-center xl:text-left">
+                <strong>Exportação:</strong> Devido a bloqueios de segurança do navegador, a melhor forma é clicar em Exportar e "Salvar como PDF" (Layout Retrato). Em seguida, tire um print ou converta o PDF em JPG/PNG.
+            </p>
         </div>
 
     </div>
 
     <script>
-        const inputs = ['bgColor', 'mainTitle', 'slideContent', 'currentSlide', 'totalSlides', 'ctaText'];
-        
-        function updatePreview() {
-            const bg = document.getElementById('bgColor').value;
-            const title = document.getElementById('mainTitle').value;
-            const content = document.getElementById('slideContent').value;
-            const current = document.getElementById('currentSlide').value;
-            const total = document.getElementById('totalSlides').value;
-            const cta = document.getElementById('ctaText').value;
+        // Função para gerar o fundo numérico estático
+        function generateMatrixBackground() {
+            const bg = document.getElementById('matrixBackground');
+            let text = '';
+            const chars = '0123456789';
+            // Gera aprox. 3500 caracteres para preencher o fundo
+            for (let i = 0; i < 3500; i++) {
+                text += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            bg.innerText = text;
+        }
 
-            const card = document.getElementById('previewCard');
-            card.style.backgroundColor = bg;
-            
-            document.getElementById('viewTitle').innerText = title || 'TÍTULO DO POST';
-            document.getElementById('viewContent').innerText = content || 'O conteúdo informativo aparecerá aqui para educar seu público.';
-            document.getElementById('viewCTA').querySelector('span').innerText = cta;
-            document.getElementById('viewPagination').innerText = `${current.padStart(2, '0')}/${total.padStart(2, '0')}`;
-            document.getElementById('labelSlide').innerText = `Slide #${current}`;
-            
-            // Ajuste automático de cor do texto (Preto ou Branco) baseado no fundo
-            const r = parseInt(bg.substr(1,2),16);
-            const g = parseInt(bg.substr(3,2),16);
-            const b = parseInt(bg.substr(5,2),16);
-            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            card.style.color = brightness > 155 ? '#000' : '#fff';
-            if(brightness > 155) {
-                card.querySelector('.brand-footer').style.borderColor = 'rgba(0,0,0,0.2)';
-                document.getElementById('labelSlide').style.backgroundColor = 'rgba(0,0,0,0.1)';
-            } else {
-                card.querySelector('.brand-footer').style.borderColor = 'rgba(255,255,255,0.2)';
-                document.getElementById('labelSlide').style.backgroundColor = 'rgba(255,255,255,0.2)';
+        // Função para carregar a foto do usuário
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewPhoto').src = e.target.result;
+            }
+            if (file) {
+                reader.readAsDataURL(file);
             }
         }
 
-        inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', updatePreview);
+        // Atualiza o Preview em tempo real
+        function updatePreview() {
+            // Inputs
+            const theme = document.getElementById('gradTheme').value;
+            const lTitle = document.getElementById('inLargeTitle').value;
+            const sTitle = document.getElementById('inSmallTitle').value;
+            const current = document.getElementById('inCurrent').value;
+            const total = document.getElementById('inTotal').value;
+
+            // Elementos de View
+            const gradOverlay = document.getElementById('photoGradOverlay');
+            const vLarge = document.getElementById('viewLargeTitle');
+            const vSmall = document.getElementById('viewSmallTitle');
+            const vPag = document.getElementById('viewPagination');
+
+            // Títulos e Paginação
+            vLarge.innerText = lTitle.toUpperCase();
+            vSmall.innerText = sTitle;
+            vPag.innerText = `${current.padStart(2, '0')}.${total.padStart(2, '0')}`;
+
+            // Aplicar o Gradiente Tema (Removendo classes antigas)
+            gradOverlay.className = gradOverlay.className.replace(/from-\w+-\d+ to-\w+-\d+/g, '').trim();
+            gradOverlay.classList.add(...theme.split(' '));
+        }
+
+        // Setup dos Event Listeners
+        const inputIds = ['gradTheme', 'inPhoto', 'inLargeTitle', 'inSmallTitle', 'inCurrent', 'inTotal'];
+        inputIds.forEach(id => {
+            const element = document.getElementById(id);
+            if (id === 'inPhoto') {
+                element.addEventListener('change', handlePhotoUpload);
+            } else {
+                element.addEventListener('input', updatePreview);
+            }
         });
 
+        // Inicialização
+        generateMatrixBackground();
         updatePreview();
     </script>
 </body>
