@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FerramentasPro AI - Auto-Image v12.0</title>
+    <title>FerramentasPro AI - Ultimate v11.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -11,27 +11,26 @@
         body { font-family: 'Poppins', sans-serif; background: #010411; color: white; margin: 0; overflow: hidden; display: flex; }
         .sidebar { width: 380px; min-width: 380px; background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; overflow-y: auto; padding: 20px; transition: all 0.4s ease; position: relative; z-index: 50; }
         .sidebar.hidden-menu { margin-left: -380px; opacity: 0; }
-        #toggleMenu { position: fixed; top: 20px; left: 20px; z-index: 100; background: #3b82f6; color: white; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        .preview-area { flex: 1; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 50px 20px; background: radial-gradient(circle at center, #1e293b 0%, #010411 100%); overflow: auto; }
-        #instagramPreview { width: 1080px; height: 1080px; min-width: 1080px; position: relative; overflow: hidden; background: #020617; border-radius: 0px; transform: scale(0.42); transform-origin: top center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
-        .blob { position: absolute; z-index: 2; opacity: 0.6; pointer-events: none; }
-        .blob-1 { width: 900px; height: 900px; top: -300px; left: -300px; background: radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0) 70%); }
-        .blob-2 { width: 800px; height: 800px; bottom: -200px; right: -200px; background: radial-gradient(circle, rgba(8,145,178,0.4) 0%, rgba(8,145,178,0) 70%); }
-        #matrixBackground { position: absolute; inset: 0; font-family: monospace; font-size: 22px; color: #1e293b; opacity: 0.25; line-height: 1.1; z-index: 1; word-break: break-all; }
+        #toggleMenu { position: fixed; top: 20px; left: 20px; z-index: 100; background: #3b82f6; color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .preview-area { flex: 1; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 20px; background: radial-gradient(circle at center, #1e293b 0%, #010411 100%); overflow: auto; }
+        #instagramPreview { width: 1080px; height: 1080px; min-width: 1080px; position: relative; overflow: hidden; background: #020617; border-radius: 20px; transform: scale(0.42); transform-origin: top center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
+        .blob { position: absolute; border-radius: 50%; z-index: 2; opacity: 0.7; pointer-events: none; }
+        #matrixBackground { position: absolute; inset: 0; font-family: monospace; font-size: 22px; color: #1e293b; opacity: 0.2; line-height: 1.1; z-index: 1; }
         .fp-title { font-size: 55px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -0.05em; line-height: 1; }
-        #photoFrame { position: absolute; z-index: 10; overflow: hidden; border: 12px solid #fff; transition: all 0.5s ease; box-shadow: 0 30px 60px rgba(0,0,0,0.5); background: #111; }
-        #previewPhoto { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s; }
-        #contentArea { position: absolute; z-index: 30; transition: all 0.3s ease; word-wrap: break-word; }
-        #viewLargeTitle { font-weight: 900; font-style: italic; text-transform: uppercase; line-height: 1.1; letter-spacing: -0.04em; padding-bottom: 10px; }
-        #viewSmallTitle { font-weight: 500; line-height: 1.4; color: #cbd5e1; }
+        #photoFrame { position: absolute; z-index: 10; overflow: hidden; border: 12px solid #fff; transition: all 0.5s ease; }
+        #previewPhoto { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); }
+        #contentArea { position: absolute; z-index: 30; transition: all 0.3s ease; }
+        #viewLargeTitle { font-weight: 900; font-style: italic; text-transform: uppercase; line-height: 0.9; letter-spacing: -0.04em; }
         .section-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; padding: 14px; border-radius: 12px; margin-bottom: 15px; }
         label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        input, textarea, select { background: #020617 !important; border: 1px solid #334155 !important; color: white !important; padding: 8px; border-radius: 8px; width: 100%; margin-bottom: 8px; font-size: 13px; }
-        .slide-tab { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #334155; cursor: pointer; font-weight: 900; background: #020617; color: #475569; transition: all 0.3s; flex-shrink: 0; }
+        input, textarea, select { background: #020617 !important; border: 1px solid #334155 !important; color: white !important; padding: 8px; border-radius: 8px; width: 100%; margin-bottom: 8px; font-size: 12px; }
+        .slide-tab { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #334155; cursor: pointer; font-weight: 900; background: #020617; color: #475569; }
         .slide-tab.active { background: #3b82f6; color: white; }
+        .gallery-img { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; transition: transform 0.2s; }
+        .gallery-img:hover { transform: scale(1.05); border: 2px solid #3b82f6; }
         .tpl-1 #photoFrame { top: 100px; right: 100px; width: 520px; height: 520px; border-radius: 50% 50% 50% 10px; }
-        .tpl-1 #contentArea { top: 660px; left: 80px; width: 920px; padding-right: 40px; }
-        .tpl-2 #photoFrame { top: 0; left: 0; width: 1080px; height: 480px; border: none; border-radius: 0; }
+        .tpl-1 #contentArea { top: 660px; left: 80px; width: 920px; }
+        .tpl-2 #photoFrame { top: 0; left: 0; width: 1080px; height: 480px; border: none; }
         .tpl-2 #contentArea { top: 540px; left: 80px; width: 920px; }
         .tpl-4 #photoFrame { display: none; }
         .tpl-4 #contentArea { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 920px; text-align: center; }
@@ -39,61 +38,72 @@
     </style>
 </head>
 <body>
-
     <div id="loadingOverlay">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mb-4"></div>
-        <p class="font-bold tracking-widest uppercase text-xs text-blue-400">Criando Conteúdo e Buscando Imagens...</p>
+        <p class="font-bold tracking-widest uppercase text-xs text-blue-400">Roteirizando e Buscando Ativos...</p>
     </div>
-
     <div id="toggleMenu" onclick="toggleSidebar()"><span>☰</span></div>
-
     <aside class="sidebar" id="sidebar">
-        <header class="mb-6 pt-10">
+        <header class="mb-4 pt-10">
             <div class="fp-title text-xl">Ferramentas<span class="text-blue-500">Pro</span></div>
-            <p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">Auto-Image Station v12.0</p>
+            <p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">Ultimate Engine v11.0</p>
         </header>
-
         <div class="section-card border-amber-500/50 bg-amber-950/10">
-            <label class="text-amber-400">🔑 Chave Groq</label>
+            <label class="text-amber-400">🔑 Chave Groq (Manual)</label>
             <input type="password" id="apiKeyManual" placeholder="gsk_...">
         </div>
-
         <div class="section-card border-emerald-500/50 bg-emerald-900/10">
-            <label class="text-emerald-400">✨ Gerar Tudo com IA</label>
+            <label class="text-emerald-400">✨ Gerar Conteúdo</label>
             <input type="text" id="aiTopic" placeholder="Tema (ex: Juros Compostos)">
-            <button onclick="generateWithAI()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-lg uppercase text-[10px] tracking-widest transition-all">🚀 Criar Post Completo</button>
+            <button onclick="generateWithAI()" class="w-full bg-emerald-600 font-black py-2 rounded-lg uppercase text-[10px] tracking-widest">🚀 Criar</button>
         </div>
-
         <div class="section-card">
-            <label>Navegador de Slides</label>
-            <div id="slideTabs" class="flex gap-2 overflow-x-auto pb-2 mb-4"></div>
-            <label>Estilo do Slide</label>
-            <select id="selTemplate" onchange="updateData()">
-                <option value="tpl-1">Capa Clássica</option>
-                <option value="tpl-2">Split Explicativo</option>
-                <option value="tpl-4">Texto de Impacto</option>
+            <label>Cor Tema (Baseada no Site)</label>
+            <select id="selColor" onchange="updateData()">
+                <option value="from-blue-600 to-blue-800">Azul (Juros Compostos)</option>
+                <option value="from-emerald-600 to-emerald-800">Verde (Salário Líquido)</option>
+                <option value="from-indigo-600 to-indigo-800">Indigo (13º Salário)</option>
+                <option value="from-orange-600 to-orange-800">Laranja (ROI)</option>
+                <option value="from-rose-600 to-rose-800">Rosa (Margem de Lucro)</option>
+                <option value="from-cyan-600 to-cyan-800">Ciano (Parcelamento)</option>
+                <option value="from-violet-600 to-violet-800">Violeta (Comissão)</option>
+                <option value="from-slate-600 to-slate-800">Ardósia (Horas Extras)</option>
+                <option value="from-amber-600 to-amber-800">Âmbar (Combustível)</option>
+                <option value="from-lime-600 to-lime-800">Lima (Custo de Contratação)</option>
             </select>
+        </div>
+        <div class="section-card">
+            <label>Galeria de Sugestões</label>
+            <div id="imageGallery" class="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto">
+                <p class="text-[8px] col-span-3 text-center text-slate-500">Gere um tema para ver fotos...</p>
+            </div>
+        </div>
+        <div class="section-card">
+            <div id="slideTabs" class="flex gap-2 overflow-x-auto pb-2 mb-2"></div>
             <label>Título</label>
             <input type="text" id="inLargeTitle" oninput="updateData()">
             <label>Legenda</label>
-            <textarea id="inSmallTitle" rows="3" oninput="updateData()"></textarea>
+            <textarea id="inSmallTitle" rows="2" oninput="updateData()"></textarea>
             <label>Trocar Foto</label>
             <input type="file" id="inPhoto" accept="image/*">
         </div>
-
-        <button onclick="downloadPNG()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl uppercase text-xs shadow-lg">Baixar Slide Atual</button>
+        <button onclick="downloadPNG()" class="w-full bg-blue-600 font-black py-3 rounded-xl uppercase text-xs mb-4">Baixar PNG High-Res</button>
     </aside>
-
     <main class="preview-area">
         <div id="instagramPreview" class="tpl-1">
             <div id="matrixBackground"></div>
-            <div class="blob blob-1"></div>
-            <div class="blob blob-2"></div>
-            <header class="absolute top-16 left-20 z-[30]"><div class="fp-title text-[50px]">Ferramentas<span class="text-blue-500">Pro</span></div></header>
-            <div id="contentArea"><h2 id="viewLargeTitle"></h2><p id="viewSmallTitle" class="mt-12 text-2xl"></p></div>
+            <div id="blob1" class="blob" style="width:700px; height:700px; top:-200px; left:-200px;"></div>
+            <div id="blob2" class="blob" style="width:600px; height:600px; bottom:-100px; right:-100px;"></div>
+            <header class="absolute top-16 left-20 z-[30]">
+                <div class="fp-title text-[50px]">Ferramentas<span class="text-blue-500">Pro</span></div>
+            </header>
+            <div id="contentArea">
+                <h2 id="viewLargeTitle"></h2>
+                <p id="viewSmallTitle" class="mt-6 text-2xl font-medium"></p>
+            </div>
             <div id="photoFrame">
-                <img id="previewPhoto" crossorigin="anonymous" src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800">
-                <div id="photoGradOverlay" class="absolute inset-0 opacity-40 bg-gradient-to-br from-blue-600 to-cyan-500"></div>
+                <img id="previewPhoto" src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800">
+                <div id="photoGradOverlay" class="absolute inset-0 opacity-40"></div>
             </div>
             <footer class="absolute bottom-12 left-20 right-20 flex justify-between items-center z-[30] border-t border-white/10 pt-8">
                 <span class="text-xl font-bold text-slate-500 tracking-[0.2em]">WWW.FERRAMENTASPRO.NET</span>
@@ -101,78 +111,76 @@
             </footer>
         </div>
     </main>
-
     <script>
-        let slides = [{ 
-            title: "AUTO-IMAGE ATIVO", 
-            subtitle: "Agora a IA busca imagens relacionadas ao seu tema automaticamente.", 
-            template: "tpl-1", 
-            image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800" 
-        }];
+        let slides = [{ title: "BEM-VINDO", subtitle: "Cole sua chave e crie um carrossel profissional.", template: "tpl-1", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800", theme: "from-blue-600 to-blue-800" }];
         let currentSlideIndex = 0;
+
+        const colorMap = {
+            "from-blue-600 to-blue-800": { main: "#2563eb", secondary: "#1e40af" },
+            "from-emerald-600 to-emerald-800": { main: "#059669", secondary: "#065f46" },
+            "from-indigo-600 to-indigo-800": { main: "#4f46e5", secondary: "#3730a3" },
+            "from-orange-600 to-orange-800": { main: "#ea580c", secondary: "#9a3412" },
+            "from-rose-600 to-rose-800": { main: "#e11d48", secondary: "#9f1239" },
+            "from-cyan-600 to-cyan-800": { main: "#0891b2", secondary: "#155e75" },
+            "from-violet-600 to-violet-800": { main: "#7c3aed", secondary: "#5b21b6" },
+            "from-slate-600 to-slate-800": { main: "#475569", secondary: "#1e293b" },
+            "from-amber-600 to-amber-800": { main: "#d97706", secondary: "#92400e" },
+            "from-lime-600 to-lime-800": { main: "#65a30d", secondary: "#3f6212" }
+        };
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden-menu'); }
 
         async function generateWithAI() {
             const key = document.getElementById('apiKeyManual').value;
             const topic = document.getElementById('aiTopic').value;
-            if(!key.startsWith('gsk_')) return alert("Insira uma chave Groq válida!");
-            if(!topic) return alert("Digite um assunto!");
-            
+            if(!key || !topic) return alert("Preencha chave e tema!");
             document.getElementById('loadingOverlay').style.display = 'flex';
-            
-            // PROMPT OTIMIZADO PARA GERAR KEYWORD DE IMAGEM
-            const prompt = `Crie um carrossel de 5 slides sobre "${topic}". 
-            Retorne um JSON: {"slides": [{"title": "TITULO", "subtitle": "CONTEUDO", "keyword": "uma_palavra_em_ingles_sobre_o_assunto"}]}.
-            Ex: se o assunto é juros, use keyword "finance". Se é trabalho, use "office".`;
-
+            const prompt = `Crie carrossel de 5 slides sobre "${topic}". Retorne JSON: {"slides": [{"title": "TITULO", "subtitle": "LEGENDA"}]}. Títulos máx 25 chars.`;
             try {
-                const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-                    body: JSON.stringify({ 
-                        model: "llama-3.3-70b-versatile", 
-                        messages: [{role: "user", content: prompt}], 
-                        temperature: 0.6,
-                        response_format: { type: "json_object" } 
-                    })
+                    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role: "user", content: prompt}], temperature: 0.5, response_format: { type: "json_object" } })
                 });
                 const data = await res.json();
-                const content = JSON.parse(data.choices[0].message.content);
-                const rawSlides = content.slides || content;
-
-                slides = rawSlides.map((s, i) => ({
-                    title: s.title.toUpperCase(),
-                    subtitle: s.subtitle,
-                    template: i === 0 ? "tpl-1" : (i === 4 ? "tpl-4" : "tpl-2"),
-                    // BUSCA IMAGEM AUTOMÁTICA BASEADA NA KEYWORD
-                    image: `https://loremflickr.com/1080/1080/${s.keyword || 'business'}?lock=${Math.floor(Math.random()*1000)}`
-                }));
+                const content = JSON.parse(data.choices[0].message.content).slides;
+                slides = content.map((s, i) => ({ title: s.title.toUpperCase(), subtitle: s.subtitle, template: i === 0 ? "tpl-1" : (i === 4 ? "tpl-4" : "tpl-2"), image: slides[0].image, theme: document.getElementById('selColor').value }));
+                loadGallery(topic);
                 currentSlideIndex = 0;
-                renderTabs();
-            } catch (e) { alert("Erro na geração."); } 
-            finally { document.getElementById('loadingOverlay').style.display = 'none'; }
+                render();
+            } catch (e) { alert("Erro na Groq."); }
+            document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        function renderTabs() {
-            const container = document.getElementById('slideTabs');
-            container.innerHTML = '';
+        async function loadGallery(topic) {
+            const gallery = document.getElementById('imageGallery');
+            gallery.innerHTML = '';
+            for(let i=0; i<15; i++) {
+                const img = document.createElement('img');
+                const url = `https://images.unsplash.com/photo-${1550000000000 + (i*1000000)}?q=80&w=400&auto=format&fit=crop&sig=${Math.random()}&query=${topic} finance`;
+                img.src = url; img.className = 'gallery-img';
+                img.onclick = () => { document.getElementById('previewPhoto').src = url; slides[currentSlideIndex].image = url; };
+                gallery.appendChild(img);
+            }
+        }
+
+        function render() {
+            const tabs = document.getElementById('slideTabs'); tabs.innerHTML = '';
             slides.forEach((_, i) => {
-                const btn = document.createElement('div');
-                btn.className = `slide-tab ${i === currentSlideIndex ? 'active' : ''}`;
-                btn.innerText = (i + 1).toString().padStart(2, '0');
-                btn.onclick = () => { currentSlideIndex = i; renderTabs(); loadSlide(); };
-                container.appendChild(btn);
+                const b = document.createElement('div');
+                b.className = `slide-tab ${i === currentSlideIndex ? 'active' : ''}`;
+                b.innerText = (i + 1).toString().padStart(2, '0');
+                b.onclick = () => { currentSlideIndex = i; load(); };
+                tabs.appendChild(b);
             });
-            loadSlide();
+            load();
         }
 
-        function loadSlide() {
+        function load() {
             const s = slides[currentSlideIndex];
             document.getElementById('inLargeTitle').value = s.title;
             document.getElementById('inSmallTitle').value = s.subtitle;
-            document.getElementById('selTemplate').value = s.template;
-            document.getElementById('previewPhoto').src = s.image;
+            document.getElementById('selColor').value = s.theme;
             updatePreviewUI();
         }
 
@@ -180,7 +188,7 @@
             const s = slides[currentSlideIndex];
             s.title = document.getElementById('inLargeTitle').value;
             s.subtitle = document.getElementById('inSmallTitle').value;
-            s.template = document.getElementById('selTemplate').value;
+            s.theme = document.getElementById('selColor').value;
             updatePreviewUI();
         }
 
@@ -189,42 +197,32 @@
             const titleEl = document.getElementById('viewLargeTitle');
             const subEl = document.getElementById('viewSmallTitle');
             const preview = document.getElementById('instagramPreview');
+            const color = colorMap[s.theme];
             preview.className = s.template;
             titleEl.innerText = s.title;
             subEl.innerText = s.subtitle;
-
-            let titleSize = s.template === 'tpl-4' ? 120 : 85;
-            if (s.title.length > 20) titleSize = s.template === 'tpl-4' ? 80 : 65;
-            if (s.title.length > 40) titleSize = s.template === 'tpl-4' ? 60 : 50;
-            titleEl.style.fontSize = titleSize + 'px';
-            
+            let size = s.template === 'tpl-4' ? 120 : 85;
+            if(s.title.length > 20) size -= 20;
+            if(s.title.length > 40) size -= 20;
+            titleEl.style.fontSize = size + 'px';
+            document.getElementById('blob1').style.background = `radial-gradient(circle, ${color.main}99 0%, transparent 70%)`;
+            document.getElementById('blob2').style.background = `radial-gradient(circle, ${color.secondary}88 0%, transparent 70%)`;
+            document.getElementById('photoGradOverlay').style.background = `linear-gradient(to bottom right, ${color.main}, ${color.secondary})`;
             document.getElementById('viewPagination').innerText = `${(currentSlideIndex + 1).toString().padStart(2, '0')}/${slides.length.toString().padStart(2, '0')}`;
+            document.getElementById('viewPagination').style.color = color.main;
         }
-
-        document.getElementById('inPhoto').onchange = (e) => {
-            const r = new FileReader();
-            r.onload = (ev) => { 
-                document.getElementById('previewPhoto').src = ev.target.result; 
-                slides[currentSlideIndex].image = ev.target.result; 
-            };
-            r.readAsDataURL(e.target.files[0]);
-        };
 
         function downloadPNG() {
             const node = document.getElementById('instagramPreview');
-            const originalTransform = node.style.transform;
+            const sc = node.style.transform;
             node.style.transform = "none";
             html2canvas(node, { scale: 2, backgroundColor: "#020617", useCORS: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `slide-${currentSlideIndex+1}.png`;
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-                node.style.transform = originalTransform;
+                const a = document.createElement('a'); a.download = `ferramentaspro-${Date.now()}.png`;
+                a.href = canvas.toDataURL(); a.click(); node.style.transform = sc;
             });
         }
-
         document.getElementById('matrixBackground').innerText = Array.from({length: 4000}, () => Math.floor(Math.random() * 10)).join('');
-        renderTabs();
+        render();
     </script>
 </body>
 </html>
