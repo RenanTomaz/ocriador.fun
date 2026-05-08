@@ -3,84 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FerramentasPro AI - Private v7.1</title>
+    <title>FerramentasPro Groq AI - v8.0 Focus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,900;1,900&display=swap');
-        body { font-family: 'Poppins', sans-serif; background: #010411; color: white; margin: 0; overflow: hidden; }
-        .sidebar { width: 400px; background: #0f172a; border-right: 1px solid #1e293b; height: 100vh; overflow-y: auto; padding: 24px; z-index: 50; }
-        .preview-area { flex: 1; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px; background: radial-gradient(circle at center, #1e293b 0%, #010411 100%); overflow: auto; }
-        #instagramPreview { width: 1080px; height: 1080px; min-width: 1080px; position: relative; overflow: hidden; background: #020617; border-radius: 20px; transform: scale(0.45); transform-origin: top center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); transition: all 0.5s ease; }
+        
+        body { font-family: 'Poppins', sans-serif; background: #010411; color: white; margin: 0; overflow: hidden; display: flex; }
+        
+        /* Menu Lateral Retrátil */
+        .sidebar { 
+            width: 400px; min-width: 400px; background: #0f172a; 
+            border-right: 1px solid #1e293b; height: 100vh; overflow-y: auto; 
+            padding: 24px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; z-index: 50;
+        }
+        .sidebar.hidden-menu { margin-left: -400px; opacity: 0; pointer-events: none; }
+
+        /* Botão Toggle */
+        #toggleMenu {
+            position: fixed; top: 20px; left: 20px; z-index: 100;
+            background: #3b82f6; color: white; width: 45px; height: 45px;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s;
+        }
+        #toggleMenu:hover { background: #2563eb; transform: scale(1.05); }
+
+        /* Área de Preview */
+        .preview-area { 
+            flex: 1; height: 100vh; display: flex; flex-direction: column; 
+            align-items: center; justify-content: flex-start; padding: 60px 20px; 
+            background: radial-gradient(circle at center, #1e293b 0%, #010411 100%); 
+            overflow: auto; transition: all 0.4s;
+        }
+
+        #instagramPreview { 
+            width: 1080px; height: 1080px; min-width: 1080px; position: relative; overflow: hidden; 
+            background: #020617; border-radius: 20px; transform: scale(0.4); transform-origin: top center;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+        }
+
+        /* Elementos Visuais do Post */
         #matrixBackground { position: absolute; inset: 0; font-family: monospace; font-size: 20px; color: #1e293b; opacity: 0.3; line-height: 1.2; z-index: 1; }
         .fp-title { font-size: 60px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -0.05em; line-height: 1; }
         #photoFrame { position: absolute; z-index: 10; overflow: hidden; border: 10px solid #fff; transition: all 0.5s ease; }
         #previewPhoto { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); }
+
+        /* Estilização UI */
         .section-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
         label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px; display: block; }
         input, textarea, select { background: #020617 !important; border: 1px solid #334155 !important; color: white !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 12px; font-size: 13px; }
+        
         .slide-tab { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #334155; cursor: pointer; font-weight: 900; background: #020617; color: #475569; }
         .slide-tab.active { background: #3b82f6; color: white; border-color: #60a5fa; }
+
+        /* Templates CSS */
         .tpl-1 #photoFrame { top: 200px; right: 80px; width: 450px; height: 600px; border-radius: 200px 30px 200px 30px; }
         .tpl-1 #contentArea { top: 320px; left: 80px; width: 500px; }
         .tpl-2 #photoFrame { bottom: 0; left: 0; width: 1080px; height: 500px; border: none; }
         .tpl-2 #contentArea { top: 180px; left: 80px; width: 920px; text-align: center; }
         .tpl-4 #photoFrame { display: none; }
         .tpl-4 #contentArea { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 850px; text-align: center; }
-        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
+
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
-<body class="flex">
+<body>
 
     <div id="loadingOverlay">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mb-4"></div>
-        <p class="font-bold tracking-widest uppercase text-xs">Gemini criando roteiro...</p>
+        <p class="font-bold tracking-widest uppercase text-xs text-blue-400">Groq AI Gerando Conteúdo...</p>
     </div>
 
-    <aside class="sidebar">
-        <header class="mb-6">
+    <div id="toggleMenu" onclick="toggleSidebar()" title="Esconder/Mostrar Menu">
+        <span id="toggleIcon">☰</span>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <header class="mb-6 pt-12 md:pt-0">
             <div class="fp-title text-xl">Ferramentas<span class="text-blue-500">Pro</span></div>
-            <p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">Private AI Station</p>
+            <p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">Groq Station v8.0</p>
         </header>
 
-        <div class="section-card border-blue-500/50 bg-blue-900/10">
-            <label class="text-blue-400">Tópico do Carrossel</label>
-            <input type="text" id="aiTopic" placeholder="Ex: Como economizar no IRRF">
+        <div class="section-card border-emerald-500/50 bg-emerald-900/10">
+            <label class="text-emerald-400 font-black">✨ Gerador Automático</label>
+            <input type="text" id="aiTopic" placeholder="Digite o assunto aqui...">
+            <button onclick="generateWithAI()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-lg uppercase text-[10px] tracking-widest transition-all">🚀 Criar Carrossel</button>
             
-            <button onclick="generateWithAI()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-lg uppercase text-[10px] tracking-widest transition-all">
-                ✨ Gerar com Gemini
-            </button>
-            
-            <input type="hidden" id="apiKey" value="AIzaSyBwcVUq1MkAx5cRFU8SmCOzPh5q8PR8fQs">
+            <input type="hidden" id="apiKey" value="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">
         </div>
 
         <div class="section-card">
-            <label>Navegação</label>
+            <label>Navegação do Projeto</label>
             <div id="slideTabs" class="flex gap-2 overflow-x-auto pb-2 mb-4"></div>
 
-            <label>Template</label>
+            <label>Estilo do Slide</label>
             <select id="selTemplate" onchange="updateData()">
-                <option value="tpl-1">Capa (Template 01)</option>
-                <option value="tpl-2">Conteúdo (Template 02)</option>
-                <option value="tpl-4">Texto Puro (Template 04)</option>
+                <option value="tpl-1">Capa Clássica</option>
+                <option value="tpl-2">Split Explicativo</option>
+                <option value="tpl-4">Texto de Impacto</option>
             </select>
 
-            <label>Título</label>
+            <label>Título (Heavy Italic)</label>
             <input type="text" id="inLargeTitle" oninput="updateData()">
 
-            <label>Legenda</label>
+            <label>Conteúdo Informativo</label>
             <textarea id="inSmallTitle" rows="3" oninput="updateData()"></textarea>
 
-            <label>Mudar Foto</label>
+            <label>Trocar Imagem</label>
             <input type="file" id="inPhoto" accept="image/*">
         </div>
 
-        <button onclick="downloadPNG()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs mb-4">
-            Baixar Slide Atual
-        </button>
+        <button onclick="downloadPNG()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs mb-4 shadow-lg">Baixar PNG de Alta Res</button>
     </aside>
 
-    <main class="preview-area">
+    <main class="preview-area" id="previewArea">
         <div id="instagramPreview" class="tpl-1">
             <div id="matrixBackground"></div>
             <header class="absolute top-16 left-20 z-[30]">
@@ -102,28 +139,49 @@
     </main>
 
     <script>
-        let slides = [{ title: "PRONTO PARA USO", subtitle: "Digite um assunto e deixe a IA trabalhar.", template: "tpl-1", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=600" }];
+        let slides = [{ title: "SISTEMA ATIVO", subtitle: "Digite um tema na barra lateral e veja a mágica da IA Groq.", template: "tpl-1", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=600" }];
         let currentSlideIndex = 0;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('toggleIcon');
+            sidebar.classList.toggle('hidden-menu');
+            icon.innerText = sidebar.classList.contains('hidden-menu') ? '▶' : '☰';
+        }
 
         async function generateWithAI() {
             const key = document.getElementById('apiKey').value;
             const topic = document.getElementById('aiTopic').value;
-            if(key === "COLE_SUA_CHAVE_AQUI") return alert("Você esqueceu de inserir sua API KEY no código!");
+            if(!topic) return alert("Digite um assunto primeiro!");
             
             document.getElementById('loadingOverlay').style.display = 'flex';
-            const prompt = `Crie um carrossel de 5 slides sobre "${topic}" para o site FerramentasPro. Retorne APENAS um JSON: [{"title": "TITULO", "subtitle": "CONTEUDO"}]. Regras: Slide 1: Gancho, Slides 2-4: Educativo, Slide 5: CTA para ferramentaspro.net. Máximo 100 caracteres por legenda.`;
+            const prompt = `Você é um copywriter financeiro experiente. Crie um carrossel estratégico de 5 slides sobre "${topic}" para o site FerramentasPro. 
+            Retorne APENAS um JSON puro no formato: {"slides": [{"title": "TITULO", "subtitle": "CONTEUDO"}]}. 
+            Regras: 
+            Slide 1: Gancho curioso. 
+            Slides 2-4: Educativo/Técnico. 
+            Slide 5: CTA forte para ferramentaspro.net. 
+            Títulos em Caps e curtos. Legendas máx 120 caracteres.`;
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                    body: JSON.stringify({ 
+                        model: "llama3-70b-8192", 
+                        messages: [
+                            {role: "system", content: "Responda exclusivamente com JSON."},
+                            {role: "user", content: prompt}
+                        ], 
+                        temperature: 0.6,
+                        response_format: { type: "json_object" } 
+                    })
                 });
                 const data = await res.json();
-                const cleanJson = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
-                const result = JSON.parse(cleanJson);
+                const content = JSON.parse(data.choices[0].message.content);
+                const rawSlides = content.slides || content;
 
-                slides = result.map((s, i) => ({
+                slides = rawSlides.map((s, i) => ({
                     title: s.title.toUpperCase(),
                     subtitle: s.subtitle,
                     template: i === 0 ? "tpl-1" : (i === 4 ? "tpl-4" : "tpl-2"),
@@ -131,7 +189,10 @@
                 }));
                 currentSlideIndex = 0;
                 render();
-            } catch (e) { alert("Erro na API. Verifique sua chave."); }
+            } catch (e) { 
+                console.error(e);
+                alert("Erro na conexão com a Groq. Verifique a chave ou o assunto."); 
+            }
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
@@ -175,7 +236,10 @@
 
         document.getElementById('inPhoto').onchange = (e) => {
             const r = new FileReader();
-            r.onload = (ev) => { document.getElementById('previewPhoto').src = ev.target.result; slides[currentSlideIndex].image = ev.target.result; };
+            r.onload = (ev) => { 
+                document.getElementById('previewPhoto').src = ev.target.result; 
+                slides[currentSlideIndex].image = ev.target.result; 
+            };
             r.readAsDataURL(e.target.files[0]);
         };
 
@@ -183,9 +247,13 @@
             const node = document.getElementById('instagramPreview');
             const sc = node.style.transform;
             node.style.transform = "none";
-            html2canvas(node, { scale: 2 }).then(canvas => {
+            html2canvas(node, { 
+                scale: 2, 
+                backgroundColor: "#020617",
+                useCORS: true 
+            }).then(canvas => {
                 const a = document.createElement('a');
-                a.download = `post-${currentSlideIndex+1}.png`;
+                a.download = `ferramentaspro-${Date.now()}.png`;
                 a.href = canvas.toDataURL();
                 a.click();
                 node.style.transform = sc;
