@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Carrossel - FerramentasPro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; }
+        
+        .slide-preview {
+            width: 1080px;
+            height: 1080px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 80px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            transform: scale(0.4); /* Escala para caber na tela de edição */
+            transform-origin: top left;
+        }
+
+        .brand-footer {
+            border-top: 2px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .canvas-container { height: 450px; width: 450px; }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- PAINEL DE CONTROLE -->
+        <div class="bg-white p-6 rounded-xl shadow-lg h-fit">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Configurador de Post</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium">Cor de Fundo</label>
+                    <input type="color" id="bgColor" value="#0057ff" class="w-full h-10 rounded-md cursor-pointer">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Título Principal</label>
+                    <input type="text" id="mainTitle" placeholder="Ex: Cálculo de ROI" class="w-full p-2 border rounded-md">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Conteúdo do Slide</label>
+                    <textarea id="slideContent" rows="4" placeholder="Descreva o conteúdo informativo aqui..." class="w-full p-2 border rounded-md"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium">Slide Atual / Total</label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="currentSlide" value="1" class="w-full p-2 border rounded-md">
+                            <span>de</span>
+                            <input type="number" id="totalSlides" value="5" class="w-full p-2 border rounded-md">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Texto do CTA (Rodapé)</label>
+                    <input type="text" id="ctaText" value="Acesse: ferramentaspro.net" class="w-full p-2 border rounded-md">
+                </div>
+
+                <button onclick="window.print()" class="w-full bg-black text-white font-bold py-3 rounded-md hover:bg-gray-800 transition">
+                    Exportar para PDF/Imagem
+                </button>
+            </div>
+        </div>
+
+        <!-- PRÉ-VISUALIZAÇÃO EM TEMPO REAL -->
+        <div class="flex flex-col items-center">
+            <h3 class="text-lg font-semibold mb-4 text-gray-600">Preview (1080x1080)</h3>
+            <div class="canvas-container">
+                <div id="previewCard" class="slide-preview text-white">
+                    <div class="header">
+                        <span id="labelSlide" class="bg-white/20 px-4 py-2 rounded-full text-xl uppercase tracking-widest">Dica #1</span>
+                        <h1 id="viewTitle" class="text-7xl font-black mt-12 leading-tight uppercase">CÁLCULO DE ROI</h1>
+                    </div>
+                    
+                    <div id="viewContent" class="text-4xl leading-relaxed font-medium">
+                        O Retorno sobre Investimento permite que você saiba exatamente quanto ganhou para cada real investido.
+                    </div>
+
+                    <div class="footer-area">
+                        <div id="viewCTA" class="brand-footer flex justify-between items-center">
+                            <span>ferramentaspro.net</span>
+                            <span id="viewPagination">01/05</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="mt-4 text-sm text-gray-500 text-center">O post real terá alta resolução. <br>Use "Salvar como PDF" e corte as bordas ou use um print de alta qualidade.</p>
+        </div>
+
+    </div>
+
+    <script>
+        const inputs = ['bgColor', 'mainTitle', 'slideContent', 'currentSlide', 'totalSlides', 'ctaText'];
+        
+        function updatePreview() {
+            const bg = document.getElementById('bgColor').value;
+            const title = document.getElementById('mainTitle').value;
+            const content = document.getElementById('slideContent').value;
+            const current = document.getElementById('currentSlide').value;
+            const total = document.getElementById('totalSlides').value;
+            const cta = document.getElementById('ctaText').value;
+
+            const card = document.getElementById('previewCard');
+            card.style.backgroundColor = bg;
+            
+            document.getElementById('viewTitle').innerText = title || 'TÍTULO DO POST';
+            document.getElementById('viewContent').innerText = content || 'O conteúdo informativo aparecerá aqui para educar seu público.';
+            document.getElementById('viewCTA').querySelector('span').innerText = cta;
+            document.getElementById('viewPagination').innerText = `${current.padStart(2, '0')}/${total.padStart(2, '0')}`;
+            document.getElementById('labelSlide').innerText = `Slide #${current}`;
+            
+            // Ajuste automático de cor do texto (Preto ou Branco) baseado no fundo
+            const r = parseInt(bg.substr(1,2),16);
+            const g = parseInt(bg.substr(3,2),16);
+            const b = parseInt(bg.substr(5,2),16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            card.style.color = brightness > 155 ? '#000' : '#fff';
+            if(brightness > 155) {
+                card.querySelector('.brand-footer').style.borderColor = 'rgba(0,0,0,0.2)';
+                document.getElementById('labelSlide').style.backgroundColor = 'rgba(0,0,0,0.1)';
+            } else {
+                card.querySelector('.brand-footer').style.borderColor = 'rgba(255,255,255,0.2)';
+                document.getElementById('labelSlide').style.backgroundColor = 'rgba(255,255,255,0.2)';
+            }
+        }
+
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', updatePreview);
+        });
+
+        updatePreview();
+    </script>
+</body>
+</html>
