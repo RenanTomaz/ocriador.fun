@@ -272,13 +272,14 @@
         }
 
         function updateData() {
-            const s = slides[currentSlideIndex];
-            s.title = document.getElementById('inLargeTitle').value.toUpperCase();
-            s.subtitle = document.getElementById('inSmallTitle').value;
-            s.theme = document.getElementById('selColor').value;
-            s.template = document.getElementById('selTemplate').value;
-            updatePreviewUI();
-        }
+    const s = slides[currentSlideIndex];
+    // Mantendo o valor original do input (que contém as quebras de linha)
+    s.title = document.getElementById('inLargeTitle').value.toUpperCase();
+    s.subtitle = document.getElementById('inSmallTitle').value;
+    s.theme = document.getElementById('selColor').value;
+    s.template = document.getElementById('selTemplate').value;
+    updatePreviewUI();
+}
 
         function updatePreviewUI() {
             const s = slides[currentSlideIndex];
