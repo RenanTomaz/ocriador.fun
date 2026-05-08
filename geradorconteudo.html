@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador FerramentasPro v3.5</title>
+    <title>Gerador FerramentasPro v4.0 - Multi-Slides</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -12,32 +12,35 @@
         :root { --bg-dark: #010411; --accent: #3b82f6; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg-dark); color: white; margin: 0; }
 
-        /* Estilização da área de Preview para garantir visibilidade */
         .viewport-container {
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
             overflow: auto;
-            height: calc(100vh - 80px);
+            height: calc(100vh - 0px);
             background: radial-gradient(circle at center, #0f172a 0%, #010411 100%);
+            flex: 1;
         }
 
         #instagramPreview {
             width: 1080px;
             height: 1080px;
-            min-width: 1080px; /* Impede que o flexbox esmague o card */
+            min-width: 1080px;
             position: relative;
             overflow: hidden;
             background-color: #020617;
             border-radius: 20px;
-            /* Zoom para visualização no editor */
-            transform: scale(0.5); 
+            transform: scale(0.35); 
             transform-origin: top center;
             box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            transition: transform 0.3s ease;
         }
 
-        /* Elementos Visuais Estilo Site v2.7 */
+        @media (min-width: 768px) {
+            #instagramPreview { transform: scale(0.5); }
+        }
+
         #matrixBackground {
             position: absolute;
             inset: 0; font-family: monospace; font-size: 20px;
@@ -56,7 +59,6 @@
             border: 10px solid #fff;
         }
 
-        /* Ajustes de inputs */
         input, textarea, select {
             background: #1e293b !important;
             border: 1px solid #334155 !important;
@@ -65,20 +67,38 @@
             border-radius: 8px !important;
             width: 100%;
         }
+
+        .slide-tab {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .slide-tab.active {
+            background-color: #3b82f6;
+            border-color: #60a5fa;
+            color: white;
+        }
     </style>
 </head>
 <body class="flex flex-col md:flex-row h-screen overflow-hidden">
 
-    <aside class="w-full md:w-[400px] bg-slate-900 p-6 overflow-y-auto border-r border-slate-800 shadow-2xl z-50">
-        <div class="mb-8">
-            <div class="fp-title text-2xl">Ferramentas<span class="text-blue-500">Pro</span></div>
-            <p class="text-[10px] text-slate-500 uppercase tracking-widest">Gerador de Posts v3.5</p>
+    <aside class="w-full md:w-[450px] bg-slate-900 p-6 overflow-y-auto border-r border-slate-800 shadow-2xl z-50">
+        <div class="mb-6 flex justify-between items-center">
+            <div>
+                <div class="fp-title text-2xl">Ferramentas<span class="text-blue-500">Pro</span></div>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest">Multi-Slide Editor v4.0</p>
+            </div>
+            <button onclick="addSlide()" class="bg-blue-600 hover:bg-blue-500 p-2 rounded-lg text-xs font-bold uppercase tracking-tighter transition-colors">
+                + Novo Slide
+            </button>
         </div>
+
+        <div id="slideTabs" class="flex gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-800">
+            </div>
 
         <div class="space-y-4">
             <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Cor do Tema</label>
-                <select id="gradTheme">
+                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-tighter">Tema do Slide Atual</label>
+                <select id="gradTheme" onchange="updateCurrentSlideData()">
                     <option value="from-blue-600 to-blue-800">Azul (Juros/ROI)</option>
                     <option value="from-emerald-600 to-emerald-800">Verde (Salário/Lucro)</option>
                     <option value="from-indigo-600 to-indigo-800">Índigo (13º/Comissão)</option>
@@ -88,41 +108,32 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Imagem de Fundo</label>
+                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-tighter">Imagem (Individual por slide)</label>
                 <input type="file" id="inPhoto" accept="image/*">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Título Principal</label>
-                <input type="text" id="inLargeTitle" value="JUROS COMPOSTOS">
+                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-tighter">Título</label>
+                <input type="text" id="inLargeTitle" oninput="updateCurrentSlideData()">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Subtítulo</label>
-                <textarea id="inSmallTitle" rows="2">O guia definitivo para fazer o dinheiro trabalhar por você.</textarea>
+                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-tighter">Conteúdo / Subtítulo</label>
+                <textarea id="inSmallTitle" rows="3" oninput="updateCurrentSlideData()"></textarea>
             </div>
 
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Slide</label>
-                    <input type="number" id="inCurrent" value="1">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Total</label>
-                    <input type="number" id="inTotal" value="5">
-                </div>
-            </div>
-
-            <div class="pt-4 space-y-2">
-                <button onclick="downloadPNG()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-blue-900/20">
-                    Descargar PNG (Alta Res)
+            <div class="pt-6 space-y-3">
+                <button onclick="downloadPNG()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-blue-900/40">
+                    Exportar Slide Atual (PNG)
                 </button>
-                <p class="text-[10px] text-slate-500 text-center">A imagem será salva em 2160x2160px (Ultra HD)</p>
+                <button onclick="deleteSlide()" id="btnDelete" class="w-full bg-red-900/30 hover:bg-red-600 text-red-500 hover:text-white py-2 rounded-lg text-[10px] uppercase font-bold transition-all">
+                    Excluir este slide
+                </button>
             </div>
         </div>
     </aside>
 
-    <main class="flex-1 viewport-container">
+    <main class="viewport-container">
         <div id="instagramPreview">
             <div id="matrixBackground"></div>
             <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#020617] z-[2]"></div>
@@ -150,27 +161,95 @@
     </main>
 
     <script>
-        // Preenche o fundo com números aleatórios
-        const matrix = document.getElementById('matrixBackground');
-        matrix.innerText = Array.from({length: 4000}, () => Math.floor(Math.random() * 10)).join('');
+        // ESTADO GLOBAL
+        let slides = [
+            {
+                title: "JUROS COMPOSTOS",
+                subtitle: "O guia definitivo para fazer o dinheiro trabalhar por você.",
+                theme: "from-blue-600 to-blue-800",
+                image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=600"
+            }
+        ];
+        let currentSlideIndex = 0;
 
-        function update() {
-            document.getElementById('viewLargeTitle').innerText = document.getElementById('inLargeTitle').value;
-            document.getElementById('viewSmallTitle').innerText = document.getElementById('inSmallTitle').value;
-            
-            const current = document.getElementById('inCurrent').value.padStart(2, '0');
-            const total = document.getElementById('inTotal').value.padStart(2, '0');
-            document.getElementById('viewPagination').innerText = `${current}/${total}`;
-
-            const theme = document.getElementById('gradTheme').value;
-            const overlay = document.getElementById('photoGradOverlay');
-            overlay.className = "absolute inset-0 opacity-60 bg-gradient-to-br " + theme;
+        // INICIALIZAÇÃO
+        function init() {
+            const matrix = document.getElementById('matrixBackground');
+            matrix.innerText = Array.from({length: 4000}, () => Math.floor(Math.random() * 10)).join('');
+            renderTabs();
+            loadSlide(0);
         }
 
-        // Upload de foto
+        // NAVEGAÇÃO
+        function renderTabs() {
+            const container = document.getElementById('slideTabs');
+            container.innerHTML = '';
+            slides.forEach((slide, index) => {
+                const button = document.createElement('div');
+                button.className = `slide-tab min-w-[60px] h-[40px] flex items-center justify-center rounded-lg border border-slate-700 font-bold text-xs ${index === currentSlideIndex ? 'active' : 'bg-slate-800 text-slate-500'}`;
+                button.innerText = (index + 1).toString().padStart(2, '0');
+                button.onclick = () => loadSlide(index);
+                container.appendChild(button);
+            });
+        }
+
+        function loadSlide(index) {
+            currentSlideIndex = index;
+            const data = slides[index];
+            
+            // Atualiza Inputs
+            document.getElementById('inLargeTitle').value = data.title;
+            document.getElementById('inSmallTitle').value = data.subtitle;
+            document.getElementById('gradTheme').value = data.theme;
+            document.getElementById('previewPhoto').src = data.image;
+
+            renderTabs();
+            updatePreviewUI();
+            
+            // Esconde botão de deletar se só houver um slide
+            document.getElementById('btnDelete').style.display = slides.length > 1 ? 'block' : 'none';
+        }
+
+        function addSlide() {
+            slides.push({
+                title: "NOVO TÍTULO",
+                subtitle: "Descrição do conteúdo aqui...",
+                theme: "from-blue-600 to-blue-800",
+                image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=600"
+            });
+            loadSlide(slides.length - 1);
+        }
+
+        function deleteSlide() {
+            if(slides.length <= 1) return;
+            slides.splice(currentSlideIndex, 1);
+            currentSlideIndex = Math.max(0, currentSlideIndex - 1);
+            loadSlide(currentSlideIndex);
+        }
+
+        // SINCRONIZAÇÃO
+        function updateCurrentSlideData() {
+            slides[currentSlideIndex].title = document.getElementById('inLargeTitle').value;
+            slides[currentSlideIndex].subtitle = document.getElementById('inSmallTitle').value;
+            slides[currentSlideIndex].theme = document.getElementById('gradTheme').value;
+            updatePreviewUI();
+        }
+
+        function updatePreviewUI() {
+            const data = slides[currentSlideIndex];
+            document.getElementById('viewLargeTitle').innerText = data.title;
+            document.getElementById('viewSmallTitle').innerText = data.subtitle;
+            document.getElementById('viewPagination').innerText = `${(currentSlideIndex + 1).toString().padStart(2, '0')}/${slides.length.toString().padStart(2, '0')}`;
+            document.getElementById('photoGradOverlay').className = "absolute inset-0 opacity-60 bg-gradient-to-br " + data.theme;
+        }
+
+        // Upload de foto para o slide ativo
         document.getElementById('inPhoto').addEventListener('change', function(e) {
             const reader = new FileReader();
-            reader.onload = (event) => document.getElementById('previewPhoto').src = event.target.result;
+            reader.onload = (event) => {
+                document.getElementById('previewPhoto').src = event.target.result;
+                slides[currentSlideIndex].image = event.target.result;
+            };
             reader.readAsDataURL(e.target.files[0]);
         });
 
@@ -178,26 +257,22 @@
         function downloadPNG() {
             const node = document.getElementById('instagramPreview');
             const originalTransform = node.style.transform;
-            
-            // Remove o zoom para capturar em tamanho real
             node.style.transform = "none";
             
             html2canvas(node, {
-                scale: 2, // Dobra a resolução para 2160px
+                scale: 2,
                 backgroundColor: "#020617",
                 useCORS: true
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `post-ferramentaspro-${Date.now()}.png`;
+                link.download = `ferramentaspro-slide-${currentSlideIndex + 1}.png`;
                 link.href = canvas.toDataURL("image/png");
                 link.click();
-                node.style.transform = originalTransform; // Restaura o zoom na tela
+                node.style.transform = originalTransform;
             });
         }
 
-        // Escuta todos os inputs para atualizar em tempo real
-        document.querySelectorAll('input, textarea, select').forEach(el => el.oninput = update);
-        update(); // Inicia o estado inicial
+        init();
     </script>
 </body>
 </html>
