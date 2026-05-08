@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador FerramentasPro v5.0 - 9 Templates</title>
+    <title>Gerador FerramentasPro v5.1 - Fix Visual</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -18,125 +18,112 @@
             background: radial-gradient(circle at center, #0f172a 0%, #010411 100%);
         }
 
-        /* Container do Post */
+        /* Container do Post - Ajustado para visualização */
         #instagramPreview {
             width: 1080px; height: 1080px; min-width: 1080px;
             position: relative; overflow: hidden; background-color: #020617;
             border-radius: 20px; transform: scale(0.35); transform-origin: top center;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8); transition: all 0.5s ease-in-out;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8); transition: all 0.4s ease;
         }
 
-        @media (min-width: 768px) { #instagramPreview { transform: scale(0.5); } }
+        @media (min-width: 768px) { #instagramPreview { transform: scale(0.45); } }
 
-        /* Estilos Comuns */
+        /* Estilos de Elementos */
         #matrixBackground { position: absolute; inset: 0; font-family: monospace; font-size: 20px; color: #1e293b; opacity: 0.3; line-height: 1.2; z-index: 1; }
         .fp-title { font-size: 60px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -0.05em; line-height: 1; }
-        #photoFrame { position: absolute; z-index: 10; overflow: hidden; border: 10px solid #fff; transition: all 0.5s ease; }
+        #photoFrame { position: absolute; z-index: 10; overflow: hidden; border: 10px solid #fff; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         #previewPhoto { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); }
         #contentArea { position: absolute; z-index: 20; transition: all 0.5s ease; }
 
-        /* --- CONFIGURAÇÃO DOS 9 TEMPLATES --- */
-        
-        /* 1. Clássico (O que já tínhamos) */
+        /* --- LOGICA DE TEMPLATES (CSS) --- */
         .tpl-1 #photoFrame { top: 200px; right: 80px; width: 450px; height: 600px; border-radius: 200px 30px 200px 30px; }
         .tpl-1 #contentArea { top: 320px; left: 80px; width: 500px; }
 
-        /* 2. Split Vertical (Texto em cima, Foto embaixo) */
         .tpl-2 #photoFrame { bottom: 0; left: 0; width: 1080px; height: 500px; border: none; border-radius: 0; }
         .tpl-2 #contentArea { top: 180px; left: 80px; width: 920px; text-align: center; }
-        .tpl-2 #viewLargeTitle { font-size: 110px; }
 
-        /* 3. Foco na Foto (Círculo Central) */
-        .tpl-3 #photoFrame { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 700px; height: 700px; border-radius: 50%; border-width: 20px; }
+        .tpl-3 #photoFrame { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 700px; height: 700px; border-radius: 50%; }
         .tpl-3 #contentArea { bottom: 80px; left: 0; width: 1080px; text-align: center; background: rgba(2,6,23,0.8); padding: 40px 0; }
 
-        /* 4. Minimalista Dark (Sem Foto, Apenas Texto Gigante) */
         .tpl-4 #photoFrame { display: none; }
-        .tpl-4 #contentArea { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; text-align: left; }
-        .tpl-4 #viewLargeTitle { font-size: 140px; border-left: 15px solid #3b82f6; padding-left: 40px; }
+        .tpl-4 #contentArea { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; }
+        .tpl-4 #viewLargeTitle { font-size: 130px; border-left: 20px solid #3b82f6; padding-left: 40px; }
 
-        /* 5. Diagonal (Corte inclinado) */
-        .tpl-5 #photoFrame { top: -100px; right: -100px; width: 700px; height: 1200px; transform: rotate(15deg); border-radius: 80px; }
-        .tpl-5 #contentArea { bottom: 150px; left: 80px; width: 600px; }
+        .tpl-5 #photoFrame { top: -100px; right: -100px; width: 700px; height: 1200px; transform: rotate(15deg); border-radius: 80px; opacity: 0.5; }
+        .tpl-5 #contentArea { bottom: 150px; left: 80px; width: 700px; }
 
-        /* 6. Card Superior (Estilo App) */
         .tpl-6 #photoFrame { top: 80px; left: 80px; width: 920px; height: 400px; border-radius: 40px; }
         .tpl-6 #contentArea { top: 520px; left: 80px; width: 920px; }
-        .tpl-6 #viewLargeTitle { color: #3b82f6; }
 
-        /* 7. Revista (Texto sobreposto lateral) */
-        .tpl-7 #photoFrame { top: 0; left: 0; width: 600px; height: 1080px; border: none; border-radius: 0; }
+        .tpl-7 #photoFrame { top: 0; left: 0; width: 600px; height: 1080px; border: none; }
         .tpl-7 #contentArea { top: 200px; right: 80px; width: 450px; text-align: right; }
 
-        /* 8. Impacto (Centralizado com moldura quadrada) */
         .tpl-8 #photoFrame { top: 150px; left: 150px; width: 780px; height: 500px; border-radius: 20px; }
         .tpl-8 #contentArea { bottom: 150px; left: 150px; width: 780px; text-align: center; }
 
-        /* 9. Tech Grid (Estilo Dashboard) */
-        .tpl-9 #photoFrame { bottom: 150px; right: 80px; width: 350px; height: 350px; border-radius: 50% 0 50% 50%; }
+        .tpl-9 #photoFrame { bottom: 150px; right: 80px; width: 350px; height: 350px; border-radius: 50%; }
         .tpl-9 #contentArea { top: 250px; left: 80px; width: 800px; }
-        .tpl-9 #viewLargeTitle { font-size: 110px; text-shadow: 10px 10px 0px #3b82f6; }
 
-        /* Inputs */
-        input, textarea, select { background: #1e293b !important; border: 1px solid #334155 !important; color: white !important; padding: 10px !important; border-radius: 8px !important; width: 100%; }
-        .slide-tab { transition: all 0.2s; cursor: pointer; }
-        .slide-tab.active { background-color: #3b82f6; color: white; }
+        /* Estilização dos Controles */
+        .control-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; display: block; }
+        input, textarea, select { background: #1e293b !important; border: 1px solid #334155 !important; color: white !important; padding: 12px !important; border-radius: 10px !important; width: 100%; margin-bottom: 15px; font-size: 14px; }
+        select { cursor: pointer; border-left: 4px solid #3b82f6 !important; }
+        
+        .slide-tab { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #334155; cursor: pointer; font-weight: 900; font-size: 12px; transition: all 0.2s; background: #0f172a; color: #475569; }
+        .slide-tab.active { background: #3b82f6; color: white; border-color: #60a5fa; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
     </style>
 </head>
-<body class="flex flex-col md:flex-row h-screen overflow-hidden">
+<body class="flex flex-col md:flex-row h-screen">
 
-    <aside class="w-full md:w-[450px] bg-slate-900 p-6 overflow-y-auto border-r border-slate-800 z-50">
-        <div class="mb-6 flex justify-between items-center">
-            <div class="fp-title text-2xl">Ferramentas<span class="text-blue-500">Pro</span></div>
-            <button onclick="addSlide()" class="bg-blue-600 px-3 py-2 rounded-lg text-xs font-bold">+ Slide</button>
+    <aside class="w-full md:w-[420px] bg-slate-900 p-6 overflow-y-auto border-r border-slate-800 z-50 shadow-2xl">
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <div class="fp-title text-2xl">Ferramentas<span class="text-blue-500">Pro</span></div>
+                <p class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Multi-Template Engine v5.1</p>
+            </div>
+            <button onclick="addSlide()" class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase transition-all">+ Slide</button>
+        </header>
+
+        <label class="control-label">Navegar entre Slides</label>
+        <div id="slideTabs" class="flex gap-2 overflow-x-auto pb-6 mb-6 border-b border-slate-800">
+            </div>
+
+        <div class="bg-blue-900/20 p-4 rounded-xl border border-blue-500/30 mb-6">
+            <label class="control-label text-blue-400">Layout do Slide Atual</label>
+            <select id="selTemplate" onchange="updateData()">
+                <option value="tpl-1">Template 01: Clássico Orgânico</option>
+                <option value="tpl-2">Template 02: Split Vertical</option>
+                <option value="tpl-3">Template 03: Círculo Central</option>
+                <option value="tpl-4">Template 04: Minimalista (Sem Foto)</option>
+                <option value="tpl-5">Template 05: Diagonal Tech</option>
+                <option value="tpl-6">Template 06: Estilo App</option>
+                <option value="tpl-7">Template 07: Estilo Revista</option>
+                <option value="tpl-8">Template 08: Moldura Central</option>
+                <option value="tpl-9">Template 09: Grid Dashboard</option>
+            </select>
         </div>
 
-        <div id="slideTabs" class="flex gap-2 overflow-x-auto pb-4 mb-6"></div>
+        <label class="control-label">Cor do Gradiente</label>
+        <select id="gradTheme" onchange="updateData()">
+            <option value="from-blue-600 to-blue-800">Azul Profissional</option>
+            <option value="from-emerald-600 to-emerald-800">Verde Sucesso</option>
+            <option value="from-indigo-600 to-indigo-800">Índigo Futurista</option>
+            <option value="from-orange-600 to-orange-800">Laranja Alerta</option>
+            <option value="from-rose-600 to-rose-800">Rosa Moderno</option>
+        </select>
 
-        <div class="space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Escolher Layout (Template)</label>
-                <select id="selTemplate" onchange="updateCurrentSlideData()">
-                    <option value="tpl-1">01. Clássico Orgânico</option>
-                    <option value="tpl-2">02. Split Vertical</option>
-                    <option value="tpl-3">03. Círculo Central</option>
-                    <option value="tpl-4">04. Minimalista (Só Texto)</option>
-                    <option value="tpl-5">05. Diagonal Tech</option>
-                    <option value="tpl-6">06. Estilo Aplicativo</option>
-                    <option value="tpl-7">07. Estilo Revista</option>
-                    <option value="tpl-8">08. Moldura Central</option>
-                    <option value="tpl-9">09. Grid Dashboard</option>
-                </select>
-            </div>
+        <label class="control-label">Foto de Fundo</label>
+        <input type="file" id="inPhoto" accept="image/*">
 
-            <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Cor do Tema</label>
-                <select id="gradTheme" onchange="updateCurrentSlideData()">
-                    <option value="from-blue-600 to-blue-800">Azul</option>
-                    <option value="from-emerald-600 to-emerald-800">Verde</option>
-                    <option value="from-indigo-600 to-indigo-800">Índigo</option>
-                    <option value="from-orange-600 to-orange-800">Laranja</option>
-                    <option value="from-rose-600 to-rose-800">Rosa</option>
-                </select>
-            </div>
+        <label class="control-label">Título do Post</label>
+        <input type="text" id="inLargeTitle" oninput="updateData()" placeholder="Título principal">
 
-            <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Foto</label>
-                <input type="file" id="inPhoto" accept="image/*">
-            </div>
+        <label class="control-label">Conteúdo/Legenda</label>
+        <textarea id="inSmallTitle" rows="3" oninput="updateData()" placeholder="Escreva o texto informativo aqui..."></textarea>
 
-            <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Título</label>
-                <input type="text" id="inLargeTitle" oninput="updateCurrentSlideData()">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">Conteúdo</label>
-                <textarea id="inSmallTitle" rows="3" oninput="updateCurrentSlideData()"></textarea>
-            </div>
-
-            <button onclick="downloadPNG()" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs mt-4">Download PNG</button>
-            <button onclick="deleteSlide()" id="btnDelete" class="w-full text-red-500 text-[10px] uppercase font-bold mt-2">Excluir Slide</button>
+        <div class="pt-4 space-y-3">
+            <button onclick="downloadPNG()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl uppercase tracking-widest text-xs shadow-lg">Descargar Slide PNG</button>
+            <button onclick="deleteSlide()" id="btnDelete" class="w-full text-red-500 text-[10px] font-bold uppercase hover:bg-red-500/10 py-2 rounded-lg">Excluir este slide</button>
         </div>
     </aside>
 
@@ -150,7 +137,7 @@
             </header>
 
             <div id="contentArea">
-                <h2 id="viewLargeTitle" class="text-[90px] font-black italic leading-[0.9] uppercase tracking-tighter"></h2>
+                <h2 id="viewLargeTitle" class="text-[90px] font-black italic leading-[0.85] uppercase tracking-tighter"></h2>
                 <p id="viewSmallTitle" class="mt-8 text-2xl text-slate-300 font-medium leading-relaxed"></p>
             </div>
 
@@ -167,9 +154,10 @@
     </main>
 
     <script>
+        // ESTADO INICIAL
         let slides = [{
             title: "JUROS COMPOSTOS",
-            subtitle: "O guia definitivo para fazer o dinheiro trabalhar por você.",
+            subtitle: "O guia definitivo para fazer o dinheiro trabalhar por você no longo prazo.",
             theme: "from-blue-600 to-blue-800",
             template: "tpl-1",
             image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=600"
@@ -179,47 +167,37 @@
         function init() {
             const matrix = document.getElementById('matrixBackground');
             matrix.innerText = Array.from({length: 4000}, () => Math.floor(Math.random() * 10)).join('');
-            renderTabs();
-            loadSlide(0);
+            render();
         }
 
-        function renderTabs() {
-            const container = document.getElementById('slideTabs');
-            container.innerHTML = '';
-            slides.forEach((_, index) => {
-                const btn = document.createElement('div');
-                btn.className = `slide-tab min-w-[50px] h-[40px] flex items-center justify-center rounded-lg border border-slate-700 font-bold text-xs ${index === currentSlideIndex ? 'active' : 'bg-slate-800 text-slate-500'}`;
-                btn.innerText = (index + 1).toString().padStart(2, '0');
-                btn.onclick = () => loadSlide(index);
-                container.appendChild(btn);
+        function render() {
+            // Renderiza abas de slides
+            const tabs = document.getElementById('slideTabs');
+            tabs.innerHTML = '';
+            slides.forEach((_, i) => {
+                const b = document.createElement('div');
+                b.className = `slide-tab ${i === currentSlideIndex ? 'active' : ''}`;
+                b.innerText = (i + 1).toString().padStart(2, '0');
+                b.onclick = () => { currentSlideIndex = i; loadSlide(); };
+                tabs.appendChild(b);
             });
+
+            loadSlide();
         }
 
-        function loadSlide(index) {
-            currentSlideIndex = index;
-            const data = slides[index];
-            document.getElementById('inLargeTitle').value = data.title;
-            document.getElementById('inSmallTitle').value = data.subtitle;
-            document.getElementById('gradTheme').value = data.theme;
-            document.getElementById('selTemplate').value = data.template;
-            document.getElementById('previewPhoto').src = data.image;
-            renderTabs();
+        function loadSlide() {
+            const s = slides[currentSlideIndex];
+            document.getElementById('inLargeTitle').value = s.title;
+            document.getElementById('inSmallTitle').value = s.subtitle;
+            document.getElementById('gradTheme').value = s.theme;
+            document.getElementById('selTemplate').value = s.template;
+            document.getElementById('previewPhoto').src = s.image;
+            
             updatePreviewUI();
+            document.getElementById('btnDelete').style.display = slides.length > 1 ? 'block' : 'none';
         }
 
-        function addSlide() {
-            slides.push({...slides[currentSlideIndex]});
-            loadSlide(slides.length - 1);
-        }
-
-        function deleteSlide() {
-            if(slides.length <= 1) return;
-            slides.splice(currentSlideIndex, 1);
-            currentSlideIndex = Math.max(0, currentSlideIndex - 1);
-            loadSlide(currentSlideIndex);
-        }
-
-        function updateCurrentSlideData() {
+        function updateData() {
             const s = slides[currentSlideIndex];
             s.title = document.getElementById('inLargeTitle').value;
             s.subtitle = document.getElementById('inSmallTitle').value;
@@ -229,34 +207,47 @@
         }
 
         function updatePreviewUI() {
-            const data = slides[currentSlideIndex];
-            const preview = document.getElementById('instagramPreview');
-            preview.className = data.template;
-            document.getElementById('viewLargeTitle').innerText = data.title;
-            document.getElementById('viewSmallTitle').innerText = data.subtitle;
+            const s = slides[currentSlideIndex];
+            const p = document.getElementById('instagramPreview');
+            p.className = s.template;
+            document.getElementById('viewLargeTitle').innerText = s.title;
+            document.getElementById('viewSmallTitle').innerText = s.subtitle;
             document.getElementById('viewPagination').innerText = `${(currentSlideIndex + 1).toString().padStart(2, '0')}/${slides.length.toString().padStart(2, '0')}`;
-            document.getElementById('photoGradOverlay').className = "absolute inset-0 opacity-60 bg-gradient-to-br " + data.theme;
+            document.getElementById('photoGradOverlay').className = "absolute inset-0 opacity-60 bg-gradient-to-br " + s.theme;
+        }
+
+        function addSlide() {
+            slides.push({...slides[currentSlideIndex]});
+            currentSlideIndex = slides.length - 1;
+            render();
+        }
+
+        function deleteSlide() {
+            if(slides.length <= 1) return;
+            slides.splice(currentSlideIndex, 1);
+            currentSlideIndex = Math.max(0, currentSlideIndex - 1);
+            render();
         }
 
         document.getElementById('inPhoto').onchange = function(e) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
+            const r = new FileReader();
+            r.onload = (ev) => {
                 document.getElementById('previewPhoto').src = ev.target.result;
                 slides[currentSlideIndex].image = ev.target.result;
             };
-            reader.readAsDataURL(e.target.files[0]);
+            r.readAsDataURL(e.target.files[0]);
         };
 
         function downloadPNG() {
             const node = document.getElementById('instagramPreview');
-            const scale = node.style.transform;
+            const sc = node.style.transform;
             node.style.transform = "none";
             html2canvas(node, { scale: 2, backgroundColor: "#020617", useCORS: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `slide-${currentSlideIndex+1}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                node.style.transform = scale;
+                const l = document.createElement('a');
+                l.download = `slide-${currentSlideIndex+1}.png`;
+                l.href = canvas.toDataURL();
+                l.click();
+                node.style.transform = sc;
             });
         }
 
