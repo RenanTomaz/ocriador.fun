@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FerramentasPro AI - v13.0 Versatile</title>
+    <title>FerramentasPro - Gerador de Conteúdo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -108,26 +108,26 @@
     <aside class="sidebar">
         <header class="mb-6">
             <div class="fp-title text-xl">Ferramentas<span class="text-blue-500">Pro</span></div>
-            <p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">v13.0 Precision Engine</p>
+            <p class="text-[8px] text-slate-500 uppercase font-bold tracking-widest">Gerador de conteúdo</p>
         </header>
 
         <div class="section-card border-amber-500/30 bg-amber-950/10">
-            <label class="text-amber-400">🔑 API Groq</label>
+            <label class="text-amber-400">🔑 Cole aqui a sua API KEY do GROK</label>
             <input type="password" id="apiKeyManual" placeholder="gsk_...">
         </div>
 
         <div class="section-card border-emerald-500/30 bg-emerald-900/10">
-            <label class="text-emerald-400">✨ Gerar com IA</label>
+            <label class="text-emerald-400">✨ Gerar</label>
             <input type="text" id="aiTopic" placeholder="Tema do carrossel">
-            <button onclick="generateWithAI()" class="w-full bg-emerald-600 font-black py-2 rounded-lg uppercase text-[10px] tracking-widest hover:bg-emerald-500">🚀 Criar 5 Slides</button>
+            <button onclick="generateWithAI()" class="w-full bg-emerald-600 font-black py-2 rounded-lg uppercase text-[10px] tracking-widest hover:bg-emerald-500">Gerar conteúdo</button>
         </div>
 
         <div class="section-card">
             <label>Navegação</label>
             <div id="slideTabs" class="flex flex-wrap gap-2 mb-4"></div>
             <div class="flex gap-2">
-                <button onclick="addSlide()" class="flex-1 bg-slate-700 hover:bg-slate-600 py-2 rounded text-[10px] font-bold uppercase">+ Add</button>
-                <button onclick="removeSlide()" class="flex-1 bg-red-900/50 hover:bg-red-800 py-2 rounded text-[10px] font-bold uppercase">- Del</button>
+                <button onclick="addSlide()" class="flex-1 bg-slate-700 hover:bg-slate-600 py-2 rounded text-[10px] font-bold uppercase">+</button>
+                <button onclick="removeSlide()" class="flex-1 bg-red-900/50 hover:bg-red-800 py-2 rounded text-[10px] font-bold uppercase">-</button>
             </div>
         </div>
 
@@ -141,7 +141,7 @@
                 <option value="from-purple-600 to-purple-800">Tema 05 - Roxo</option>
             </select>
             
-            <label>Escolher Template (Ponto 2)</label>
+            <label>Escolha o Template</label>
             <select id="selTemplate" onchange="updateData()">
                 <option value="tpl-1">01. Capa Circular</option>
                 <option value="tpl-2">02. Banner Superior</option>
@@ -173,8 +173,8 @@
                 <div id="blob1" class="blob" style="width:800px; height:800px; top:-200px; left:-200px;"></div>
                 <div id="blob2" class="blob" style="width:700px; height:700px; bottom:-100px; right:-100px;"></div>
                 
-                <header class="absolute top-16 left-20 z-[30]">
-                    <div class="fp-title text-[50px]">Ferramentas<span class="text-blue-500">Pro</span></div>
+                <header class="absolute top-10 left-20 z-[30]">
+                    <div class="fp-title text-[30px]">Ferramentas<span class="text-blue-500">Pro</span></div>
                 </header>
 
                 <div id="contentArea">
@@ -197,8 +197,8 @@
 
     <script>
         let slides = Array.from({length: 5}, (_, i) => ({
-            title: i === 0 ? "TÍTULO PRINCIPAL" : `PONTO DE INTERESSE ${i+1}`,
-            subtitle: "Insira aqui o texto descritivo. O espaçamento foi ajustado para garantir que letras com hastes inferiores (como Ç) fiquem perfeitas.",
+            title: i === 0 ? "TÍTULO" : `PONTO DE INTERESSE ${i+1}`,
+            subtitle: "Insira aqui o seu texto.",
             template: `tpl-${(i % 10) + 1}`,
             image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1080",
             theme: "from-blue-600 to-blue-800"
