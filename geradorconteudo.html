@@ -41,8 +41,22 @@
 
         /* Conteúdo (Espaçamento Ponto 6) */
         #contentArea { position: absolute; z-index: 30; transition: all 0.5s ease; }
-        #viewLargeTitle { font-weight: 900; font-style: italic; text-transform: uppercase; line-height: 0.95; letter-spacing: -0.04em; margin-bottom: 50px; }
-        #viewSmallTitle { font-weight: 500; color: #cbd5e1; }
+        #viewLargeTitle { 
+    font-weight: 900; 
+    font-style: italic; 
+    text-transform: uppercase; 
+    line-height: 0.95; 
+    letter-spacing: -0.04em; 
+    margin-bottom: 50px;
+    /* ADICIONE ESTA LINHA ABAIXO */
+    white-space: pre-line; 
+}
+        #viewSmallTitle { 
+    font-weight: 500; 
+    color: #cbd5e1;
+    /* ADICIONE ESTA LINHA ABAIXO */
+    white-space: pre-line; 
+}
 
         /* UI */
         .section-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; padding: 14px; border-radius: 12px; margin-bottom: 15px; }
@@ -73,7 +87,7 @@
 
         /* T5: Quadrado Minimalista */
         .tpl-5 #photoFrame { top: 150px; left: 150px; width: 780px; height: 400px; border-radius: 20px; }
-        .tpl-5 #contentArea { bottom: 150px; left: 150px; width: 780px; text-align: center; }
+        .tpl-5 #contentArea { bottom: 250px; left: 150px; width: 780px; text-align: center; }
 
         /* T6: Divisão Vertical */
         .tpl-6 #photoFrame { top: 0; right: 0; width: 540px; height: 1080px; border: none; border-radius: 0; }
@@ -85,11 +99,11 @@
 
         /* T8: Faixa Inferior */
         .tpl-8 #photoFrame { top: 120px; left: 80px; width: 920px; height: 500px; border-radius: 20px; }
-        .tpl-8 #contentArea { bottom: 100px; left: 80px; width: 920px; text-align: center; }
+        .tpl-8 #contentArea { bottom: 250px; left: 80px; width: 920px; text-align: center; }
 
         /* T9: Estilo Revista */
         .tpl-9 #photoFrame { bottom: 80px; right: 80px; width: 400px; height: 600px; border-radius: 50% 10% 50% 10%; }
-        .tpl-9 #contentArea { top: 120px; left: 80px; width: 800px; text-align: left; }
+        .tpl-9 #contentArea { top: 200px; left: 80px; width: 800px; text-align: left; }
 
         /* T10: Full Background (Overlaid) */
         .tpl-10 #photoFrame { top: 0; left: 0; width: 1080px; height: 1080px; border: none; opacity: 0.4; }
