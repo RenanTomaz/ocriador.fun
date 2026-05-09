@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FerramentasPro - Gerador de Conteúdo v13.6</title>
+    <title>FerramentasPro - Gerador de Conteúdo v16.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -11,7 +11,6 @@
         
         body { font-family: 'Poppins', sans-serif; background: #010411; color: white; margin: 0; overflow: hidden; display: flex; }
         
-        /* Layout Sidebar Retrátil */
         .sidebar { 
             width: 380px; min-width: 380px; background: #0f172a; 
             border-right: 1px solid #1e293b; height: 100vh; overflow-y: auto; 
@@ -20,7 +19,6 @@
         
         .sidebar.collapsed { margin-left: -380px; }
 
-        /* Botão de Toggle */
         #toggleSidebarBtn {
             position: fixed; top: 20px; left: 20px; z-index: 100;
             background: #3b82f6; color: white; border-radius: 8px;
@@ -28,9 +26,10 @@
             cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s;
         }
 
+        /* Área de Preview sem gradientes para evitar bugs visual no download */
         .preview-area { 
             flex: 1; height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: radial-gradient(circle at center, #1e293b 0%, #010411 100%); 
+            background: #010411; 
             overflow: hidden; padding: 20px; transition: 0.4s;
         }
 
@@ -39,18 +38,26 @@
         #instagramPreview { 
             width: 1080px; height: 1080px; min-width: 1080px; position: relative; 
             overflow: hidden; background: #020617; border-radius: 0;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
             transform-origin: center;
+            /* Removido box-shadow complexo que causava faixas de cores */
+            border: 1px solid rgba(255,255,255,0.05); 
         }
 
-        .blob { position: absolute; border-radius: 50%; z-index: 2; opacity: 0.6; pointer-events: none; filter: blur(80px); }
-        #matrixBackground { position: absolute; inset: 0; font-family: monospace; font-size: 22px; color: #1e293b; opacity: 0.2; line-height: 1.1; z-index: 1; pointer-events: none;}
         .fp-title { font-size: 55px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -0.05em; line-height: 1; }
         
-        #photoFrame { position: absolute; z-index: 10; overflow: hidden; border: 12px solid #fff; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        #previewPhoto { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: grayscale(100%); }
+        /* PhotoFrame Totalmente Sólido */
+        #photoFrame { 
+            position: absolute; 
+            z-index: 10; 
+            overflow: hidden; 
+            background: #ffffff; /* Cor 100% sólida */
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none; /* Removido qualquer borda ou pontilhado */
+        }
 
-        /* Conteúdo Flexível: Título empurra o resumo */
         #contentArea { 
             position: absolute; 
             z-index: 30; 
@@ -65,27 +72,29 @@
             white-space: pre-wrap; display: block;
         }
 
-        #viewSmallTitle { font-weight: 500; color: #cbd5e1; white-space: pre-wrap; display: block; }
+        #viewSmallTitle { font-weight: 500; white-space: pre-wrap; display: block; }
 
         .section-card { background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; padding: 14px; border-radius: 12px; margin-bottom: 15px; }
         label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; }
         input, textarea, select { background: #020617 !important; border: 1px solid #334155 !important; color: white !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 8px; font-size: 12px; }
         
+        input[type="color"] { padding: 2px; height: 40px; cursor: pointer; border: none !important; }
+
         .slide-tab { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #334155; cursor: pointer; font-weight: 900; background: #020617; color: #94a3b8; transition: 0.3s; }
         .slide-tab.active { background: #3b82f6 !important; color: white !important; border-color: #60a5fa; transform: scale(1.1); }
 
         /* Templates */
         .tpl-1 #photoFrame { top: 100px; right: 100px; width: 520px; height: 520px; border-radius: 50% 50% 50% 10px; }
         .tpl-1 #contentArea { top: 660px; left: 80px; width: 920px; text-align: left; align-items: flex-start; }
-        .tpl-2 #photoFrame { top: 0; left: 0; width: 1080px; height: 480px; border: none; border-radius: 0; }
+        .tpl-2 #photoFrame { top: 0; left: 0; width: 1080px; height: 480px; border-radius: 0; }
         .tpl-2 #contentArea { top: 580px; left: 80px; width: 920px; text-align: left; align-items: flex-start; }
-        .tpl-3 #photoFrame { bottom: 100px; left: 80px; width: 450px; height: 450px; border-radius: 30px; }
-        .tpl-3 #contentArea { top: 150px; right: 80px; width: 500px; text-align: right; align-items: flex-end; }
+        .tpl-3 #photoFrame { bottom: 100px; left: 80px; width: 450px; height: 900px; border-radius: 30px; }
+        .tpl-3 #contentArea { top: 150px; right: 80px; width: 500px; text-align: left; align-items: flex-end; }
         .tpl-4 #photoFrame { display: none; }
         .tpl-4 #contentArea { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 920px; text-align: center; align-items: center; }
         .tpl-5 #photoFrame { top: 150px; left: 150px; width: 780px; height: 400px; border-radius: 20px; }
         .tpl-5 #contentArea { bottom: 150px; left: 150px; width: 780px; text-align: center; align-items: center; }
-        .tpl-6 #photoFrame { top: 0; right: 0; width: 540px; height: 1080px; border: none; border-radius: 0; }
+        .tpl-6 #photoFrame { top: 0; right: 0; width: 540px; height: 1080px; border-radius: 0; }
         .tpl-6 #contentArea { top: 300px; left: 80px; width: 420px; text-align: left; align-items: flex-start; }
         .tpl-7 #photoFrame { top: 120px; left: 50%; transform: translateX(-50%); width: 400px; height: 400px; border-radius: 50%; }
         .tpl-7 #contentArea { top: 550px; left: 50%; transform: translateX(-50%); width: 900px; text-align: center; align-items: center; }
@@ -93,8 +102,8 @@
         .tpl-8 #contentArea { bottom: 120px; left: 80px; width: 920px; text-align: center; align-items: center; }
         .tpl-9 #photoFrame { bottom: 80px; right: 80px; width: 400px; height: 600px; border-radius: 50% 10% 50% 10%; }
         .tpl-9 #contentArea { top: 120px; left: 80px; width: 800px; text-align: left; align-items: flex-start; }
-        .tpl-10 #photoFrame { top: 0; left: 0; width: 1080px; height: 1080px; border: none; opacity: 0.4; }
-        .tpl-10 #contentArea { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; text-align: center; align-items: center; text-shadow: 0 10px 30px rgba(0,0,0,1); }
+        .tpl-10 #photoFrame { top: 0; left: 0; width: 1080px; height: 1080px; border: none; }
+        .tpl-10 #contentArea { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; text-align: center; align-items: center; }
 
         #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; flex-direction: column; align-items: center; justify-content: center; }
     </style>
@@ -137,15 +146,21 @@
         </div>
 
         <div class="section-card">
+            <label>🎨 Cores do Slide (Sólidas)</label>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label>Fundo</label>
+                    <input type="color" id="bgColorPicker" value="#020617" oninput="updateData()">
+                </div>
+                <div>
+                    <label>Textos</label>
+                    <input type="color" id="textColorPicker" value="#ffffff" oninput="updateData()">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
             <label>Editor de Layout</label>
-            <select id="selColor" onchange="updateData()">
-                <option value="from-blue-600 to-blue-800">Tema 01 - Azul</option>
-                <option value="from-emerald-600 to-emerald-800">Tema 02 - Verde</option>
-                <option value="from-orange-600 to-orange-800">Tema 03 - Laranja</option>
-                <option value="from-rose-600 to-rose-800">Tema 04 - Rosa</option>
-                <option value="from-purple-600 to-purple-800">Tema 05 - Roxo</option>
-            </select>
-            
             <label>Escolha o Template</label>
             <select id="selTemplate" onchange="updateData()">
                 <option value="tpl-1">01. Capa Circular</option>
@@ -165,9 +180,6 @@
             
             <label>Resumo (Aceita Enter)</label>
             <textarea id="inSmallTitle" rows="3" oninput="updateData()" placeholder="Texto do slide"></textarea>
-            
-            <label>Foto</label>
-            <input type="file" id="inPhoto" accept="image/*" onchange="handleImage(this)">
         </div>
 
         <button onclick="downloadPNG()" class="w-full bg-blue-600 font-black py-4 rounded-xl uppercase text-xs mb-4 hover:bg-blue-500">Baixar PNG (1080px)</button>
@@ -176,12 +188,8 @@
     <main class="preview-area" id="previewArea">
         <div id="canvasWrapper">
             <div id="instagramPreview" class="tpl-1">
-                <div id="matrixBackground"></div>
-                <div id="blob1" class="blob" style="width:800px; height:800px; top:-200px; left:-200px;"></div>
-                <div id="blob2" class="blob" style="width:700px; height:700px; bottom:-100px; right:-100px;"></div>
-                
                 <header class="absolute top-10 left-20 z-[30]">
-                    <div class="fp-title text-[30px]">Ferramentas<span class="text-blue-500">Pro</span></div>
+                    <div class="fp-title text-[30px]" id="brandingText">Ferramentas<span class="text-blue-500">Pro</span></div>
                 </header>
 
                 <div id="contentArea">
@@ -189,13 +197,10 @@
                     <p id="viewSmallTitle" class="text-2xl font-medium"></p>
                 </div>
 
-                <div id="photoFrame">
-                    <img id="previewPhoto" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1080">
-                    <div id="photoGradOverlay" class="absolute inset-0 opacity-40"></div>
-                </div>
+                <div id="photoFrame"></div>
 
-                <footer class="absolute bottom-12 left-20 right-20 flex justify-between items-center z-[30] border-t border-white/10 pt-8">
-                    <span class="text-xl font-bold text-slate-500 tracking-[0.2em]">WWW.FERRAMENTASPRO.NET</span>
+                <footer class="absolute bottom-12 left-20 right-20 flex justify-between items-center z-[30] border-t border-white/10 pt-8" id="slideFooter">
+                    <span class="text-xl font-bold tracking-[0.2em]" id="siteUrl">WWW.FERRAMENTASPRO.NET</span>
                     <span id="viewPagination" class="text-4xl font-black"></span>
                 </footer>
             </div>
@@ -207,30 +212,17 @@
             title: i === 0 ? "TÍTULO" : `INSIRA O TÍTULO ${i+1}`,
             subtitle: "Insira aqui o seu texto.",
             template: `tpl-${(i % 10) + 1}`,
-            image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1080",
-            theme: "from-blue-600 to-blue-800"
+            bgColor: "#020617",
+            textColor: "#ffffff"
         }));
         
         let currentSlideIndex = 0;
-
-        const colorMap = {
-            "from-blue-600 to-blue-800": { main: "#2563eb", secondary: "#1e40af" },
-            "from-emerald-600 to-emerald-800": { main: "#059669", secondary: "#065f46" },
-            "from-orange-600 to-orange-800": { main: "#ea580c", secondary: "#9a3412" },
-            "from-rose-600 to-rose-800": { main: "#e11d48", secondary: "#9f1239" },
-            "from-purple-600 to-purple-800": { main: "#9333ea", secondary: "#6b21a8" }
-        };
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const icon = document.getElementById('toggleIcon');
             sidebar.classList.toggle('collapsed');
-            
-            if (sidebar.classList.contains('collapsed')) {
-                icon.innerText = "▶";
-            } else {
-                icon.innerText = "◀";
-            }
+            icon.innerText = sidebar.classList.contains('collapsed') ? "▶" : "◀";
             setTimeout(resizer, 400);
         }
 
@@ -272,8 +264,9 @@
             const s = slides[currentSlideIndex];
             document.getElementById('inLargeTitle').value = s.title;
             document.getElementById('inSmallTitle').value = s.subtitle;
-            document.getElementById('selColor').value = s.theme;
             document.getElementById('selTemplate').value = s.template;
+            document.getElementById('bgColorPicker').value = s.bgColor;
+            document.getElementById('textColorPicker').value = s.textColor;
             updatePreviewUI();
         }
 
@@ -281,53 +274,49 @@
             const s = slides[currentSlideIndex];
             s.title = document.getElementById('inLargeTitle').value.toUpperCase();
             s.subtitle = document.getElementById('inSmallTitle').value;
-            s.theme = document.getElementById('selColor').value;
             s.template = document.getElementById('selTemplate').value;
+            s.bgColor = document.getElementById('bgColorPicker').value;
+            s.textColor = document.getElementById('textColorPicker').value;
             updatePreviewUI();
         }
 
         function updatePreviewUI() {
             const s = slides[currentSlideIndex];
-            const color = colorMap[s.theme];
             const preview = document.getElementById('instagramPreview');
             const titleEl = document.getElementById('viewLargeTitle');
             const subEl = document.getElementById('viewSmallTitle');
+            const pag = document.getElementById('viewPagination');
+            const branding = document.getElementById('brandingText');
+            const footer = document.getElementById('slideFooter');
+            const url = document.getElementById('siteUrl');
             
+            // Forçar Cor Sólida de Fundo
+            preview.style.backgroundColor = s.bgColor;
+            
+            // Forçar Cor Sólida do Texto
+            titleEl.style.color = s.textColor;
+            subEl.style.color = s.textColor;
+            branding.style.color = s.textColor;
+            pag.style.color = s.textColor;
+            url.style.color = s.textColor;
+            url.style.opacity = "0.5";
+            footer.style.borderTopColor = s.textColor + "33";
+
             preview.className = s.template;
             titleEl.innerText = s.title;
             subEl.innerText = s.subtitle;
-            document.getElementById('previewPhoto').src = s.image;
-            
-            const pag = document.getElementById('viewPagination');
             pag.innerText = `${(currentSlideIndex + 1).toString().padStart(2, '0')}/${slides.length.toString().padStart(2, '0')}`;
-            pag.style.color = color.main;
-
-            document.getElementById('blob1').style.background = `radial-gradient(circle, ${color.main}99 0%, transparent 70%)`;
-            document.getElementById('blob2').style.background = `radial-gradient(circle, ${color.secondary}88 0%, transparent 70%)`;
-            document.getElementById('photoGradOverlay').style.background = `linear-gradient(to bottom right, ${color.main}, ${color.secondary})`;
 
             let size = s.template === 'tpl-4' || s.template === 'tpl-10' ? 120 : 85;
             if(s.title.length > 20) size -= 15;
             if(s.title.length > 40) size -= 15;
-            if(s.title.length > 60) size -= 10;
             titleEl.style.fontSize = size + 'px';
-        }
-
-        function handleImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewPhoto').src = e.target.result;
-                    slides[currentSlideIndex].image = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
         }
 
         async function generateWithAI() {
             const key = document.getElementById('apiKeyManual').value;
             const topic = document.getElementById('aiTopic').value;
-            if(!key || !topic) return alert("Chave e tema obrigatórios!");
+            if(!key || !topic) return alert("Dados insuficientes!");
             
             document.getElementById('loadingOverlay').style.display = 'flex';
             const prompt = `Gere carrossel de 5 slides sobre "${topic}". JSON: {"slides": [{"title": "TITULO", "subtitle": "RESUMO"}]}`;
@@ -349,12 +338,12 @@
                     title: s.title.toUpperCase(),
                     subtitle: s.subtitle,
                     template: `tpl-${(i % 10) + 1}`,
-                    image: slides[0].image,
-                    theme: document.getElementById('selColor').value
+                    bgColor: document.getElementById('bgColorPicker').value,
+                    textColor: document.getElementById('textColorPicker').value
                 }));
                 currentSlideIndex = 0;
                 renderTabs(); loadSlide();
-            } catch (e) { alert("Erro na Groq."); }
+            } catch (e) { alert("Erro na API."); }
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
@@ -363,22 +352,28 @@
             const originalTransform = node.style.transform;
             node.style.transform = "none";
             
+            // Configurações do html2canvas para evitar bugs de transparência e gradientes
             html2canvas(node, { 
-                scale: 1, 
-                backgroundColor: "#020617",
+                scale: 2, 
+                backgroundColor: null, // Deixa o CSS do elemento mandar
                 useCORS: true,
+                logging: false,
                 width: 1080,
-                height: 1080
+                height: 1080,
+                onclone: (clonedDoc) => {
+                    // Garante que o fundo do clone seja sólido antes da captura
+                    const clonedPreview = clonedDoc.getElementById('instagramPreview');
+                    clonedPreview.style.boxShadow = "none";
+                }
             }).then(canvas => {
                 const a = document.createElement('a');
-                a.download = `ferramentaspro-slide-${currentSlideIndex+1}.png`;
+                a.download = `slide-${currentSlideIndex+1}.png`;
                 a.href = canvas.toDataURL("image/png");
                 a.click();
                 node.style.transform = originalTransform;
             });
         }
 
-        document.getElementById('matrixBackground').innerText = Array.from({length: 4000}, () => Math.floor(Math.random() * 10)).join('');
         renderTabs(); loadSlide();
     </script>
 </body>
