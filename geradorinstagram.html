@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Reels Instagram - FerramentasPro</title>
+    <title>Gerador de Reels Instagram v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         
@@ -18,17 +19,42 @@
             overflow: hidden;
         }
 
-        /* Sidebar */
+        /* Sidebar Dinâmica */
         .sidebar { 
             width: 380px; 
+            min-width: 380px;
             background: #1e293b; 
             border-right: 1px solid #334155; 
             padding: 20px; 
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            transition: margin-left 0.3s ease;
+            position: relative;
             z-index: 50;
+        }
+
+        .sidebar.collapsed {
+            margin-left: -380px;
+        }
+
+        #toggleBtn {
+            position: fixed;
+            left: 390px;
+            top: 20px;
+            z-index: 100;
+            background: #3b82f6;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: left 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .sidebar.collapsed + #toggleBtn {
+            left: 20px;
         }
 
         .section-card { 
@@ -36,6 +62,7 @@
             border: 1px solid #475569; 
             padding: 15px; 
             border-radius: 12px; 
+            margin-bottom: 15px;
         }
 
         label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 5px; }
@@ -51,7 +78,6 @@
             margin-bottom: 10px;
         }
 
-        /* Preview Area */
         .preview-area { 
             flex: 1; 
             display: flex; 
@@ -70,128 +96,82 @@
             padding: 12px 0;
             box-shadow: 0 30px 60px rgba(0,0,0,0.5);
             color: black;
-            transition: width 0.3s ease;
+            overflow: hidden;
         }
 
-        .header-post {
-            display: flex;
-            align-items: center;
-            padding: 0 12px 12px 12px;
-            justify-content: space-between;
-        }
-
+        .header-post { display: flex; align-items: center; padding: 0 12px 12px 12px; justify-content: space-between; }
         .user-meta { display: flex; align-items: center; gap: 10px; }
         
         .avatar-wrapper {
-            width: 42px;
-            height: 42px;
-            background: #f0f0f0;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 1px solid #dbdbdb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 42px; height: 42px; background: #f0f0f0;
+            border-radius: 50%; overflow: hidden; border: 1px solid #dbdbdb;
+            display: flex; align-items: center; justify-content: center;
         }
-        
         .avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-        .user-text-info { line-height: 1.2; }
-        .username-row { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 4px; }
-        .location-row { font-size: 12px; color: #606060; }
-
-        /* Media Area */
         .media-container {
             width: 100%;
             aspect-ratio: 1/1;
             background-color: #fafafa;
             position: relative;
             overflow: hidden;
-            /* Padrão quadriculado transparente */
             background-image: linear-gradient(45deg, #efefef 25%, transparent 25%), 
                               linear-gradient(-45deg, #efefef 25%, transparent 25%), 
                               linear-gradient(45deg, transparent 75%, #efefef 75%), 
                               linear-gradient(-45deg, transparent 75%, #efefef 75%);
             background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
 
-        #mediaRender { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2; }
+        #mediaRender { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 10; }
 
-        /* Actions */
-        .post-actions { padding: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .main-icons { display: flex; gap: 16px; }
-        .main-icons svg { width: 24px; height: 24px; }
-
-        .footer-content { padding: 0 12px 12px 12px; font-size: 14px; }
-        .likes-count { font-weight: 700; margin-bottom: 4px; }
-        .caption { font-size: 14px; line-height: 1.4; }
-        .caption b { margin-right: 5px; }
-
-        /* Formatos */
+        .post-actions { padding: 12px; display: flex; justify-content: space-between; }
+        .footer-content { padding: 0 12px 12px 12px; }
+        
         .format-reels { aspect-ratio: 9/16 !important; }
         .mockup-reels { width: 340px !important; }
 
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 700;
-            text-align: center;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 12px;
-            transition: 0.3s;
+        .btn-action {
+            background: #3b82f6; color: white; padding: 12px; border-radius: 8px;
+            font-weight: 700; text-align: center; cursor: pointer;
+            text-transform: uppercase; font-size: 11px; transition: 0.3s;
         }
-        .btn-primary:hover { background: #2563eb; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="mb-4">
+    <aside class="sidebar" id="sidebar">
+        <div class="mb-6">
             <h1 class="text-xl font-black italic">FERRAMENTAS<span class="text-blue-500">PRO</span></h1>
-            <p class="text-[9px] text-slate-500 uppercase tracking-widest">Instagram Content Generator</p>
         </div>
         
         <div class="section-card">
-            <label>👤 Perfil do Usuário</label>
-            <label>Foto de Perfil</label>
+            <label>👤 Perfil</label>
             <input type="file" id="userFile" accept="image/*" onchange="loadAvatar(event)">
-            
-            <label>Nome de Usuário</label>
-            <input type="text" id="inUser" value="ferramentas.pro" oninput="sync()">
-            
-            <label>Sub-título (Localização)</label>
-            <input type="text" id="inLoc" value="Brasil" oninput="sync()">
+            <input type="text" id="inUser" value="seu_usuario" oninput="sync()">
+            <input type="text" id="inLoc" value="Localização" oninput="sync()">
         </div>
 
         <div class="section-card">
-            <label>🎬 Mídia Principal</label>
-            <label>Upload Vídeo ou Foto</label>
+            <label>🎬 Mídia (Vídeo ou Foto)</label>
             <input type="file" id="mediaFile" accept="video/*,image/*" onchange="loadMedia(event)">
-            
-            <label>Formato do Post</label>
             <select id="inFormat" onchange="changeFormat()">
-                <option value="square">Quadrado (Feed 1:1)</option>
-                <option value="reels">Vertical (Reels 9:16)</option>
+                <option value="square">Quadrado (1:1)</option>
+                <option value="reels">Vertical (9:16)</option>
             </select>
         </div>
 
         <div class="section-card">
-            <label>✍️ Legenda e Stats</label>
-            <label>Texto de Visualizações/Curtidas</label>
-            <input type="text" id="inStats" value="15.283 visualizações" oninput="sync()">
-            
-            <label>Legenda Principal</label>
-            <textarea id="inCap" rows="3" oninput="sync()">Este é um exemplo de conteúdo gerado automaticamente. #instagram #reels</textarea>
+            <label>✍️ Legenda</label>
+            <input type="text" id="inStats" value="1.234 visualizações" oninput="sync()">
+            <textarea id="inCap" rows="3" oninput="sync()">Legenda do seu post aqui...</textarea>
         </div>
 
-        <div class="mt-auto">
-            <button class="btn-primary w-full" onclick="window.print()">Exportar (PDF / Print)</button>
-        </div>
+        <button class="btn-action w-full bg-emerald-600 hover:bg-emerald-500" onclick="downloadContent()">Baixar Foto (PNG)</button>
     </aside>
+
+    <div id="toggleBtn" onclick="toggleMenu()">
+        <span id="toggleIcon">◀</span>
+    </div>
 
     <main class="preview-area">
         <div id="instagramMockup">
@@ -201,43 +181,44 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="#ccc"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     </div>
                     <div class="user-text-info">
-                        <div class="username-row">
-                            <span id="outUser">ferramentas.pro</span>
-                            <svg width="14" height="14" viewBox="0 0 40 40"><path d="M19.9999 0L23.4701 2.21351L27.4631 1.10449L29.6106 4.54478L33.6496 4.88147L34.5446 8.8228L38.1633 10.6106L37.5259 14.5828L40 17.7611L37.8687 21.213L38.9955 25.1769L35.7194 27.6106L35.2139 31.642L31.3323 32.8811L29.3516 36.4172L25.4093 36.1423L22.25 38.8955L18.5299 37.7865L14.5369 38.8955L12.3894 35.4552L8.35037 35.1185L7.4554 31.1772L3.83669 29.3894L4.47408 25.4172L2 22.2389L4.13127 18.787L3.00448 14.8231L6.2806 12.3894L6.78609 8.35804L10.6677 7.11892L12.6484 3.58283L16.5907 3.85768L19.75 1.10449L19.9999 0Z" fill="#0095F6"/><path d="M18.125 26.25L11.25 19.375L13.125 17.5L18.125 22.5L26.875 13.75L28.75 15.625L18.125 26.25Z" fill="white"/></svg>
+                        <div class="font-bold text-[14px] flex items-center gap-1">
+                            <span id="outUser">seu_usuario</span>
+                            <svg width="12" height="12" viewBox="0 0 40 40"><path d="M19.9999 0L23.4701 2.21351L27.4631 1.10449L29.6106 4.54478L33.6496 4.88147L34.5446 8.8228L38.1633 10.6106L37.5259 14.5828L40 17.7611L37.8687 21.213L38.9955 25.1769L35.7194 27.6106L35.2139 31.642L31.3323 32.8811L29.3516 36.4172L25.4093 36.1423L22.25 38.8955L18.5299 37.7865L14.5369 38.8955L12.3894 35.4552L8.35037 35.1185L7.4554 31.1772L3.83669 29.3894L4.47408 25.4172L2 22.2389L4.13127 18.787L3.00448 14.8231L6.2806 12.3894L6.78609 8.35804L10.6677 7.11892L12.6484 3.58283L16.5907 3.85768L19.75 1.10449L19.9999 0Z" fill="#0095F6"/><path d="M18.125 26.25L11.25 19.375L13.125 17.5L18.125 22.5L26.875 13.75L28.75 15.625L18.125 26.25Z" fill="white"/></svg>
                         </div>
-                        <div class="location-row" id="outLoc">Brasil</div>
+                        <div class="text-[12px] text-gray-500" id="outLoc">Localização</div>
                     </div>
                 </div>
-                <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
             </div>
 
             <div class="media-container" id="mediaBox">
-                <div id="mediaDisplay" class="h-full w-full flex items-center justify-center text-slate-300 text-xs font-bold uppercase">
-                    Área do Vídeo / Foto
-                </div>
+                <!-- A mídia será inserida aqui -->
             </div>
 
             <div class="post-actions">
-                <div class="main-icons">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                <div class="flex gap-4">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 </div>
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
             </div>
 
-            <div class="footer-content">
-                <div class="likes-count" id="outStats">15.283 visualizações</div>
-                <div class="caption">
-                    <b id="outUserCap">ferramentas.pro</b>
-                    <span id="outCap">Este é um exemplo de conteúdo gerado automaticamente. #instagram #reels</span>
+            <div class="footer-content text-black">
+                <div class="font-bold text-[14px] mb-1" id="outStats">1.234 visualizações</div>
+                <div class="text-[14px]">
+                    <b id="outUserCap">seu_usuario</b> <span id="outCap">Legenda do seu post aqui...</span>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // Sincroniza textos
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('toggleIcon');
+            sidebar.classList.toggle('collapsed');
+            icon.innerText = sidebar.classList.contains('collapsed') ? "▶" : "◀";
+        }
+
         function sync() {
             const user = document.getElementById('inUser').value;
             document.getElementById('outUser').innerText = user;
@@ -247,42 +228,46 @@
             document.getElementById('outCap').innerText = document.getElementById('inCap').value;
         }
 
-        // Carrega foto de perfil
         function loadAvatar(event) {
             const box = document.getElementById('avatarBox');
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    box.innerHTML = `<img src="${e.target.result}">`;
-                };
+                reader.onload = (e) => box.innerHTML = `<img src="${e.target.result}">`;
                 reader.readAsDataURL(file);
             }
         }
 
-        // Carrega vídeo ou imagem principal
         function loadMedia(event) {
-            const display = document.getElementById('mediaDisplay');
+            const mediaBox = document.getElementById('mediaBox');
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
+                    mediaBox.innerHTML = ''; // Limpa a área
                     if (file.type.startsWith('video/')) {
-                        display.innerHTML = `<video id="mediaRender" src="${e.target.result}" autoplay muted loop></video>`;
+                        const video = document.createElement('video');
+                        video.id = 'mediaRender';
+                        video.src = e.target.result;
+                        video.autoplay = true;
+                        video.muted = true;
+                        video.loop = true;
+                        mediaBox.appendChild(video);
                     } else {
-                        display.innerHTML = `<img id="mediaRender" src="${e.target.result}">`;
+                        const img = document.createElement('img');
+                        img.id = 'mediaRender';
+                        img.src = e.target.result;
+                        mediaBox.appendChild(img);
                     }
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        // Altera formato (Quadrado vs Reels)
         function changeFormat() {
             const format = document.getElementById('inFormat').value;
             const mediaBox = document.getElementById('mediaBox');
             const mockup = document.getElementById('instagramMockup');
-
             if (format === 'reels') {
                 mediaBox.classList.add('format-reels');
                 mockup.classList.add('mockup-reels');
@@ -290,6 +275,15 @@
                 mediaBox.classList.remove('format-reels');
                 mockup.classList.remove('mockup-reels');
             }
+        }
+
+        async function downloadContent() {
+            const mockup = document.getElementById('instagramMockup');
+            const canvas = await html2canvas(mockup, { scale: 2, useCORS: true });
+            const link = document.createElement('a');
+            link.download = 'instagram-preview.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
         }
     </script>
 </body>
