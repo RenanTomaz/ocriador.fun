@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Interativo - Direito Constitucional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Menu Lateral */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 1rem;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            z-index: 100;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            font-size: 1.25rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 1rem;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            overflow-y: auto;
+        }
+
+        .menu-item a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .menu-item a:hover, .menu-item.active a {
+            color: white;
+            background-color: var(--secondary-color);
+            transform: translateX(5px);
+        }
+
+        /* Conteúdo Principal */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .controls-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.3s;
+        }
+
+        .controls-btn:hover {
+            background-color: #2563eb;
+        }
+
+        /* Container das Questões */
+        .question-card {
+            background: var(--card-background);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--secondary-color);
+            scroll-margin-top: 2rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .question-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-weight: 500;
+        }
+
+        .audio-control-block {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-audio {
+            background: #eff6ff;
+            color: var(--secondary-color);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-audio:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Alternativas */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-item {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .option-letter {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Gabarito e Comentários */
+        .analysis-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .analysis-title {
+            color: #166534;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .commentary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            padding-left: 1rem;
+        }
+
+        .commentary-item strong {
+            color: var(--primary-color);
+        }
+
+        .correct-badge {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        .incorrect-badge {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        /* Modo de Orientação Forçada / Aviso Horizontal */
+        @media screen and (orientation: landscape) {
+            body {
+                background-color: #f0f4f8;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <h2>Navegação</h2>
+        <ul class="menu-list" id="menuList">
+            </ul>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div class="header-title">
+                <h1>Painel de Estudos Constitucionais</h1>
+                <p>10 Questões Comentadas com Áudio Didático Integrado</p>
+            </div>
+            <button class="controls-btn" id="btnOrientation" onclick="toggleOrientation()">
+                <i class="fa-solid fa-rotate"></i> Alternar Orientação
+            </button>
+        </header>
+
+        <section id="questionsContainer">
+            </section>
+    </main>
+
+    <script>
+        // Dados Estruturados extraídos do PDF e da nossa análise didática
+        const questoesData = [
+            {
+                id: "Q3656504",
+                numero: 1,
+                assunto: "Tratados Internacionais de Direitos Humanos",
+                enunciado: "Joaquim, estudante, ficou sabendo que o Brasil deseja ratificar um importante Tratado Internacional sobre Direitos Humanos e descobriu que, de acordo com a Constituição Federal de 1988, referido tratado...",
+                alternativas: {
+                    a: "será equivalente às emendas constitucionais se for aprovado, em cada Casa do Congresso Nacional, em turno único, por três quintos dos votos dos respectivos membros.",
+                    b: "será equivalente às emendas constitucionais se for aprovado, em cada Casa do Congresso Nacional, em turno único, por metade dos votos dos respectivos membros.",
+                    c: "será equivalente às emendas constitucionais se for aprovado por maioria simples, em turno único, em apenas uma das Casas do Congresso Nacional, em razão da importância dos direitos humanos no ordenamento jurídico brasileiro.",
+                    d: "será equivalente às emendas constitucionais se for aprovado, em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros.",
+                    e: "não poderá ser equivalente às emendas constitucionais, independentemente de qualquer aprovação pelo Congresso Nacional, por expressa vedação constitucional."
+                },
+                gabarito: "D",
+                comentarios: {
+                    a: "Incorreta. O rito exige votação em dois turnos em cada casa, e não em turno único.",
+                    b: "Incorreta. O quórum exigido por lei é de três quintos, e não de metade dos votos.",
+                    c: "Incorreta. Erra ao apontar maioria simples, turno único e apenas uma das Casas do Congresso.",
+                    d: "Correta. Reflete com precisão o artigo 5º, parágrafo 3º da nossa Constituição.",
+                    e: "Incorreta. Ignora complemente a regra de equivalência trazida pela Emenda Constitucional 45."
+                }
+            },
+            {
+                id: "Q3052709",
+                numero: 2,
+                assunto: "Cláusulas Pétreas Expressas",
+                enunciado: "Com base nas limitações materiais ao poder de reforma constitucional, assinale a opção que apresenta uma cláusula pétrea expressa no texto do artigo 60 da Constituição Federal de 1988.",
+                alternativas: {
+                    a: "A independência e autonomia funcional do Ministério Público.",
+                    b: "A autonomia administrativa e financeira da Defensoria Pública.",
+                    c: "A forma republicana de Governo.",
+                    d: "O sistema presidencialista de Governo.",
+                    e: "A forma federativa de Estado."
+                },
+                gabarito: "E",
+                comentarios: {
+                    a: "Incorreta. Embora relevante, a autonomia do Ministério Público não consta na lista expressa do artigo 60.",
+                    b: "Incorreta. A Defensoria possui proteção institucional, mas não é uma cláusula pétrea explícita.",
+                    c: "Incorreta. A forma republicana é um princípio sensível, mas a cláusula pétrea expressa protege a Federação.",
+                    d: "Incorreta. O presidencialismo pode ser alterado, inclusive já foi alvo de plebiscito no passado.",
+                    e: "Correta. A forma federativa de Estado é explicitamente protegida contra abolição no artigo 60, parágrafo 4º."
+                }
+            },
+            {
+                id: "Q2372527",
+                numero: 3,
+                assunto: "Teoria Geral do Estado e Ideologia Galicana",
+                enunciado: "No contexto da formação do Estado Moderno e das relações entre o poder político e o poder religioso, a chamada ideologia ou vertente galicana caracterizou-se por:",
+                alternativas: {
+                    a: "Defender a submissão total e absoluta do Rei ao poder espiritual do Papa romano.",
+                    b: "Sustentar que o poder real emana diretamente de Deus, sem necessidade de intermediários institucionais na Terra.",
+                    c: "Consagrar o direito de resistência dos povos perante os monarcas que professassem fé herética.",
+                    d: "Afirmar que o poder político deriva de um pacto de submissão familiar e patriarcal imutável.",
+                    e: "Pregar a autonomia da Igreja nacional francesa face à autoridade papal, conferindo direitos de controle ao monarca sobre os assuntos eclesiásticos do território."
+                },
+                gabarito: "E",
+                comentarios: {
+                    a: "Incorreta. O galicanismo fazia o oposto, buscava reduzir a influência de Roma.",
+                    b: "Incorreta. Essa alternativa descreve a Teoria do Direito Divino dos Reis tradicional.",
+                    c: "Incorreta. Isso caracteriza as teorias monarcômacas de resistência ao tirano.",
+                    d: "Incorreta. Essa é a definição conceitual da Teoria Patriarcal da formação do Estado.",
+                    e: "Correta. O galicanismo foi o movimento que garantiu ao rei francês o controle administrativo sobre bens e nomeações da Igreja em seu país."
+                }
+            },
+            {
+                id: "Q2640036",
+                numero: 4,
+                assunto: "Origem do Controle de Constitucionalidade",
+                enunciado: "O histórico caso Marbury contra Madison, julgado pela Suprema Corte dos Estados Unidos em 1803, é mundialmente reconhecido por ter consagrado no direito constitucional:",
+                alternativas: {
+                    a: "A teoria do desvio de poder no ato administrativo.",
+                    b: "A origem do controle judicial difuso de constitucionalidade das leis.",
+                    c: "O modelo europeu ou austríaco de controle concentrado.",
+                    d: "A doutrina da separação absoluta de poderes proposta por Hans Kelsen.",
+                    e: "A criação do remédio constitucional do mandado de segurança individual."
+                },
+                gabarito: "B",
+                comentarios: {
+                    a: "Incorreta. O desvio de poder pertence ao Direito Administrativo e não nasceu desse caso.",
+                    b: "Correta. O juiz John Marshall fixou o entendimento de que o Judiciário deve invalidar leis contrárias à Constituição.",
+                    c: "Incorreta. O modelo europeu de controle concentrado surgiu muito depois, na década de 1920.",
+                    d: "Incorreta. Hans Kelsen idealizou o tribunal constitucional concentrado, oposto ao modelo americano de 1803.",
+                    e: "Incorreta. O caso envolvia uma ordem judicial de nomeação, mas gerou a fiscalização das leis e não o nosso Mandado de Segurança."
+                }
+            },
+            {
+                id: "Q2568861",
+                numero: 5,
+                assunto: "Equivalência dos Tratados de Direitos Humanos",
+                enunciado: "Os tratados e convenções internacionais sobre direitos humanos que forem aprovados, em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros, serão equivalentes às:",
+                alternativas: {
+                    a: "Leis Ordinárias.",
+                    b: "Leis Complementares.",
+                    c: "Leis Delegadas.",
+                    d: "Medidas Provisórias.",
+                    e: "Emendas Constitucionais."
+                },
+                gabarito: "E",
+                comentarios: {
+                    a: "Incorreta. Tratados de direitos humanos comuns têm status supralegal, nunca meramente ordinário.",
+                    b: "Incorreta. Não há equivalência com leis complementares no nosso ordenamento.",
+                    c: "Incorreta. Leis delegadas são atos executivos e não se aplicam a esse rito protetivo.",
+                    d: "Incorreta. Medidas provisórias são atos precários do Presidente, sem paralelo com tratados formais.",
+                    e: "Correta. Passando pelo rito qualificado, o tratado integra o chamado bloco de constitucionalidade com força de Emenda."
+                }
+            },
+            {
+                id: "Q2372529",
+                numero: 6,
+                assunto: "Mutação Constitucional",
+                enunciado: "O fenômeno conhecido como mutação constitucional representa um processo de modificação da Constituição que se caracteriza por:",
+                alternativas: {
+                    a: "Alterar o sentido e a interpretação da norma sem modificar o seu texto literal.",
+                    b: "Declarar a ilegalidade superveniente de emendas promulgadas com vício formal.",
+                    c: "Promover a revisão geral do texto constitucional por meio de comissão parlamentar mista exclusiva.",
+                    d: "Depender obrigatoriamente da apresentação de proposta de emenda por um terço dos membros da Câmara.",
+                    e: "Revogar de forma tácita todas as leis anteriores incompatíveis com uma nova constituição que entra em vigor."
+                },
+                gabarito: "A",
+                comentarios: {
+                    a: "Correta. A mutação é exatamente uma reforma informal: muda-se o entendimento do texto sem alterar as palavras.",
+                    b: "Incorreta. Isso diz respeito ao controle de constitucionalidade de emendas, não à mutação.",
+                    c: "Incorreta. Revisões parlamentares constituem processos formais do poder reformador.",
+                    d: "Incorreta. A mutação ocorre pela via interpretativa (julgados do STF, práticas sociais) e dispensa trâmite legislativo.",
+                    e: "Incorreta. A revogação de leis incompatíveis por nova constituição chama-se fenômeno da não-recepção."
+                }
+            },
+            {
+                id: "Q2524970",
+                numero: 7,
+                assunto: "Direito Constitucional Intertemporal",
+                enunciado: "Quando uma nova Constituição é promulgada e as normas da Constituição anterior que forem materialmente compatíveis com a nova ordem continuam válidas, mas rebaixadas ao status de lei ordinária, ocorre o fenômeno da:",
+                alternativas: {
+                    a: "Desclassificação normativa.",
+                    b: "Desconstitucionalização.",
+                    c: "Desidratação constitucional.",
+                    d: "Repristinação expressa.",
+                    e: "Recepção tácita infraconstitucional."
+                },
+                gabarito: "B",
+                comentarios: {
+                    a: "Incorreta. O termo técnico correto adotado pela doutrina não é desclassificação.",
+                    b: "Correta. A desconstitucionalização transforma normas da constituição antiga em leis comuns na nova ordem.",
+                    c: "Incorreta. Desidratação é um jargão político/econômico, sem aplicação técnica jurídica aqui.",
+                    d: "Incorreta. Repristinação ocorre quando uma lei revogada volta a valer após a queda da sua revogadora.",
+                    e: "Incorreta. A recepção clássica aproveita leis ordinárias e não normas de uma constituição anterior."
+                }
+            },
+            {
+                id: "Q2634544",
+                numero: 8,
+                assunto: "Constitucionalismo Contemporâneo e Crise Democrática",
+                enunciado: "O uso de mecanismos e emendas constitucionais formalmente legítimas com o intuito deliberado de minar os pilares democráticos e corroer as instituições de controle por dentro é denominado pela doutrina como:",
+                alternativas: {
+                    a: "Constitucionalismo pluralista.",
+                    b: "Constitucionalismo autoritário originário.",
+                    c: "Constitucionalismo abusivo.",
+                    d: "Constitucionalismo democrático defensivo.",
+                    e: "Constitucionalismo popular radical."
+                },
+                gabarito: "C",
+                comentarios: {
+                    a: "Incorreta. O constitucionalismo pluralista preza pela inclusão e diversidade de grupos sociais.",
+                    b: "Incorreta. O autoritário já nasce imposto de forma escancarada, não se disfarça em legalidade progressiva.",
+                    c: "Correta. Conceito de David Landau, o Constitucionalismo Abusivo usa as regras do jogo para destruir a democracia por dentro.",
+                    d: "Incorreta. O modelo defensivo atua para proteger as instituições e conter retrocessos autoritários.",
+                    e: "Incorreta. O popular defende que o povo e o legislativo tenham mais peso interpretativo que as cortes judiciais."
+                }
+            },
+            {
+                id: "Q2524974",
+                numero: 9,
+                assunto: "Classificação do Poder Constituinte",
+                enunciado: "O Poder Constituinte Originário costuma ser classificado pela doutrina em Histórico e Revolucionário. Considera-se revolucionário aquele poder que:",
+                alternativas: {
+                    a: "Edita a primeira constituição de um estado soberano recém-criado.",
+                    b: "Promove modificações pontuais no texto da carta por meio de revisões previstas.",
+                    c: "Estabelece diretrizes de atuação que ficam subordinadas ao poder instituidor primário.",
+                    d: "Estrutura as constituições locais dos estados-membros componentes de uma federação.",
+                    e: "Rompe por completo com a ordem jurídica anterior, instituindo uma nova organização estatal."
+                },
+                gabarito: "E",
+                comentarios: {
+                    a: "Incorreta. O poder que cria a primeiríssima constituição de uma nação é chamado de Poder Histórico.",
+                    b: "Incorreta. Modificações pontuais e previstas são frutos do Poder Constituinte Derivado.",
+                    c: "Incorreta. O Poder Originário é soberano, autônomo e ilimitado juridicamente, não se subordina.",
+                    d: "Incorreta. A estruturação das cartas estaduais é feita pelo Poder Constituinte Derivado Decorrente.",
+                    e: "Correta. O revolucionário destrona a constituição vigente e implanta um regime jurídico inteiramente novo."
+                }
+            },
+            {
+                id: "Q1905717",
+                numero: 10,
+                assunto: "Limitações Expressas ao Poder de Reforma",
+                enunciado: "As limitações expressas impostas ao Poder Constituinte Derivado Reformador na Constituição Federal de 1988 dividem-se classicamente em:",
+                alternativas: {
+                    a: "Informais, formais e materiais.",
+                    b: "Circunstanciais, formais e materiais.",
+                    c: "Temporais, circunstanciais e formais.",
+                    d: "Imateriais, materiais e procedimentais.",
+                    e: "Explícitas, implícitas e decorrentes."
+                },
+                gabarito: "B",
+                comentarios: {
+                    a: "Incorreta. Limitações informais configuram mutações e não limitações expressas do texto.",
+                    b: "Correta. Circunstanciais (crises estatais), Formais (rito e quórum) e Materiais (cláusulas pétreas).",
+                    c: "Incorreta. A Constituição de 88 não possui limitações temporais (prazos proibindo emendas).",
+                    d: "Incorreta. O termo 'imateriais' não possui validade conceitual nesse tipo de classificação acadêmica.",
+                    e: "Incorreta. Embora existam limitações implícitas, a pergunta foca na classificação das limitações expressas."
+                }
+            }
+        ];
+
+        // Inicialização dos elementos da tela
+        const menuList = document.getElementById('menuList');
+        const container = document.getElementById('questionsContainer');
+        let currentUtterance = null;
+
+        // Renderizar Menu Lateral e Questões
+        questoesData.forEach(q => {
+            // Item do Menu
+            const li = document.createElement('li');
+            li.className = 'menu-item';
+            li.id = `menu-item-${q.numero}`;
+            li.innerHTML = `<a href="#questao-${q.numero}">Questão ${q.numero} (${q.id})</a>`;
+            menuList.appendChild(li);
+
+            // Card da Questão
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `questao-${q.numero}`;
+
+            let alternativasHtml = '';
+            for (const [letra, texto] of Object.entries(q.alternativas)) {
+                alternativasHtml += `
+                    <div class="option-item">
+                        <span class="option-letter">${letra.toUpperCase()})</span>
+                        <span class="option-text-content">${texto}</span>
+                    </div>
+                `;
+            }
+
+            let comentariosHtml = '';
+            for (const [letra, texto] of Object.entries(q.comentarios)) {
+                const badge = letra.toUpperCase() === q.gabarito ? 
+                    `<span class="correct-badge">[Correta]</span>` : 
+                    `<span class="incorrect-badge">[Incorreta]</span>`;
+                comentariosHtml += `
+                    <li class="commentary-item">
+                        <strong>Alternativa ${letra.toUpperCase()}:</strong> ${badge} ${texto}
+                    </li>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="question-header">
+                    <div>
+                        <span class="question-meta">${q.assunto}</span>
+                        <h3 style="margin-top: 0.5rem; color: var(--primary-color);">Questão ${q.numero} <span style="font-size:0.9rem; color:var(--text-muted)">[${q.id}]</span></h3>
+                    </div>
+                    <div class="audio-control-block">
+                        <button class="btn-audio" title="Ouvir Questão Didática" onclick="narrarQuestao(${q.numero})">
+                            <i class="fa-solid fa-volume-high" id="icon-audio-${q.numero}"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="question-text">${q.enunciado}</p>
+                <div class="options-list">
+                    ${alternativasHtml}
+                </div>
+                <div class="analysis-box">
+                    <div class="analysis-title">
+                        <i class="fa-solid fa-graduation-cap"></i> Análise Didática e Gabarito Oficial (Opção ${q.gabarito})
+                    </div>
+                    <ul class="commentary-list">
+                        ${comentariosHtml}
+                    </ul>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Lógica de Destaque do Menu Lateral ao Scroll
+        window.addEventListener('scroll', () => {
+            let current = "";
+            questoesData.forEach(q => {
+                const card = document.getElementById(`questao-${q.numero}`);
+                const cardTop = card.offsetTop;
+                if (pageYOffset >= cardTop - 60) {
+                    current = `menu-item-${q.numero}`;
+                }
+            });
+
+            document.querySelectorAll('.menu-item').forEach(li => {
+                li.classList.remove('active');
+                if (li.id === current) {
+                    li.classList.add('active');
+                }
+            });
+        });
+
+        // Função para Alternar Orientação Simulada (via CSS transform no container se necessário, ou nativa)
+        function toggleOrientation() {
+            if (document.documentElement.requestFullscreen) {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().then(() => {
+                        if (screen.orientation && screen.orientation.lock) {
+                            screen.orientation.lock('landscape').catch(err => {
+                                alert("A mudança automática de orientação precisa de um dispositivo móvel. Por favor, deite o seu aparelho.");
+                            });
+                        }
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            } else {
+                alert("Seu navegador não oferece suporte nativo para travar a rotação da tela.");
+            }
+        }
+
+        // Função de Narração em Tempo Real (Didática e Fluida)
+        function narrarQuestao(numero) {
+            const icon = document.getElementById(`icon-audio-${numero}`);
+            
+            // Se já estiver tocando, cancela
+            if (window.speechSynthesis.speaking && currentUtterance && icon.classList.contains('fa-stop')) {
+                window.speechSynthesis.cancel();
+                resetAudioIcons();
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            resetAudioIcons();
+
+            const q = questoesData.find(item => item.numero === numero);
+            if (!q) return;
+
+            // Texto dinâmico e didático construído para a voz ler com naturalidade
+            let textoParaLer = `Vamos analisar a Questão número ${q.numero}, sobre o tema ${q.assunto}. `;
+            textoParaLer += `O enunciado diz o seguinte: ${q.enunciado} `;
+            textoParaLer += `O gabarito oficial desta questão é a alternativa ${q.gabarito}. Vamos avaliar agora o porquê de cada alternativa, de forma didática. `;
+            
+            for (const [letra, texto] of Object.entries(q.comentarios)) {
+                textoParaLer += `Alternativa ${letra.toUpperCase()}. ${texto} `;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(textoParaLer);
+            
+            // Tenta selecionar a melhor voz em português disponível no sistema
+            const vozes = window.speechSynthesis.getVoices();
+            const vozPt = vozes.find(v => v.lang.includes('PT') || v.lang.includes('pt-BR'));
+            if (vozPt) utterance.voice = vozPt;
+
+            // Configurações para soar o mais natural possível
+            utterance.rate = 1.05;  // Velocidade ligeiramente dinâmica
+            utterance.pitch = 1.0;  // Tom de voz padrão equilibrado
+
+            utterance.onstart = () => {
+                icon.className = 'fa-solid fa-stop';
+                icon.parentElement.style.background = 'var(--danger-color)';
+                icon.parentElement.style.color = 'white';
+            };
+
+            utterance.onend = () => {
+                icon.className = 'fa-solid fa-volume-high';
+                icon.parentElement.style.background = '#eff6ff';
+                icon.parentElement.style.color = 'var(--secondary-color)';
+            };
+
+            currentUtterance = utterance;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function resetAudioIcons() {
+            questoesData.forEach(q => {
+                const icon = document.getElementById(`icon-audio-${q.numero}`);
+                if (icon) {
+                    icon.className = 'fa-solid fa-volume-high';
+                    icon.parentElement.style.background = '#eff6ff';
+                    icon.parentElement.style.color = 'var(--secondary-color)';
+                }
+            });
+        }
+
+        // Garante o carregamento das vozes em alguns navegadores que as trazem de forma assíncrona
+        window.speechSynthesis.onvoiceschanged = () => {};
+    </script>
+</body>
+</html>
