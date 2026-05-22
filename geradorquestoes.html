@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Criação de Conteúdo - Edital Vitória/ES</title>
+    <title>Painel de Estudos Avançado - Vitória/ES</title>
     <style>
         :root {
             --bg-color: #f4f6f9;
@@ -13,7 +13,7 @@
             --success-color: #2ecc71;
             --text-color: #333333;
             --border-color: #e0e0e0;
-            --sidebar-width: 350px;
+            --sidebar-width: 360px;
         }
 
         * {
@@ -32,7 +32,7 @@
             position: relative;
         }
 
-        /* BOTÃO FLUTUANTE PARA EXPANDIR/RECOLHER PAINEL */
+        /* BOTÃO DE CONTROLE DA SIDEBAR */
         .toggle-sidebar-btn {
             position: fixed;
             top: 15px;
@@ -56,13 +56,13 @@
             background-color: var(--accent-color);
         }
 
-        /* PAINEL DE CONTROLE (SIDEBAR) RESPONSIVO */
+        /* PAINEL LATERAL (SIDEBAR) RESPONSIVO */
         .sidebar-admin {
             width: var(--sidebar-width);
             min-width: var(--sidebar-width);
             background-color: var(--panel-bg);
             border-right: 1px solid var(--border-color);
-            padding: 70px 20px 20px 20px; /* Espaço para o botão superior */
+            padding: 70px 20px 20px 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -71,32 +71,31 @@
             transition: transform 0.3s ease, margin-left 0.3s ease;
         }
 
-        /* Classe disparada via JS para ocultar a barra */
         .sidebar-admin.collapsed {
             transform: translateX(-100%);
             margin-left: calc(-1px * var(--sidebar-width));
         }
 
-        /* CONTEÚDO PRINCIPAL RESPONSIVO */
+        /* CONTEÚDO PRINCIPAL (DIREITA) */
         .main-content {
             flex: 1;
-            padding: 80px 30px 30px 30px; /* Espaço para o cabeçalho móvel */
+            padding: 80px 30px 30px 30px;
             overflow-y: auto;
             transition: padding-left 0.3s ease;
         }
 
         header h1 {
             color: var(--primary-color);
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             margin-bottom: 5px;
         }
 
         header p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
         }
 
-        /* FORMULÁRIO DO PAINEL */
+        /* FORMULÁRIO */
         .form-group {
             display: flex;
             flex-direction: column;
@@ -104,8 +103,8 @@
         }
 
         label {
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 700;
             color: #555;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -116,13 +115,13 @@
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             background-color: #fafafa;
         }
 
         textarea {
             resize: vertical;
-            min-height: 120px;
+            min-height: 110px;
         }
 
         .btn-block {
@@ -135,11 +134,12 @@
         button.action-btn {
             color: white;
             border: none;
-            padding: 12px;
+            padding: 11px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            font-size: 0.9rem;
         }
 
         .btn-save-content { background-color: var(--accent-color); }
@@ -148,11 +148,11 @@
         .btn-save-questions { background-color: var(--success-color); }
         .btn-save-questions:hover { background-color: #27ae60; }
 
-        /* ACCORDIONS DO EDITAL */
+        /* BLOCOS DAS MATÉRIAS (ACCORDIONS) */
         .subject-block {
             background: var(--panel-bg);
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             border: 1px solid var(--border-color);
             overflow: hidden;
@@ -166,22 +166,39 @@
             font-weight: bold;
         }
 
-        .topic-item {
+        /* CONTAINER DE TÓPICOS */
+        .topic-container {
+            padding: 10px 20px;
+            background-color: #fafbfc;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .topic-item:last-child {
-            border-bottom: none;
+        .topic-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0 5px 0;
+            padding-bottom: 3px;
+            border-bottom: 1px dashed #ced4da;
         }
 
-        .topic-trigger {
+        /* ITENS DOS SUBTÓPICOS */
+        .subtopic-item {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .subtopic-trigger {
             width: 100%;
             text-align: left;
             background: none;
             color: var(--text-color);
-            padding: 15px 20px;
-            font-size: 0.95rem;
-            font-weight: 600;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            font-weight: 500;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -189,43 +206,35 @@
             cursor: pointer;
         }
 
-        .topic-trigger:hover {
-            background-color: #fdfdfd;
+        .subtopic-trigger:hover {
+            background-color: #f1f3f5;
             color: var(--accent-color);
         }
 
-        .sub-items {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            margin-top: 4px;
-            font-style: italic;
-            font-weight: normal;
-        }
-
-        .topic-content {
+        .subtopic-content {
             display: none;
-            padding: 20px;
-            background-color: #fcfcfc;
+            padding: 15px 20px;
+            background-color: #fdfdfd;
             border-top: 1px solid var(--border-color);
         }
 
-        .topic-content.active {
+        .subtopic-content.active {
             display: block;
         }
 
-        /* ESTRUTURA DE ABAS INTERNAS (CONTEÚDO VS QUESTÕES) */
+        /* ABAS INTERNAS */
         .tabs-nav {
             display: flex;
             border-bottom: 2px solid var(--border-color);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             gap: 10px;
         }
 
         .tab-btn {
             background: none;
             border: none;
-            padding: 8px 16px;
-            font-size: 0.9rem;
+            padding: 6px 12px;
+            font-size: 0.85rem;
             font-weight: bold;
             color: #7f8c8d;
             cursor: pointer;
@@ -245,8 +254,7 @@
         .tab-panel {
             display: none;
             line-height: 1.6;
-            font-size: 0.95rem;
-            padding: 5px 0;
+            font-size: 0.9rem;
         }
 
         .tab-panel.active {
@@ -256,223 +264,323 @@
         .empty-notice {
             color: #95a5a6;
             font-style: italic;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
-        /* ADAPTAÇÃO PARA TELAS MÓVEIS (MEDIA QUERIES) */
+        /* MEDIA QUERIES (MOBILE) */
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-
+            body { flex-direction: column; }
             .sidebar-admin {
-                position: fixed;
-                left: 0;
-                top: 0;
-                height: 100vh;
+                position: fixed; left: 0; top: 0; height: 100vh;
                 box-shadow: 5px 0 15px rgba(0,0,0,0.2);
             }
-
-            .main-content {
-                padding: 80px 15px 15px 15px;
-            }
-
-            header h1 {
-                font-size: 1.4rem;
-            }
-
-            .tabs-nav {
-                width: 100%;
-                overflow-x: auto;
-            }
+            .main-content { padding: 80px 12px 12px 12px; }
+            header h1 { font-size: 1.3rem; padding-left: 70px; }
+            header p { padding-left: 70px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- BOTÃO GERAL PARA CONTROLAR A SIDEBAR -->
     <button class="toggle-sidebar-btn" onclick="toggleSidebar()">
-        <span>☰</span> <span id="btn-text">Painel</span>
+        <span>☰</span> <span>Painel</span>
     </button>
 
-    <!-- PAINEL DE CONTROLE (ESQUERDA) -->
+    <!-- PAINEL LATERAL DE CONTROLE -->
     <div class="sidebar-admin" id="sidebar">
-        <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Editor de Conteúdo</h3>
+        <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 5px; font-size: 1.1rem;">Alimentar Subtópico</h3>
         
         <div class="form-group">
-            <label for="topic-select">1. Selecione o Tópico:</label>
+            <label for="topic-select">Selecione o Subtópico Alvo:</label>
             <select id="topic-select">
-                <!-- Preenchido dinamicamente pelo JavaScript -->
+                <!-- Populado automaticamente via JS com a estrutura minuciosa -->
             </select>
         </div>
 
-        <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column; gap: 12px;">
+        <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column; gap: 10px;">
             <div style="display: flex; flex-direction: column; gap: 4px;">
-                <label for="content-input">2. Texto Teórico / Resumo:</label>
-                <textarea id="content-input" placeholder="Cole aqui a teoria, conceitos chaves ou dicas..."></textarea>
+                <label for="content-input">Teoria / Resumo Estruturado:</label>
+                <textarea id="content-input" placeholder="Cole resumos, fórmulas, mnemônicos..."></textarea>
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
-                <label for="questions-input">3. Banco de Questões / Comentários:</label>
-                <textarea id="questions-input" placeholder="Cole aqui seus exercícios, simulados e gabaritos comentados para fixação..." style="flex-grow: 1; min-height: 120px;"></textarea>
+                <label for="questions-input">Banco de Questões / Comentadas:</label>
+                <textarea id="questions-input" placeholder="Cole questões de fixação, erros frequentes e gabaritos..." style="flex-grow: 1; min-height: 100px;"></textarea>
             </div>
         </div>
 
         <div class="btn-block">
-            <button class="action-btn btn-save-content" onclick="saveData('theory')">Salvar Teoria</button>
-            <button class="action-btn btn-save-questions" onclick="saveData('questions')">Salvar Questões</button>
+            <button class="action-btn btn-save-content" onclick="saveData('theory')">Salvar Resumo Teórico</button>
+            <button class="action-btn btn-save-questions" onclick="saveData('questions')">Salvar Questões Relacionadas</button>
         </div>
     </div>
 
-    <!-- PÁGINA DE EXIBIÇÃO DO EDITAL (DIREITA) -->
+    <!-- EXIBIÇÃO DA GRADE EM SUBTÓPICOS -->
     <div class="main-content">
         <header style="margin-bottom: 25px; border-bottom: 2px solid var(--primary-color); padding-bottom: 12px;">
-            <h1 style="padding-left: 80px;">Plataforma de Estudos Integrada</h1>
-            <p style="padding-left: 80px;">Edital: Vitória/ES | Gestão Dinâmica de Teoria e Questões</p>
+            <h1>Plataforma Organizada de Estudos</h1>
+            <p>Edital: Prefeitura de Vitória/ES (2026) | Controle Total de Subtópicos e Monitoramento</p>
         </header>
 
         <div id="accordion-container">
-            <!-- Gerado via JavaScript -->
+            <!-- Renderização Dinâmica Conforme Divisão Detalhada -->
         </div>
     </div>
 
     <script>
-        // Mapeamento idêntico de todos os blocos do edital original fornecido
-        const editalData = [
+        // Banco de dados completo contendo Matérias -> Tópicos -> Subtópicos Isolados
+        const editalCompleto = [
             {
                 materia: "Língua Portuguesa",
                 topicos: [
-                    { id: "lp-1", titulo: "Compreensão e Interpretação de Textos", sub: "Tipologia, gêneros textuais, organização estrutural e modos de discurso." },
-                    { id: "lp-2", titulo: "Domínio da Textualidade", sub: "Coesão referencial e sequencial, coerência e intertextualidade." },
-                    { id: "lp-3", titulo: "Morfologia", sub: "Estrutura/formação de palavras e as 10 classes de palavras." },
-                    { id: "lp-4", titulo: "Sintaxe do Período", sub: "Termos da oração, período simples e composto (coordenação/subordinação)." },
-                    { id: "lp-5", titulo: "Concordância e Regência", sub: "Normas verbais e nominais + Emprego do sinal indicativo de crase." },
-                    { id: "lp-6", titulo: "Semântica e Pontuação", sub: "Significação das palavras, denotação/conotação e efeitos da pontuação." },
-                    { id: "lp-7", titulo: "Norma Culta e Ortografia", sub: "Acentuação gráfica, emprego de letras e registros de linguagem." }
+                    {
+                        titulo: "1.1. Compreensão e Interpretação de Textos",
+                        subtopicos: ["Compreensão textual", "Interpretação textual", "Tipologia textual", "Gêneros textuais e organização estrutural", "Modos de organização do discurso: Descritivo", "Modos de organização do discurso: Narrativo", "Modos de organização do discurso: Expositivo", "Modos de organização do discurso: Argumentativo", "Modos de organização do discurso: Injuntivo"]
+                    },
+                    {
+                        titulo: "1.2. Domínio da Textualidade",
+                        subtopicos: ["Mecanismos de referencialidade (coesão)", "Mecanismos de sequencialidade (coesão)", "Coerência textual", "Intertextualidade"]
+                    },
+                    {
+                        titulo: "1.3. Morfologia",
+                        subtopicos: ["Estrutura de palavras", "Formação de palavras", "Classes: Substantivo e Adjetivo", "Classes: Artigo e Numeral", "Classes: Pronome", "Classes: Verbo", "Classes: Advérbio", "Classes: Conjunção e Preposição", "Classes: Interjeição"]
+                    },
+                    {
+                        titulo: "1.4. Sintaxe do Período",
+                        subtopicos: ["Organização sintática do período", "Termos da oração", "Período simples", "Período composto por coordenação", "Período composto por subordinação"]
+                    },
+                    {
+                        titulo: "1.5. Concordância e Regência",
+                        subtopicos: ["Normas de concordância verbal", "Normas de concordância nominal", "Normas de regência verbal", "Normas de regência nominal", "Emprego do sinal indicativo de crase"]
+                    },
+                    {
+                        titulo: "1.6. Semântica e Pontuação",
+                        subtopicos: ["Significação: Sinonímia e Antonímia", "Significação: Paronímia, Polissemia e Ambiguidade", "Sentido denotativo e conotativo", "Emprego dos sinais de pontuação e efeitos de sentido"]
+                    },
+                    {
+                        titulo: "1.7. Norma Culta e Ortografia",
+                        subtopicos: ["Acentuação gráfica", "Emprego das letras (ortografia oficial)", "Registros de linguagem: Formalidade e informalidade"]
+                    }
                 ]
             },
             {
                 materia: "Raciocínio Lógico",
                 topicos: [
-                    { id: "rl-1", titulo: "Estruturas Lógicas e Argumentação", sub: "Conceito, valor-verdade, negação e conectivos lógicos." },
-                    { id: "rl-2", titulo: "Equivalências e Leis de De Morgan", sub: "Proposições compostas e diagramas lógicos." },
-                    { id: "rl-3", titulo: "Problemas de Raciocínio", sub: "Dedução de informações e relações arbitrárias." },
-                    { id: "rl-4", titulo: "Conjuntos, Gráficos e Probabilidade", sub: "Operações com conjuntos, tabelas, contagem e noções de probabilidade." }
+                    {
+                        titulo: "2.1. Estruturas Lógicas e Argumentação",
+                        subtopicos: ["Estruturas lógicas", "Lógica da argumentação", "Proposições: Conceito e valor-verdade", "Proposições: Negação", "Conectivos: Conjunção e Disjunção", "Conectivos: Implicação e Equivalência", "Proposições compostas"]
+                    },
+                    {
+                        titulo: "2.2. Equivalências e Leis de De Morgan",
+                        subtopicos: ["Equivalências lógicas", "Leis de De Morgan", "Diagramas lógicos"]
+                    },
+                    {
+                        titulo: "2.3. Problemas de Raciocínio",
+                        subtopicos: ["Dedução de informações", "Relações arbitrárias entre objetos, lugares, pessoas ou eventos"]
+                    },
+                    {
+                        titulo: "2.4. Conjuntos, Gráficos e Probabilidade",
+                        subtopicos: ["Análise de tabelas e gráficos", "Conjuntos e suas operações", "Princípios de contagem", "Noções de probabilidade"]
+                    }
                 ]
             },
             {
                 materia: "Matemática",
                 topicos: [
-                    { id: "mat-1", titulo: "Sistemas Numéricos", sub: "Naturais, inteiros, racionais, reais, primos, MMC e MDC, frações." },
-                    { id: "mat-2", titulo: "Álgebra", sub: "Expressões numéricas, equações, sistemas e funções de 1º e 2º graus." },
-                    { id: "mat-3", titulo: "Proporcionalidade e Matemática Financeira", sub: "Razão, proporção, regra de três, porcentagem, juros simples e compostos." },
-                    { id: "mat-4", titulo: "Grandezas, Medidas e Geometria", sub: "Sistema métrico, ângulos, polígonos, perímetros, áreas e volumes." },
-                    { id: "mat-5", titulo: "Trigonometria e Sequências", sub: "Semelhança de triângulos, relações métricas, Pitágoras e PA/PG." },
-                    { id: "mat-6", titulo: "Estatística e Plano Cartesiano", sub: "Média aritmética simples/ponderada e representação de pontos." }
+                    {
+                        titulo: "3.1. Sistemas Numéricos",
+                        subtopicos: ["Números naturais, inteiros, racionais e reais", "Operações e propriedades numéricas", "Representação de números na reta numérica", "Múltiplos e divisores", "Números primos", "Mínimo Múltiplo Comum (MMC) e Máximo Divisor Comum (MDC)", "Frações e números decimais"]
+                    },
+                    {
+                        titulo: "3.2. Álgebra",
+                        subtopicos: ["Expressões numéricas", "Equações e sistemas de 1º grau", "Equações e sistemas de 2º grau", "Funções de 1º grau (Afim)", "Funções de 2º grau (Quadrática)"]
+                    },
+                    {
+                        titulo: "3.3. Proporcionalidade e Matemática Financeira",
+                        subtopicos: ["Razões e proporções", "Regra de três simples", "Regra de três composta", "Porcentagem", "Juros simples (capital, tempo, taxas, montante)", "Juros compostos", "Noções de taxas (nominal e efetiva)"]
+                    },
+                    {
+                        titulo: "3.4. Grandezas, Medidas e Geometria Plana/Espacial",
+                        subtopicos: ["Sistema métrico decimal (comprimento, área, volume, massa)", "Unidades de medida de tempo", "Ângulos", "Polígonos e circunferência", "Cálculo de perímetro", "Cálculo de área plana", "Cálculo de volumes (Geometria espacial)"]
+                    },
+                    {
+                        titulo: "3.5. Trigonometria e Sequências",
+                        subtopicos: ["Semelhança de triângulos", "Relações métricas no triângulo retângulo", "Teorema de Pitágoras", "Relações trigonométricas (Seno, Cosseno, Tangente)", "Reconhecimento de padrões em sequências", "Progressão Aritmética (PA)", "Progressão Geométrica (PG)"]
+                    },
+                    {
+                        titulo: "3.6. Estatística e Plano Cartesiano",
+                        subtopicos: ["Média aritmética simples", "Média aritmética ponderada", "Representação de pontos no plano cartesiano"]
+                    }
                 ]
             },
             {
                 materia: "Noções de Direito Constitucional e Administrativo",
                 topicos: [
-                    { id: "dir-1", titulo: "Direito Administrativo: Regime Jurídico e Princípios", sub: "Legalidade, impessoalidade, moralidade, publicidade, eficiência, etc." },
-                    { id: "dir-2", titulo: "Organização Administrativa e Poderes", sub: "Desconcentração, descentralização, órgãos e poderes." },
-                    { id: "dir-3", titulo: "Atos Administrativos e Bens Públicos", sub: "Conceitos, requisitos, elementos, atributos e classificações." },
-                    { id: "dir-4", titulo: "Legislação Federal Especial", sub: "Lei de Licitações (14.133/21), LAI (12.527/11) e LGPD (13.709/18)." },
-                    { id: "dir-5", titulo: "Direito Constitucional: Princípios e Direitos Fundamentais", sub: "Constituição de 1988, aplicabilidade das normas e direitos." },
-                    { id: "dir-6", titulo: "Organização do Estado e dos Poderes", sub: "União, estados, DF, municípios, servidores, e os Três Poderes." },
-                    { id: "dir-7", titulo: "Tributação, Orçamento e Ordem Econômica", sub: "Fiscalização contábil, finanças públicas e princípios econômicos." }
+                    {
+                        titulo: "4.1. Direito Administrativo: Regime Jurídico e Princípios",
+                        subtopicos: ["Princípios constitucionais e infraconstitucionais", "Regime jurídico-administrativo", "Princípios expressos: LIMPE", "Princípios: Indisponibilidade do interesse público", "Princípios: Proporcionalidade e razoabilidade", "Princípios: Motivação e Continuidade", "Princípios: Presunção de veracidade e legalidade", "Princípios: Autoexecutoriedade e autotutela", "Princípios: Segurança jurídica, proteção à confiança e boa-fé"]
+                    },
+                    {
+                        titulo: "4.2. Organização Administrativa e Poderes",
+                        subtopicos: ["Administração Pública: Conceito e estrutura", "Desconcentração e descentralização", "Órgãos públicos", "Poder normativo e regulamentar", "Poder hierárquico", "Poder vinculado e discricionário", "Poder disciplinar", "Poder de polícia"]
+                    },
+                    {
+                        titulo: "4.3. Atos Administrativos e Bens Públicos",
+                        subtopicos: ["Atos administrativos: Conceitos e classificações", "Atos administrativos: Requisitos/elementos e pressupostos", "Atos administrativos: Atributos", "Bens públicos: Conceito, classificação e regime jurídico"]
+                    },
+                    {
+                        titulo: "4.4. Legislação Federal Especial",
+                        subtopicos: ["Lei Federal nº 14.133/2021 (Licitações e Contratos)", "Lei de Acesso à Informação (Lei nº 12.527/11)", "Lei Geral de Proteção de Dados - LGPD (Lei nº 13.709/18)"]
+                    },
+                    {
+                        titulo: "4.5. Direito Constitucional: Princípios e Direitos Fundamentais",
+                        subtopicos: ["CF/88: Princípios fundamentais (Art. 1º ao 4º)", "Eficácia das normas: Plena, contida e limitada", "Normas programáticas", "Direitos e deveres individuais e coletivos (Art. 5º)", "Direitos sociais (Art. 6º ao 11)", "Direitos de nacionalidade (Art. 12 e 13)", "Direitos políticos e partidos políticos (Art. 14 ao 17)"]
+                    },
+                    {
+                        titulo: "4.6. Organização do Estado e dos Poderes",
+                        subtopicos: ["Organização político-administrativa: União, estados, DF e municípios", "Administração Pública e Servidores na CF/88 (Art. 37 ao 41)", "Organização dos Poderes: Poder Legislativo", "Organização dos Poderes: Poder Executivo", "Organização dos Poderes: Poder Judiciário", "Fiscalização contábil, financeira e orçamentária"]
+                    },
+                    {
+                        titulo: "4.7. Tributação, Orçamento e Ordem Econômica",
+                        subtopicos: ["Das Finanças Públicas (normas constitucionais)", "Ordem Econômica e Financeira: Princípios Gerais"]
+                    }
                 ]
             },
             {
                 materia: "Administração Pública",
                 topicos: [
-                    { id: "adm-1", titulo: "Processos Participativos e Planejamento", sub: "Conselhos, orçamento participativo, PDCA e leis orçamentárias (PPA, LDO, LOA)." },
-                    { id: "adm-2", titulo: "Referencial Estratégico e Indicadores", sub: "Análise SWOT, cenários, matriz GUT, missão e indicadores." },
-                    { id: "adm-3", titulo: "Governo Eletrônico e Gestão de Pessoas", sub: "Transparência, controle social, accountability e competências." },
-                    { id: "adm-4", titulo: "Modelos de Gestão e Governança", sub: "OS, OSCIP, consórcios, governabilidade, governança e clientelismo." }
+                    {
+                        titulo: "5.1. Processos Participativos e Planejamento",
+                        subtopicos: ["Conselhos de gestão e parceria sociedade-governo", "Orçamento participativo", "O ciclo do planejamento e a melhoria contínua (PDCA)", "Orçamento: Plano Plurianual (PPA)", "Orçamento: Lei de Diretrizes Orçamentárias (LDO)", "Orçamento: Lei Orçamentária Anual (LOA)"]
+                    },
+                    {
+                        titulo: "5.2. Referencial Estratégico e Indicadores",
+                        subtopicos: ["Referencial Estratégico: Negócio, missão, visão e valores", "Análise ambiental: Matriz SWOT", "Ferramentas: Análise de cenários", "Ferramentas: Matriz GUT", "Indicadores de desempenho: Tipos e variáveis"]
+                    },
+                    {
+                        titulo: "5.3. Governo Eletrônico e Gestão de Pessoas",
+                        subtopicos: ["Governo eletrônico e transparência pública", "Controle social, cidadania e Accountability", "Gestão de Pessoas por Competências"]
+                    },
+                    {
+                        titulo: "5.4. Modelos de Gestão e Governança",
+                        subtopicos: ["Mudanças institucionais e administração gerencial", "Parcerias: OS e OSCIP", "Agências reguladoras e agências executivas", "Consórcios públicos", "Gestão por resultados na produção de serviços", "Governabilidade e governança pública: Princípios", "Intermediação de interesses: Clientelismo e Corporativismo"]
+                    }
                 ]
             },
             {
                 materia: "Legislação Municipal",
                 topicos: [
-                    { id: "leg-1", titulo: "Lei Orgânica de Vitória", sub: "Disposições fundamentais e organização municipal." },
-                    { id: "leg-2", titulo: "Estatuto dos Funcionários Públicos (Lei 2.994/1982)", sub: "Regime jurídico dos servidores de Vitória." },
-                    { id: "leg-3", titulo: "Código de Ética e Processo Eletrônico", sub: "Decreto 16.559/2015 (Ética) e Decreto 19.930/2021 (Processo digital)." }
+                    {
+                        titulo: "6.1. Lei Orgânica",
+                        subtopicos: ["Lei Orgânica do Município de Vitória/ES"]
+                    },
+                    {
+                        titulo: "6.2. Estatuto dos Funcionários Públicos",
+                        subtopicos: ["Lei Municipal nº 2.994/1982 (Regime Jurídico)"]
+                    },
+                    {
+                        titulo: "6.3. Códigos e Decretos de Vitória",
+                        subtopicos: ["Decreto Municipal nº 16.559/2015 (Código de Ética)", "Decreto Municipal nº 19.930/2021 (Processo Eletrônico)"]
+                    }
                 ]
             },
             {
                 materia: "Conhecimentos Específicos (TI, Infra e Projetos)",
                 topicos: [
-                    { id: "esp-1", titulo: "Infraestrutura e Operações de Rede", sub: "Arquitetura de redes, protocolos, meios de transmissão e segurança." },
-                    { id: "esp-2", titulo: "Armazenamento, Virtualização e Nuvem", sub: "SAN, NAS, RAID, S3, backup, virtualização e nuvem." },
-                    { id: "esp-3", titulo: "Hospedagem, Serviços e Datacenter", sub: "DNS, Web, Proxy, APM, subsistemas críticos e eficiência energética." },
-                    { id: "esp-4", titulo: "Containers e Automação de Infraestrutura", sub: "Docker, Kubernetes, Podman, Ansible, YAML, PowerShell, Bash e CI/CD." },
-                    { id: "esp-5", titulo: "Sistemas Operacionais e Segurança da Informação", sub: "Windows Server, Linux, AD, GRC, criptografia, Firewall, WAF." },
-                    { id: "esp-6", titulo: "Governança de TI e Gestão de Projetos", sub: "ITIL v4, COBIT, PMBOK, PMO, caminho crítico e escopo." },
-                    { id: "esp-7", titulo: "Tópicos Especiais: LGPD, Contratos de TI e IA Generativa", sub: "Lei 14.133/21 em TI, LLMs, alucinação, viés e segurança corporativa." }
+                    {
+                        titulo: "7.1. Infraestrutura e Operações de Rede",
+                        subtopicos: ["Redes de computadores: Conceitos e arquiteturas", "Protocolos e meios de transmissão", "Equipamentos de rede e configurações", "Serviços básicos de rede e segurança", "Aplicações de voz e imagem sobre redes", "Redes de longa distância (WAN)"]
+                    },
+                    {
+                        titulo: "7.2. Armazenamento, Virtualização e Nuvem",
+                        subtopicos: ["Tecnologias de armazenamento: SAN, NAS e RAID", "Padrões de disco e interfaces", "Virtualização e armazenamento de objetos (S3)", "Backups, replicação e recuperação de desastres (DRP)", "Arquitetura e virtualização de servidores e clusterização", "Conceitos de computação em nuvem (Cloud Computing)"]
+                    },
+                    {
+                        titulo: "7.3. Hospedagem, Serviços e Datacenter",
+                        subtopicos: ["Servidores DNS e servidores Web", "Proxy reverso", "Monitoramento de aplicações (APM) e eventos", "Correio eletrônico e serviços de comunicação", "Gestão de datacenter: Conceitos, projetos e arquiteturas", "Datacenter: Disponibilidade, confiabilidade, redundância e normas", "Datacenter: Eficiência energética e subsistemas críticos", "Datacenter: Automação, operação, monitoramento e replicação"]
+                    },
+                    {
+                        titulo: "7.4. Containers e Automação de Infraestrutura",
+                        subtopicos: ["Microsserviços e escalabilidade em containers", "Orquestração e motores: Kubernetes, Docker e Podman", "Automação: ANSIBLE e YAML", "Automação: PowerShell e BASH", "Conceitos de CI/CD (Integração e Entrega Contínua)"]
+                    },
+                    {
+                        titulo: "7.5. Sistemas Operacionais e Segurança da Informação",
+                        subtopicos: ["Ambientes de Servidores: Microsoft Windows Server", "Ambientes de Servidores: Linux Server", "Serviços de diretório: Microsoft Active Directory (AD)", "Segurança da informação, GRC e conformidade", "Política de privacidade, ameaças e vulnerabilidade de dados", "Criptografia e certificados digitais", "Segurança de redes: Proxy, NAT e Endereçamento IP", "Segurança de redes: Firewall, WAF e auditorias de acesso"]
+                    },
+                    {
+                        titulo: "7.6. Governança de TI e Gestão de Projetos",
+                        subtopicos: ["Gestão de governança de TI: Papéis e ITIL v4", "Framework COBIT: Estrutura, domínios e processos", "Gerenciamento de portfólio e Escritório de Projetos (PMO)", "Planejamento: Requisitos, diagrama de rede, caminho crítico, folgas", "Estrutura Analítica do Projeto (EAP)", "Estudos de viabilidade, ciclo de escopo, execução e fechamento", "Gerenciamento das aquisições e áreas do PMBOK"]
+                    },
+                    {
+                        titulo: "7.7. Tópicos Especiais (LGPD, Contratos e IA)",
+                        subtopicos: ["LGPD: Conceitos, agentes, bases legais e princípios digitais", "Gestão, fiscalização e riscos de contratos de TI", "Contratação de TI baseado na Lei nº 14.133/21", "IA Generativa e Grandes Modelos de Linguagem (LLMs)", "LLMs: Capacidades, limitações e aplicações corporativas", "Riscos em IA: Alucinação, viés, vazamentos e segurança"]
+                    }
                 ]
             }
         ];
+
+        // Função auxiliar para gerar IDs limpos e padronizados baseados no texto do subtópico
+        function gerarId(texto) {
+            return btoa(unescape(encodeURIComponent(texto)))
+                .replace(/=/g, "")
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .substring(0, 25);
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
             renderStructure();
             populateSelect();
             loadSavedData();
             
-            // Ouvinte para carregar conteúdo nos inputs ao trocar o select
             document.getElementById("topic-select").addEventListener("change", updateInputsFromSelect);
-            
-            // Em dispositivos menores que 768px, inicia com o painel fechado por padrão
-            if(window.innerWidth <= 768) {
-                toggleSidebar();
-            }
+            if(window.innerWidth <= 768) toggleSidebar();
         });
 
-        // Alterna visibilidade da barra lateral
         function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("collapsed");
+            document.getElementById("sidebar").classList.toggle("collapsed");
         }
 
-        // Renderiza a grade de estudos
+        // Constrói a árvore visual: Matéria -> Tópicos -> Subtópicos com Abas
         function renderStructure() {
             const container = document.getElementById("accordion-container");
             container.innerHTML = "";
 
-            editalData.forEach(m => {
+            editalCompleto.forEach(m => {
                 const block = document.createElement("div");
                 block.className = "subject-block";
                 
                 let html = `<div class="subject-header">${m.materia}</div>`;
                 
                 m.topicos.forEach(t => {
-                    html += `
-                        <div class="topic-item">
-                            <button class="topic-trigger" onclick="toggleAccordion('${t.id}')">
-                                <div>
-                                    ${t.titulo}
-                                    <div class="sub-items">${t.sub}</div>
-                                </div>
-                                <span id="arrow-${t.id}">▼</span>
-                            </button>
-                            
-                            <div class="topic-content" id="content-${t.id}">
-                                <!-- Navegação por abas internas -->
-                                <div class="tabs-nav">
-                                    <button class="tab-btn active" id="tab-btn-theory-${t.id}" onclick="switchTab('${t.id}', 'theory')">Teoria</button>
-                                    <button class="tab-btn questions-tab" id="tab-btn-quest-${t.id}" onclick="switchTab('${t.id}', 'questions')">Questões</button>
-                                </div>
-                                
-                                <!-- Painéis das abas -->
-                                <div class="tab-panel active" id="panel-theory-${t.id}">
-                                    <span class="empty-notice">Nenhuma teoria salva neste tópico.</span>
-                                </div>
-                                <div class="tab-panel" id="panel-quest-${t.id}">
-                                    <span class="empty-notice">Nenhuma questão vinculada a este tópico.</span>
+                    html += `<div class="topic-container">`;
+                    html += `<div class="topic-title">${t.titulo}</div>`;
+                    
+                    t.subtopicos.forEach(st => {
+                        const subId = gerarId(st);
+                        html += `
+                            <div class="subtopic-item">
+                                <button class="subtopic-trigger" onclick="toggleSubAccordion('${subId}')">
+                                    <span>${st}</span>
+                                    <span id="arrow-${subId}">▼</span>
+                                </button>
+                                <div class="subtopic-content" id="content-${subId}">
+                                    <div class="tabs-nav">
+                                        <button class="tab-btn active" id="btn-theory-${subId}" onclick="switchTab('${subId}', 'theory')">Teoria</button>
+                                        <button class="tab-btn questions-tab" id="btn-quest-${subId}" onclick="switchTab('${subId}', 'questions')">Questões</button>
+                                    </div>
+                                    <div class="tab-panel active" id="panel-theory-${subId}">
+                                        <span class="empty-notice">Nenhum resumo estruturado para este subtópico.</span>
+                                    </div>
+                                    <div class="tab-panel" id="panel-quest-${subId}">
+                                        <span class="empty-notice">Nenhuma questão adicionada aqui.</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    });
+                    
+                    html += `</div>`; // fecha topic-container
                 });
                 
                 block.innerHTML = html;
@@ -482,89 +590,86 @@
 
         function populateSelect() {
             const select = document.getElementById("topic-select");
-            editalData.forEach(m => {
+            editalCompleto.forEach(m => {
                 const group = document.createElement("optgroup");
                 group.label = m.materia;
                 m.topicos.forEach(t => {
-                    const opt = document.createElement("option");
-                    opt.value = t.id;
-                    opt.textContent = t.titulo;
-                    group.appendChild(opt);
+                    t.subtopicos.forEach(st => {
+                        const opt = document.createElement("option");
+                        opt.value = gerarId(st);
+                        opt.textContent = `[${t.titulo.substring(0,3)}] ${st}`;
+                        group.appendChild(opt);
+                    });
                 });
                 select.appendChild(group);
             });
         }
 
-        function toggleAccordion(id) {
+        function toggleSubAccordion(id) {
             const content = document.getElementById(`content-${id}`);
             const arrow = document.getElementById(`arrow-${id}`);
-            const isTargetActive = content.classList.contains("active");
+            const isActive = content.classList.contains("active");
             
-            content.classList.toggle("active", !isTargetActive);
-            arrow.textContent = isTargetActive ? "▼" : "▲";
+            content.classList.toggle("active", !isActive);
+            arrow.textContent = isActive ? "▼" : "▲";
         }
 
-        // Altera entre as abas de Teoria e Questões na visualização
-        function switchTab(topicId, tabType) {
-            const theoryBtn = document.getElementById(`tab-btn-theory-${topicId}`);
-            const questBtn = document.getElementById(`tab-btn-quest-${topicId}`);
-            const theoryPanel = document.getElementById(`panel-theory-${topicId}`);
-            const questPanel = document.getElementById(`panel-quest-${topicId}`);
+        function switchTab(id, type) {
+            const btnTheory = document.getElementById(`btn-theory-${id}`);
+            const btnQuest = document.getElementById(`btn-quest-${id}`);
+            const panelTheory = document.getElementById(`panel-theory-${id}`);
+            const panelQuest = document.getElementById(`panel-quest-${id}`);
 
-            if(tabType === 'theory') {
-                theoryBtn.classList.add("active");
-                questBtn.classList.remove("active");
-                theoryPanel.classList.add("active");
-                questPanel.classList.remove("active");
+            if(type === 'theory') {
+                btnTheory.classList.add("active"); btnQuest.classList.remove("active");
+                panelTheory.classList.add("active"); panelQuest.classList.remove("active");
             } else {
-                questBtn.classList.add("active");
-                theoryBtn.classList.remove("active");
-                questPanel.classList.add("active");
-                theoryPanel.classList.remove("active");
+                btnQuest.classList.add("active"); btnTheory.classList.remove("active");
+                panelQuest.classList.add("active"); panelTheory.classList.remove("active");
             }
         }
 
-        // Salva dados (pode ser teoria ou questões) no LocalStorage
         function saveData(type) {
-            const select = document.getElementById("topic-select");
-            const selectedId = select.value;
+            const selectedId = document.getElementById("topic-select").value;
+            const isTheory = type === 'theory';
+            const input = document.getElementById(isTheory ? "content-input" : "questions-input");
+            const storageKey = isTheory ? `st_theory_${selectedId}` : `st_quest_${selectedId}`;
             
-            let inputElement = (type === 'theory') ? document.getElementById("content-input") : document.getElementById("questions-input");
-            let storageKey = (type === 'theory') ? `theory_${selectedId}` : `questions_${selectedId}`;
-            
-            const textToSave = inputElement.value.trim();
-            localStorage.setItem(storageKey, textToSave);
+            const text = input.value.trim();
+            localStorage.setItem(storageKey, text);
 
-            updateDisplayPanel(selectedId, type, textToSave);
+            updatePanelDisplay(selectedId, type, text);
 
-            // Abre o painel automaticamente para conferência
+            // Abre automaticamente o subtópico atualizado e foca na aba certa
             document.getElementById(`content-${selectedId}`).classList.add("active");
             document.getElementById(`arrow-${selectedId}`).textContent = "▲";
             switchTab(selectedId, type);
 
-            alert("Item salvo com sucesso!");
+            alert("Subtópico atualizado com sucesso!");
         }
 
-        function updateDisplayPanel(topicId, type, text) {
-            const panel = (type === 'theory') ? document.getElementById(`panel-theory-${topicId}`) : document.getElementById(`panel-quest-${topicId}`);
-            
+        function updatePanelDisplay(id, type, text) {
+            const panel = document.getElementById(type === 'theory' ? `panel-theory-${id}` : `panel-quest-${id}`);
             if(text) {
                 panel.innerHTML = text.replace(/\n/g, '<br>');
-                panel.style.fontStyle = "normal";
-                panel.style.color = "inherit";
             } else {
-                panel.innerHTML = (type === 'theory') ? `<span class="empty-notice">Nenhuma teoria salva neste tópico.</span>` : `<span class="empty-notice">Nenhuma questão vinculada a este tópico.</span>`;
+                panel.innerHTML = type === 'theory' 
+                    ? `<span class="empty-notice">Nenhum resumo estruturado para este subtópico.</span>` 
+                    : `<span class="empty-notice">Nenhuma questão adicionada aqui.</span>`;
             }
         }
 
         function loadSavedData() {
-            editalData.forEach(m => {
+            editalCompleto.forEach(m => {
                 m.topicos.forEach(t => {
-                    const savedTheory = localStorage.getItem(`theory_${t.id}`);
-                    const savedQuestions = localStorage.getItem(`questions_${t.id}`);
-                    
-                    if(savedTheory) updateDisplayPanel(t.id, 'theory', savedTheory);
-                    if(savedQuestions) updateDisplayPanel(t.id, 'questions', savedQuestions);
+                    t.subtopicos.forEach(st => {
+                        const id = gerarId(st);
+                        const theory = localStorage.getItem(`st_theory_${id}`);
+                        const quest = localStorage.getItem(`st_quest_${id}`);
+                        
+                        if(theory) updatePanelDisplay(id, 'theory', theory);
+                        if(quest) updatePanelDisplay(id, 'questions', quest);
+                    });
                 });
             });
             updateInputsFromSelect();
@@ -572,8 +677,8 @@
 
         function updateInputsFromSelect() {
             const currentId = document.getElementById("topic-select").value;
-            document.getElementById("content-input").value = localStorage.getItem(`theory_${currentId}`) || "";
-            document.getElementById("questions-input").value = localStorage.getItem(`questions_${currentId}`) || "";
+            document.getElementById("content-input").value = localStorage.getItem(`st_theory_${currentId}`) || "";
+            document.getElementById("questions-input").value = localStorage.getItem(`st_quest_${currentId}`) || "";
         }
     </script>
 </body>
