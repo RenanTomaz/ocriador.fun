@@ -3,773 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Constitucional Quest - O Jogo do Conhecimento</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Painel de Criação de Conteúdo - Edital Vitória/ES</title>
     <style>
         :root {
-            --primary-dark: #0f172a;
-            --primary-card: #1e293b;
-            --accent-color: #6366f1;
-            --accent-hover: #4f46e5;
-            --success: #10b981;
-            --danger: #ef4444;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --gold: #f59e0b;
+            --bg-color: #f4f6f9;
+            --panel-bg: #ffffff;
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: var(--primary-dark);
-            color: var(--text-light);
-            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
-            flex-direction: column;
-        }
-
-        /* HUD Superior (Heads-Up Display de Jogo) */
-        .hud-bar {
-            background-color: var(--primary-card);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 3px solid var(--accent-color);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .hud-profile {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .level-badge {
-            background: var(--gold);
-            color: var(--primary-dark);
-            font-weight: 900;
-            padding: 0.5rem 0.8rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-        }
-
-        .xp-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            width: 150px;
-        }
-
-        .xp-text {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: var(--text-muted);
-        }
-
-        .bar-bg {
-            background: #334155;
-            height: 10px;
-            border-radius: 5px;
+            height: 100vh;
             overflow: hidden;
-        }
-
-        .bar-fill {
-            background: var(--success);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .hud-status {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
-
-        .heart-life {
-            color: var(--danger);
-            font-size: 1.3rem;
-            display: flex;
-            gap: 0.25rem;
-        }
-
-        .score-box {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: var(--text-light);
-            background: rgba(255,255,255,0.05);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .score-box i {
-            color: var(--gold);
-            margin-right: 0.5rem;
         }
 
         /* Layout Principal */
-        .game-container {
-            max-width: 900px;
-            width: 100%;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-            flex-grow: 1;
-        }
-
-        /* Card da Questão Ativa (Estilo Arena) */
-        .arena-card {
-            background: var(--primary-card);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .arena-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 6px;
-            height: 100%;
-            background: var(--accent-color);
-        }
-
-        .arena-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .topic-tag {
-            background: rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
-            padding: 0.4rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-        }
-
-        .audio-trigger-btn {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-            transition: all 0.2s;
-        }
-
-        .audio-trigger-btn:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-        }
-
-        .audio-trigger-btn.playing {
-            background: var(--danger);
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
-        .question-statement {
-            font-size: 1.25rem;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-            font-weight: 500;
-        }
-
-        /* Alternativas Gamificadas */
-        .gamified-options {
+        .sidebar-admin {
+            width: 350px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 15px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            z-index: 10;
         }
 
-        .gamified-option {
-            background: #334155;
-            border: 2px solid transparent;
-            border-radius: 1rem;
-            padding: 1.25rem;
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Formulário do Painel */
+        .form-group {
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            position: relative;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        .gamified-option:hover {
-            background: #475569;
-            transform: translateX(5px);
-            border-color: rgba(255,255,255,0.1);
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
         }
 
-        .option-badge {
-            background: var(--primary-dark);
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: var(--accent-color);
-            flex-shrink: 0;
-        }
-
-        /* Estados de Resposta (Certo/Errado) */
-        .gamified-option.correct {
-            background: rgba(16, 185, 129, 0.15) !important;
-            border-color: var(--success) !important;
-        }
-        .gamified-option.correct .option-badge {
-            background: var(--success);
-            color: white;
-        }
-
-        .gamified-option.wrong {
-            background: rgba(239, 68, 68, 0.15) !important;
-            border-color: var(--danger) !important;
-        }
-        .gamified-option.wrong .option-badge {
-            background: var(--danger);
-            color: white;
-        }
-
-        .gamified-option.disabled {
-            pointer-events: none;
-            opacity: 0.6;
-        }
-        .gamified-option.disabled.correct {
-            opacity: 1;
-        }
-
-        /* Caixa de Feedback/Explicação Pós-Clique */
-        .loot-feedback-box {
-            margin-top: 2rem;
-            background: rgba(255,255,255,0.02);
-            border: 1px dashed rgba(255,255,255,0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            display: none;
-            animation: slideUp 0.4s ease forwards;
-        }
-
-        .loot-title {
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .loot-title i {
-            color: var(--gold);
-        }
-
-        .loot-body {
+        select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             font-size: 0.95rem;
-            line-height: 1.5;
-            color: var(--text-muted);
+            background-color: #fafafa;
         }
 
-        /* Rodapé de Ações do Jogo */
-        .action-footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 2rem;
+        textarea {
+            resize: vertical;
+            flex-grow: 1;
+            min-height: 200px;
         }
 
-        .game-btn {
-            background: #334155;
+        button {
+            background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 0.8rem 1.8rem;
-            border-radius: 0.75rem;
-            cursor: pointer;
+            padding: 12px;
+            border-radius: 6px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            cursor: pointer;
             transition: background 0.2s;
         }
 
-        .game-btn:hover {
-            background: #475569;
+        button:hover {
+            background-color: #2980b9;
         }
 
-        .game-btn.primary-action {
-            background: var(--success);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-        .game-btn.primary-action:hover {
-            background: #059669;
+        /* Estilização dos Tópicos (Accordions) */
+        .subject-block {
+            background: var(--panel-bg);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
         }
 
-        .orientation-btn {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: var(--text-muted);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        .orientation-btn:hover {
+        .subject-header {
+            background-color: var(--primary-color);
             color: white;
-            border-color: white;
+            padding: 15px 20px;
+            font-size: 1.2rem;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .topic-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+
+        .topic-trigger {
+            width: 100%;
+            text-align: left;
+            background: none;
+            color: var(--text-color);
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0;
+        }
+
+        .topic-trigger:hover {
+            background-color: #f9f9f9;
+            color: var(--accent-color);
+        }
+
+        .topic-content {
+            display: none;
+            padding: 20px;
+            background-color: #fdfdfd;
+            border-top: 1px solid var(--border-color);
+            line-height: 1.6;
+        }
+
+        .topic-content.active {
+            display: block;
+        }
+
+        .sub-items {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .empty-notice {
+            color: #95a5a6;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
 
-    <div class="hud-bar">
-        <div class="hud-profile">
-            <span class="level-badge">LV 1</span>
-            <div class="xp-container">
-                <span class="xp-text" id="xpText">XP: 0 / 1000</span>
-                <div class="bar-bg"><div class="bar-fill" id="xpFill"></div></div>
-            </div>
+    <!-- PAINEL DE CONTROLE (ESQUERDA) -->
+    <div class="sidebar-admin">
+        <h2>Painel de Controle</h2>
+        <p style="font-size: 0.85rem; color: #777;">Selecione o tópico do edital para injetar ou atualizar o seu conteúdo estudado/produzido.</p>
+        
+        <div class="form-group">
+            <label for="topic-select">Selecionar Tópico:</label>
+            <select id="topic-select">
+                <!-- Preenchido dinamicamente via JS para evitar duplicar código -->
+            </select>
         </div>
 
-        <button class="orientation-btn" onclick="toggleLandscape()"><i class="fa-solid fa-expand"></i> Tela Horizontal</button>
-
-        <div class="hud-status">
-            <div class="score-box"><i class="fa-solid fa-trophy"></i> Pontos: <span id="scoreDisplay">0</span></div>
-            <div class="heart-life" id="heartsContainer">
-                <i class="fa-solid fa-heart"></i>
-                <i class="fa-solid fa-heart"></i>
-                <i class="fa-solid fa-heart"></i>
-            </div>
+        <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column;">
+            <label for="content-input">Conteúdo Acadêmico / Resumo:</label>
+            <textarea id="content-input" placeholder="Cole aqui seus textos, dicas, questões comentadas ou resumos estruturados..."></textarea>
         </div>
+
+        <button onclick="saveContent()">Salvar Conteúdo no Tópico</button>
     </div>
 
-    <div class="game-container">
-        <div class="arena-card">
-            <div class="arena-header">
-                <span class="topic-tag" id="cardTopic">Carregando...</span>
-                <button class="audio-trigger-btn" id="audioBtn" onclick="controlarNarracaoCompleta()">
-                    <i class="fa-solid fa-play" id="audioIcon"></i> Ouvir Missão (Voz)
-                </button>
-            </div>
+    <!-- PÁGINA DE EXIBIÇÃO DO CONTEÚDO (DIREITA) -->
+    <div class="main-content">
+        <header style="margin-bottom: 30px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">
+            <h1>Plataforma de Conteúdo Dinâmico</h1>
+            <p>Edital: Prefeitura de Vitória/ES (2026) | Organizador de Conteúdo e Estudos</p>
+        </header>
 
-            <h2 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: var(--accent-color);" id="questionIndexText">MISSÃO 1 DE 10</h2>
-            <div class="question-statement" id="cardStatement">Carregando enunciado...</div>
-
-            <div class="gamified-options" id="optionsContainer">
-                </div>
-
-            <div class="loot-feedback-box" id="feedbackBox">
-                <div class="loot-title"><i class="fa-solid fa-scroll"></i> Pergaminho do Conhecimento (Por que está certa?)</div>
-                <div class="loot-body" id="feedbackText">Explicativo aqui...</div>
-            </div>
-        </div>
-
-        <div class="action-footer">
-            <button class="game-btn" onclick="voltarMissao()" id="btnVoltar" disabled><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-            <button class="game-btn primary-action" onclick="avancarMissao()" id="btnAvancar">Próxima Missão <i class="fa-solid fa-arrow-right"></i></button>
+        <div id="accordion-container">
+            <!-- Os tópicos estruturados do edital nascerão aqui via JavaScript -->
         </div>
     </div>
 
     <script>
-        // Banco de Dados das 10 Questões Completas
-        const questoesData = [
+        // Estruturação analítica do conteúdo bruto do edital fornecido
+        const editalData = [
             {
-                id: "Q3656504",
-                assunto: "Tratados Internacionais de Direitos Humanos",
-                enunciado: "Joaquim, estudante, ficou sabendo que o Brasil deseja ratificar um importante Tratado Internacional sobre Direitos Humanos e descobriu que, de acordo com a Constituição Federal de 1988, referido tratado...",
-                alternativas: {
-                    a: "será equivalente às emendas constitucionais se for aprovado, em cada Casa do Congresso Nacional, em turno único, por três quintos dos votos dos respectivos membros.",
-                    b: "será equivalente às emendas constitucionais se for aprovado, em cada Casa do Congresso Nacional, em turno único, por metade dos votos dos respectivos membros.",
-                    c: "será equivalente às emendas constitucionais se for aprovado por maioria simples, em turno único, em apenas uma das Casas do Congresso Nacional, em razão da importância dos direitos humanos no ordenamento jurídico brasileiro.",
-                    d: "será equivalente às emendas constitucionais se for aprovado, em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros.",
-                    e: "não poderá ser equivalente às emendas constitucionais, independentemente de qualquer aprovação pelo Congresso Nacional, por expressa vedação constitucional."
-                },
-                gabarito: "D",
-                justificativaCurta: "A alternativa D está correta porque reproduz com perfeição o artigo 5º, parágrafo 3º da Constituição. O rito de equivalência exige dois turnos em ambas as Casas por quórum qualificado de três quintos."
+                materia: "Língua Portuguesa",
+                topicos: [
+                    { id: "lp-1", titulo: "Compreensão e Interpretação de Textos", sub: "Tipologia, gêneros textuais, organização estrutural e modos de discurso." },
+                    { id: "lp-2", titulo: "Domínio da Textualidade", sub: "Coesão referencial e sequencial, coerência e intertextualidade." },
+                    { id: "lp-3", titulo: "Morfologia", sub: "Estrutura/formação de palavras e as 10 classes de palavras." },
+                    { id: "lp-4", titulo: "Sintaxe do Período", sub: "Termos da oração, período simples e composto (coordenação/subordinação)." },
+                    { id: "lp-5", titulo: "Concordância e Regência", sub: "Normas verbais e nominais + Emprego do sinal indicativo de crase." },
+                    { id: "lp-6", titulo: "Semântica e Pontuação", sub: "Significação das palavras, denotação/conotação e efeitos da pontuação." },
+                    { id: "lp-7", titulo: "Norma Culta e Ortografia", sub: "Acentuação gráfica, emprego de letras e registros de linguagem." }
+                ]
             },
             {
-                id: "Q3052709",
-                assunto: "Cláusulas Pétreas Expressas",
-                enunciado: "Com base nas limitações materiais ao poder de reforma constitucional, assinale a opção que apresenta uma cláusula pétrea expressa no texto do artigo 60 da Constituição Federal de 1988.",
-                alternativas: {
-                    a: "A independência e autonomia funcional do Ministério Público.",
-                    b: "A autonomia administrativa e financeira da Defensoria Pública.",
-                    c: "A forma republicana de Governo.",
-                    d: "O sistema presidencialista de Governo.",
-                    e: "A forma federativa de Estado."
-                },
-                gabarito: "E",
-                justificativaCurta: "A alternativa E está correta. A forma federativa de Estado é uma limitação material explícita listada no artigo 60, parágrafo 4º da Carta Magna, protegida de qualquer abolição."
+                materia: "Raciocínio Lógico",
+                topicos: [
+                    { id: "rl-1", titulo: "Estruturas Lógicas e Argumentação", sub: "Conceito, valor-verdade, negação e conectivos lógicos." },
+                    { id: "rl-2", titulo: "Equivalências e Leis de De Morgan", sub: "Proposições compostas e diagramas lógicos." },
+                    { id: "rl-3", titulo: "Problemas de Raciocínio", sub: "Dedução de informações e relações arbitrárias." },
+                    { id: "rl-4", titulo: "Conjuntos, Gráficos e Probabilidade", sub: "Operações com conjuntos, tabelas, contagem e noções de probabilidade." }
+                ]
             },
             {
-                id: "Q2372527",
-                assunto: "Teoria Geral do Estado e Ideologia Galicana",
-                enunciado: "No contexto da formação do Estado Moderno e das relações entre o poder político e o poder religioso, a chamada ideologia ou vertente galicana caracterizou-se por:",
-                alternativas: {
-                    a: "Defender a submissão total e absoluta do Rei ao poder espiritual do Papa romano.",
-                    b: "Sustentar que o poder real emana diretamente de Deus, sem necessidade de intermediários institucionais na Terra.",
-                    c: "Consagrar o direito de resistência dos povos perante os monarcas que professassem fé herética.",
-                    d: "Afirmar que o poder político deriva de um pacto de submissão familiar e patriarcal imutável.",
-                    e: "Pregar a autonomia da Igreja nacional francesa face à autoridade papal, conferindo direitos de controle ao monarca sobre os assuntos eclesiásticos do território."
-                },
-                gabarito: "E",
-                justificativaCurta: "A alternativa E está correta. O galicanismo defendia a autonomia administrativa da Igreja Católica na França, reduzindo o controle do Papa de Roma e dando força política ao monarca francês."
+                materia: "Matemática",
+                topicos: [
+                    { id: "mat-1", titulo: "Sistemas Numéricos", sub: "Naturais, inteiros, racionais, reais, primos, MMC e MDC, frações." },
+                    { id: "mat-2", titulo: "Álgebra", sub: "Expressões numéricas, equações, sistemas e funções de 1º e 2º graus." },
+                    { id: "mat-3", titulo: "Proporcionalidade e Matemática Financeira", sub: "Razão, proporção, regra de três, porcentagem, juros simples e compostos." },
+                    { id: "mat-4", titulo: "Grandezas, Medidas e Geometria", sub: "Sistema métrico, ângulos, polígonos, perímetros, áreas e volumes (espacial)." },
+                    { id: "mat-5", titulo: "Trigonometria e Sequências", sub: "Semelhança de triângulos, relações métricas/trigonométricas, Pitágoras e PA/PG." },
+                    { id: "mat-6", titulo: "Estatística e Plano Cartesiano", sub: "Média aritmética simples/ponderada e representação de pontos." }
+                ]
             },
             {
-                id: "Q2640036",
-                assunto: "Origem do Controle de Constitucionalidade",
-                enunciado: "O histórico caso Marbury contra Madison, julgado pela Suprema Corte dos Estados Unidos em 1803, é mundialmente reconhecido por ter consagrado no direito constitucional:",
-                alternativas: {
-                    a: "A teoria do desvio de poder no ato administrativo.",
-                    b: "A origem do controle judicial difuso de constitucionalidade das leis.",
-                    c: "O modelo europeu ou austríaco de controle concentrado.",
-                    d: "A doutrina da separação absoluta de poderes proposta por Hans Kelsen.",
-                    e: "A criação do remédio constitucional do mandado de segurança individual."
-                },
-                gabarito: "B",
-                justificativaCurta: "A alternativa B está correta. O juiz norte-americano John Marshall declarou, pela primeira vez na história moderna, a nulidade judicial de uma lei aprovada pelo parlamento que feria a Constituição, gerando o controle difuso."
+                materia: "Noções de Direito Constitucional e Administrativo",
+                topicos: [
+                    { id: "dir-1", titulo: "Direito Administrativo: Regime Jurídico e Princípios", sub: "Legalidade, impessoalidade, moralidade, publicidade, eficiência, etc." },
+                    { id: "dir-2", titulo: "Organização Administrativa e Poderes", sub: "Desconcentração, descentralização, órgãos e poderes da administração." },
+                    { id: "dir-3", titulo: "Atos Administrativos e Bens Públicos", sub: "Conceitos, requisitos, elementos, atributos e classificações." },
+                    { id: "dir-4", titulo: "Legislação Federal Especial", sub: "Lei de Licitações (14.133/21), LAI (12.527/11) e LGPD (13.709/18)." },
+                    { id: "dir-5", titulo: "Direito Constitucional: Princípios e Direitos Fundamentais", sub: "Constituição de 1988, aplicabilidade das normas e direitos individuais/sociais." },
+                    { id: "dir-6", titulo: "Organização do Estado e dos Poderes", sub: "União, estados, DF, municípios, servidores, e os Poderes Legislativo, Executivo e Judiciário." },
+                    { id: "dir-7", titulo: "Tributação, Orçamento e Ordem Econômica", sub: "Fiscalização contábil, finanças públicas e princípios gerais da atividade econômica." }
+                ]
             },
             {
-                id: "Q2568861",
-                assunto: "Equivalência dos Tratados de Direitos Humanos",
-                enunciado: "Os tratados e convenções internacionais sobre direitos humanos que forem aprovados, em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros, serão equivalentes às:",
-                alternativas: {
-                    a: "Leis Ordinárias.",
-                    b: "Leis Complementares.",
-                    c: "Leis Delegadas.",
-                    d: "Medidas Provisórias.",
-                    e: "Emendas Constitucionais."
-                },
-                gabarito: "E",
-                justificativaCurta: "A alternativa E está correta. É a exata consequência formal disposta no art. 5º, § 3º. Esses tratados adentram no topo da pirâmide normativa, igualando-se às Emendas Constitucionais."
+                materia: "Administração Pública",
+                topicos: [
+                    { id: "adm-1", titulo: "Processos Participativos e Planejamento", sub: "Conselhos, orçamento participativo, ciclo PDCA e leis orçamentárias (PPA, LDO, LOA)." },
+                    { id: "adm-2", titulo: "Referencial Estratégico e Indicadores", sub: "Análise SWOT, cenários, matriz GUT, missão, visão, valores e indicadores." },
+                    { id: "adm-3", titulo: "Governo Eletrônico e Gestão de Pessoas", sub: "Transparência, controle social, accountability e competências." },
+                    { id: "adm-4", titulo: "Modelos de Gestão e Governança", sub: "OS, OSCIP, consórcios, governabilidade, governança e clientelismo." }
+                ]
             },
             {
-                id: "Q2372529",
-                assunto: "Mutação Constitucional",
-                enunciado: "O fenômeno conhecido como mutação constitucional representa um processo de modificação da Constituição que se caracteriza por:",
-                alternativas: {
-                    a: "Alterar o sentido e a interpretação da norma sem modificar o seu texto literal.",
-                    b: "Declarar a ilegalidade superveniente de emendas promulgadas com vício formal.",
-                    c: "Promover a revisão geral do texto constitucional por meio de comissão parlamentar mista exclusiva.",
-                    d: "Depender obrigatoriamente da apresentação de proposta de emenda por um terço dos membros da Câmara.",
-                    e: "Revogar de forma tácita todas as leis anteriores incompatíveis com uma nova constituição que entra em vigor."
-                },
-                gabarito: "A",
-                justificativaCurta: "A alternativa A está correta. A mutação constitucional altera a interpretação e a abrangência de uma norma por conta da evolução social sem mexer em nenhuma palavra do seu texto formal."
+                materia: "Legislação Municipal",
+                topicos: [
+                    { id: "leg-1", titulo: "Lei Orgânica de Vitória", sub: "Disposições fundamentais e organização municipal." },
+                    { id: "leg-2", titulo: "Estatuto dos Funcionários Públicos (Lei 2.994/1982)", sub: "Regime jurídico dos servidores de Vitória." },
+                    { id: "leg-3", titulo: "Código de Ética e Processo Eletrônico", sub: "Decreto 16.559/2015 (Ética) e Decreto 19.930/2021 (Processo digital)." }
+                ]
             },
             {
-                id: "Q2524970",
-                assunto: "Direito Constitucional Intertemporal",
-                enunciado: "Quando uma nova Constituição é promulgada e as normas da Constituição anterior que forem materialmente compatíveis com a nova ordem continuam válidas, mas rebaixadas ao status de lei ordinária, ocorre o fenômeno da:",
-                alternativas: {
-                    a: "Desclassificação normativa.",
-                    b: "Desconstitucionalização.",
-                    c: "Desidratação constitucional.",
-                    d: "Repristinação expressa.",
-                    e: "Recepção tácita infraconstitucional."
-                },
-                gabarito: "B",
-                justificativaCurta: "A alternativa B está correta. O rebaixamento hierárquico de uma norma formalmente constitucional da carta antiga para lei comum da nova ordem define tecnicamente a desconstitucionalização."
-            },
-            {
-                id: "Q2634544",
-                assunto: "Constitucionalismo Contemporâneo e Crise Democrática",
-                enunciado: "O uso de mechanisms e emendas constitucionais formalmente legítimas com o intuito deliberado de minar os pilares democráticos e corroer as instituições de controle por dentro é denominado pela doutrina como:",
-                alternativas: {
-                    a: "Constitucionalismo pluralista.",
-                    b: "Constitucionalismo autoritário originário.",
-                    c: "Constitucionalismo abusivo.",
-                    d: "Constitucionalismo democrático defensivo.",
-                    e: "Constitucionalismo popular radical."
-                },
-                gabarito: "C",
-                justificativaCurta: "A alternativa C está correta. O Constitucionalismo Abusivo se mascara utilizando ferramentas constitucionais e democráticas formais para, de forma sorrateira, corroer e autocratizar o Estado."
-            },
-            {
-                id: "Q2524974",
-                assunto: "Classificação do Poder Constituinte",
-                enunciado: "O Poder Constituinte Originário costuma ser classificado pela doutrina em Histórico e Revolucionário. Considera-se revolucionário aquele poder que:",
-                alternativas: {
-                    a: "Edita a primeira constituição de um estado soberano recém-criado.",
-                    b: "Promove modificações pontuais no texto da carta por meio de revisões previstas.",
-                    c: "Estabelece diretrizes de atuação que ficam subordinadas ao poder instituidor primário.",
-                    d: "Estrutura as constituições locais dos estados-membros componentes de uma federação.",
-                    e: "Rompe por completo com a ordem jurídica anterior, instituindo uma nova organização estatal."
-                },
-                gabarito: "E",
-                justificativaCurta: "A alternativa E está correta. Enquanto o Histórico ergue a primeiríssima constituição, o Revolucionário rompe e derruba a ordem estabelecida para fundar um arranjo estatal totalmente novo."
-            },
-            {
-                id: "Q1905717",
-                assunto: "Limitações Expressas ao Poder de Reforma",
-                enunciado: "As limitações expressas impostas ao Poder Constituinte Derivado Reformador na Constituição Federal de 1988 dividem-se classicamente em:",
-                alternativas: {
-                    a: "Informais, formais e materiais.",
-                    b: "Circunstanciais, formais e materiais.",
-                    c: "Temporais, circunstanciais e formais.",
-                    d: "Imateriais, materiais e procedimentais.",
-                    e: "Explícitas, implícitas e decorrentes."
-                },
-                gabarito: "B",
-                justificativaCurta: "A alternativa B está correta. As limitações do artigo 60 se subdividem em Circunstanciais (crises civis), Formais (trâmite exigido por lei) e Materiais (as intocáveis cláusulas pétreas)."
+                materia: "Conhecimentos Específicos (TI, Infra e Projetos)",
+                topicos: [
+                    { id: "esp-1", titulo: "Infraestrutura e Operações de Rede", sub: "Arquitetura de redes, protocolos, meios de transmissão e segurança básica." },
+                    { id: "esp-2", titulo: "Armazenamento, Virtualização e Nuvem", sub: "SAN, NAS, RAID, S3, backup, cluster, virtualização de servidores e cloud." },
+                    { id: "esp-3", titulo: "Hospedagem, Serviços e Datacenter", sub: "DNS, Web, Proxy, APM, correio, subsistemas críticos e eficiência energética." },
+                    { id: "esp-4", titulo: "Containers e Automação de Infraestrutura", sub: "Docker, Kubernetes, Podman, Ansible, YAML, PowerShell, Bash e CI/CD." },
+                    { id: "esp-5", titulo: "Sistemas Operacionais e Segurança da Informação", sub: "Windows Server, Linux, Active Directory, GRC, criptografia, Firewall, WAF." },
+                    { id: "esp-6", titulo: "Governança de TI e Gestão de Projetos", sub: "ITIL v4, COBIT, PMBOK, PMO, caminho crítico, escopo e aquisições." },
+                    { id: "esp-7", titulo: "Tópicos Especiais: LGPD, Contratos de TI e IA Generativa", sub: "Rito da Lei 14.133/21 em TI, LLMs, alucinação, viés e segurança corporativa." }
+                ]
             }
         ];
 
-        // Estado do Jogo (UX Gamificada)
-        let indiceAtual = 0;
-        let score = 0;
-        let vidas = 3;
-        let xp = 0;
-        let respondidas = {}; // Guarda a alternativa que o usuário clicou para cada índice
-        let currentUtterance = null;
+        // Inicializar a aplicação
+        document.addEventListener("DOMContentLoaded", () => {
+            renderStructure();
+            populateSelect();
+            loadSavedContent();
+            setupSelectListener();
+        });
 
-        // Elementos de tela
-        const cardTopic = document.getElementById('cardTopic');
-        const cardStatement = document.getElementById('cardStatement');
-        const optionsContainer = document.getElementById('optionsContainer');
-        const questionIndexText = document.getElementById('questionIndexText');
-        const feedbackBox = document.getElementById('feedbackBox');
-        const feedbackText = document.getElementById('feedbackText');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        const heartsContainer = document.getElementById('heartsContainer');
-        const xpText = document.getElementById('xpText');
-        const xpFill = document.getElementById('xpFill');
-        const audioIcon = document.getElementById('audioIcon');
-        const audioBtn = document.getElementById('audioBtn');
-        const btnVoltar = document.getElementById('btnVoltar');
-        const btnAvancar = document.getElementById('btnAvancar');
+        // Monta a estrutura visual do edital na tela
+        function renderStructure() {
+            const container = document.getElementById("accordion-container");
+            container.innerHTML = "";
 
-        // Renderizar a Questão Atual da Arena
-        function carregarQuestao() {
-            window.speechSynthesis.cancel();
-            resetBotaoAudio();
-
-            const q = questoesData[indiceAtual];
-            
-            // Textos básicos
-            questionIndexText.innerText = `MISSÃO ${indiceAtual + 1} DE 10 [ID: ${q.id}]`;
-            cardTopic.innerText = q.assunto;
-            cardStatement.innerText = q.enunciado;
-
-            // Limpar container e renderizar alternativas
-            optionsContainer.innerHTML = '';
-            feedbackBox.style.display = 'none';
-
-            const jaRespondida = respondidas[indiceAtual] !== undefined;
-
-            for (const [letra, texto] of Object.entries(q.alternativas)) {
-                const div = document.createElement('div');
-                div.className = 'gamified-option';
-                div.innerHTML = `
-                    <div class="option-badge">${letra.toUpperCase()}</div>
-                    <div style="flex-grow: 1;">${texto}</div>
-                `;
-
-                // Controlar estados caso o jogador já tenha clicado antes
-                if (jaRespondida) {
-                    div.classList.add('disabled');
-                    if (letra.toUpperCase() === q.gabarito) {
-                        div.classList.add('correct');
-                    }
-                    if (letra.toUpperCase() === respondidas[indiceAtual] && respondidas[indiceAtual] !== q.gabarito) {
-                        div.classList.add('wrong');
-                    }
-                } else {
-                    div.onclick = () => verificarResposta(letra.toUpperCase(), div);
-                }
-
-                optionsContainer.appendChild(div);
-            }
-
-            // Exibir a caixa de recompensa se já respondeu
-            if (jaRespondida) {
-                feedbackText.innerText = q.justificativaCurta;
-                feedbackBox.style.display = 'block';
-            }
-
-            // Atualizar botões de navegação
-            btnVoltar.disabled = indiceAtual === 0;
-            btnAvancar.innerText = indiceAtual === questoesData.length - 1 ? "Finalizar Jogo 🏆" : "Próxima Missão ➡️";
+            editalData.forEach(m => {
+                const block = document.createElement("div");
+                block.className = "subject-block";
+                
+                let html = `<div class="subject-header">${m.materia}</div>`;
+                
+                m.topicos.forEach(t => {
+                    html += `
+                        <div class="topic-item">
+                            <button class="topic-trigger" onclick="toggleAccordion('${t.id}')">
+                                <div>
+                                    ${t.titulo}
+                                    <div class="sub-items">${t.sub}</div>
+                                </div>
+                                <span>▼</span>
+                            </button>
+                            <div class="topic-content" id="content-${t.id}">
+                                <div class="dynamic-placeholder empty-notice">Nenhum conteúdo adicionado para este tópico ainda. Use o painel lateral para criar!</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                block.innerHTML = html;
+                container.appendChild(block);
+            });
         }
 
-        // Sistema de Validação Dinâmica com Recompensa (XP/Vidas)
-        function verificarResposta(letraEscolhida, elementoClicado) {
-            const q = questoesData[indiceAtual];
-            respondidas[indiceAtual] = letraEscolhida;
-
-            // Desabilitar todas as opções
-            document.querySelectorAll('.gamified-option').forEach(opt => opt.classList.add('disabled'));
-
-            if (letraEscolhida === q.gabarito) {
-                // Ganhou pontuação e XP
-                elementoClicado.classList.add('correct');
-                score += 100;
-                xp += 100;
-                if (xp >= 1000) xp = 990; // Trava o level 1 para o escopo do teste
+        // Popula as opções do Select do Painel de Controle
+        function populateSelect() {
+            const select = document.getElementById("topic-select");
+            editalData.forEach(m => {
+                const group = document.createElement("optgroup");
+                group.label = m.materia;
                 
-                scoreDisplay.innerText = score;
-                atualizarHUDGamificada();
-            } else {
-                // Perdeu vida
-                elementoClicado.classList.add('wrong');
-                vidas--;
-                atualizarHUDGamificada();
+                m.topicos.forEach(t => {
+                    const opt = document.createElement("option");
+                    opt.value = t.id;
+                    opt.textContent = t.titulo;
+                    group.appendChild(opt);
+                });
+                select.appendChild(group);
+            });
+        }
 
-                // Destacar onde estava a correta
-                document.querySelectorAll('.gamified-option').forEach((opt) => {
-                    if (opt.querySelector('.option-badge').innerText === q.gabarito) {
-                        opt.classList.add('correct');
+        // Controla o abrir/fechar dos tópicos
+        function toggleAccordion(id) {
+            const content = document.getElementById(`content-${id}`);
+            content.classList.toggle("active");
+        }
+
+        // Salva o conteúdo no LocalStorage do Navegador
+        function saveContent() {
+            const select = document.getElementById("topic-select");
+            const textarea = document.getElementById("content-input");
+            const selectedId = select.value;
+            const textToSave = textarea.value.trim();
+
+            if(!selectedId) return;
+
+            // Salva no LocalStorage
+            localStorage.setItem(`content_vitoria_${selectedId}`, textToSave);
+
+            // Atualiza a visualização imediatamente
+            updateTopicDisplay(selectedId, textToSave);
+
+            // Abre o painel editado para o usuário ver o resultado
+            const targetContent = document.getElementById(`content-${selectedId}`);
+            if (!targetContent.classList.contains("active")) {
+                targetContent.classList.add("active");
+            }
+
+            alert("Conteúdo salvo e atualizado com sucesso!");
+        }
+
+        // Atualiza o container de texto do tópico alvo
+        function updateTopicDisplay(id, text) {
+            const displayDiv = document.getElementById(`content-${id}`);
+            if (text) {
+                // Substitui quebras de linha por tags <br> para manter a formatação visual do usuário
+                displayDiv.innerHTML = text.replace(/\n/g, '<br>');
+                displayDiv.classList.remove("empty-notice");
+            } else {
+                displayDiv.innerHTML = `<div class="dynamic-placeholder empty-notice">Nenhum conteúdo adicionado para este tópico ainda. Use o painel lateral para criar!</div>`;
+            }
+        }
+
+        // Carrega as informações previamente salvas ao abrir a página
+        function loadSavedContent() {
+            editalData.forEach(m => {
+                m.topicos.forEach(t => {
+                    const savedText = localStorage.getItem(`content_vitoria_${t.id}`);
+                    if (savedText) {
+                        updateTopicDisplay(t.id, savedText);
                     }
                 });
-            }
-
-            // Revelar pergaminho de conhecimento
-            feedbackText.innerText = q.justificativaCurta;
-            feedbackBox.style.display = 'block';
+            });
+            // Carrega no campo de texto o valor do primeiro item do select
+            updateTextareaFromSelect();
         }
 
-        function atualizarHUDGamificada() {
-            // Atualizar XP
-            xpText.innerText = `XP: ${xp} / 1000`;
-            xpFill.style.width = `${(xp / 1000) * 100}%`;
-
-            // Atualizar Corações
-            heartsContainer.innerHTML = '';
-            for (let i = 0; i < 3; i++) {
-                if (i < vidas) {
-                    heartsContainer.innerHTML += `<i class="fa-solid fa-heart"></i>`;
-                } else {
-                    heartsContainer.innerHTML += `<i class="fa-regular fa-heart" style="color: #475569;"></i>`;
-                }
-            }
-
-            if (vidas <= 0) {
-                setTimeout(() => {
-                    alert("⚠️ Suas vidas acabaram! Mas o conhecimento continua. Prossiga para revisar o resto das missões.");
-                }, 300);
-            }
+        // Atualiza a área de texto quando o usuário muda o select (para ele ver o que já escreveu antes)
+        function setupSelectListener() {
+            document.getElementById("topic-select").addEventListener("change", updateTextareaFromSelect);
         }
 
-        // Navegação das missões do RPG
-        function avançarMissao() {
-            if (indiceAtual < questoesData.length - 1) {
-                indiceAtual++;
-                carregarQuestao();
-            } else {
-                alert(`🎮 Fim do Jogo! Você concluiu a campanha com ${score} Pontos de Honra e colheu bastante conhecimento!`);
-            }
+        function updateTextareaFromSelect() {
+            const currentId = document.getElementById("topic-select").value;
+            const savedText = localStorage.getItem(`content_vitoria_${currentId}`) || "";
+            document.getElementById("content-input").value = savedText;
         }
-
-        function voltarMissao() {
-            if (indiceAtual > 0) {
-                indiceAtual--;
-                carregarQuestao();
-            }
-        }
-
-        // Sistema de Narração Completo e Realista (Enunciado + Todas as Alternativas)
-        function controlarNarracaoCompleta() {
-            if (window.speechSynthesis.speaking && currentUtterance) {
-                window.speechSynthesis.cancel();
-                resetBotaoAudio();
-                return;
-            }
-
-            const q = questoesData[indiceAtual];
-            
-            // Montagem do Script da Voz Didática
-            let scriptVoz = `Iniciando a Missão número ${indiceAtual + 1}, abordando o tema ${q.assunto}. `;
-            scriptVoz += `Ouça com atenção o enunciado da questão: ${q.enunciado} `;
-            scriptVoz += `Agora, preste atenção em cada uma das alternativas disponíveis: `;
-            
-            for (const [letra, texto] of Object.entries(q.alternativas)) {
-                scriptVoz += `Alternativa ${letra.toUpperCase()}: ${texto}. `;
-            }
-
-            // Se o usuário já respondeu, narra também o porquê
-            if (respondidas[indiceAtual] !== undefined) {
-                scriptVoz += `Análise de combate concluída. O pergaminho indica que a alternativa certa é a ${q.gabarito}. Justificativa: ${q.justificativaCurta}`;
-            } else {
-                scriptVoz += `Analise as alternativas em sua arena e escolha sua resposta para ganhar cem pontos de experiência. Boa sorte.`;
-            }
-
-            const utterance = new SpeechSynthesisUtterance(scriptVoz);
-            
-            // Localizar melhor voz em português
-            const vozes = window.speechSynthesis.getVoices();
-            const vozPt = vozes.find(v => v.lang.includes('PT') || v.lang.includes('pt-BR'));
-            if (vozPt) utterance.voice = vozPt;
-
-            utterance.rate = 1.05; // Fluidez
-            utterance.pitch = 1.0; 
-
-            utterance.onstart = () => {
-                audioIcon.className = 'fa-solid fa-stop';
-                audioBtn.classList.add('playing');
-                audioBtn.innerHTML = `<i class="fa-solid fa-stop"></i> Parar Narração`;
-            };
-
-            utterance.onend = () => {
-                resetBotaoAudio();
-            };
-
-            currentUtterance = utterance;
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function resetBotaoAudio() {
-            audioIcon.className = 'fa-solid fa-play';
-            audioBtn.classList.remove('playing');
-            audioBtn.innerHTML = `<i class="fa-solid fa-play"></i> Ouvir Missão (Voz)`;
-        }
-
-        // Alternar Rotação Horizontal Nativa/Simulada para UX Mobile
-        function toggleLandscape() {
-            if (document.documentElement.requestFullscreen) {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().then(() => {
-                        if (screen.orientation && screen.orientation.lock) {
-                            screen.orientation.lock('landscape').catch(() => {
-                                alert("Por favor, vire seu dispositivo de lado para ativar a visualização horizontal.");
-                            });
-                        }
-                    });
-                } else {
-                    document.exitFullscreen();
-                }
-            }
-        }
-
-        // Inicializar primeira missão
-        window.speechSynthesis.onvoiceschanged = () => {};
-        carregarQuestao();
     </script>
 </body>
 </html>
