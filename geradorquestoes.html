@@ -56,7 +56,7 @@
             background-color: var(--accent-color);
         }
 
-        /* PAINEL LATERAL (SIDEBAR) RESPONSIVO */
+        /* PAINEL LATERAL DE CONTROLE */
         .sidebar-admin {
             width: var(--sidebar-width);
             min-width: var(--sidebar-width);
@@ -93,6 +93,31 @@
         header p {
             font-size: 0.85rem;
             color: #666;
+            margin-bottom: 15px;
+        }
+
+        /* BARRA DE CONTROLES GLOBAIS */
+        .global-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .global-btn {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            border: 1px solid #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .global-btn:hover {
+            background-color: #cbd5e1;
+            color: #1a202c;
         }
 
         /* FORMULÁRIO */
@@ -148,11 +173,11 @@
         .btn-save-questions { background-color: var(--success-color); }
         .btn-save-questions:hover { background-color: #27ae60; }
 
-        /* BLOCOS DAS MATÉRIAS (ACCORDIONS) */
+        /* NÍVEL 1: BLOCOS DAS MATÉRIAS (ACCORDIONS) */
         .subject-block {
             background: var(--panel-bg);
             border-radius: 8px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             border: 1px solid var(--border-color);
             overflow: hidden;
@@ -164,25 +189,60 @@
             padding: 15px 20px;
             font-size: 1.1rem;
             font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
         }
 
-        /* CONTAINER DE TÓPICOS */
+        .subject-body {
+            display: block; /* Inicia aberto, alterável via clique ou global */
+        }
+        
+        .subject-body.collapsed-node {
+            display: none;
+        }
+
+        /* NÍVEL 2: CONTAINER E TÍTULO DE TÓPICOS */
         .topic-container {
-            padding: 10px 20px;
+            padding: 5px 20px;
             background-color: #fafbfc;
             border-bottom: 1px solid var(--border-color);
+        }
+
+        .topic-header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin: 10px 0 5px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ced4da;
+            user-select: none;
         }
 
         .topic-title {
             font-size: 0.95rem;
             font-weight: bold;
             color: var(--primary-color);
-            margin: 10px 0 5px 0;
-            padding-bottom: 3px;
-            border-bottom: 1px dashed #ced4da;
+        }
+        
+        .topic-arrow {
+            font-size: 0.85rem;
+            color: #7f8c8d;
         }
 
-        /* ITENS DOS SUBTÓPICOS */
+        .topic-body {
+            display: block;
+            padding: 5px 0;
+        }
+
+        .topic-body.collapsed-node {
+            display: none;
+        }
+
+        /* NÍVEL 3: ITENS DOS SUBTÓPICOS */
         .subtopic-item {
             background: #ffffff;
             border: 1px solid var(--border-color);
@@ -277,6 +337,7 @@
             .main-content { padding: 80px 12px 12px 12px; }
             header h1 { font-size: 1.3rem; padding-left: 70px; }
             header p { padding-left: 70px; }
+            .global-controls { padding-left: 70px; flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -293,7 +354,7 @@
         <div class="form-group">
             <label for="topic-select">Selecione o Subtópico Alvo:</label>
             <select id="topic-select">
-                <!-- Populado automaticamente via JS com a estrutura minuciosa -->
+                <!-- Populado automaticamente via JS -->
             </select>
         </div>
 
@@ -317,18 +378,23 @@
 
     <!-- EXIBIÇÃO DA GRADE EM SUBTÓPICOS -->
     <div class="main-content">
-        <header style="margin-bottom: 25px; border-bottom: 2px solid var(--primary-color); padding-bottom: 12px;">
+        <header>
             <h1>Plataforma Organizada de Estudos</h1>
             <p>Edital: Prefeitura de Vitória/ES (2026) | Controle Total de Subtópicos e Monitoramento</p>
         </header>
 
+        <!-- CONTROLES GLOBAIS MAIS POTENTES -->
+        <div class="global-controls">
+            <button class="global-btn" onclick="globalCollapseAll()">📁 Recolher Tudo</button>
+            <button class="global-btn" onclick="globalExpandAll()">📂 Expandir Tudo</button>
+        </div>
+
         <div id="accordion-container">
-            <!-- Renderização Dinâmica Conforme Divisão Detalhada -->
+            <!-- Renderização Dinâmica -->
         </div>
     </div>
 
     <script>
-        // Banco de dados completo contendo Matérias -> Tópicos -> Subtópicos Isolados
         const editalCompleto = [
             {
                 materia: "Língua Portuguesa",
@@ -437,7 +503,7 @@
                         subtopicos: ["CF/88: Princípios fundamentais (Art. 1º ao 4º)", "Eficácia das normas: Plena, contida e limitada", "Normas programáticas", "Direitos e deveres individuais e coletivos (Art. 5º)", "Direitos sociais (Art. 6º ao 11)", "Direitos de nacionalidade (Art. 12 e 13)", "Direitos políticos e partidos políticos (Art. 14 ao 17)"]
                     },
                     {
-                        titulo: "4.6. Organização do Estado e dos Poderes",
+                        titulo: "4.6. Organização do State e dos Poderes",
                         subtopicos: ["Organização político-administrativa: União, estados, DF e municípios", "Administração Pública e Servidores na CF/88 (Art. 37 ao 41)", "Organização dos Poderes: Poder Legislativo", "Organização dos Poderes: Poder Executivo", "Organização dos Poderes: Poder Judiciário", "Fiscalização contábil, financeira e orçamentária"]
                     },
                     {
@@ -513,19 +579,15 @@
                     },
                     {
                         titulo: "7.7. Tópicos Especiais (LGPD, Contratos e IA)",
-                        subtopicos: ["LGPD: Conceitos, agentes, bases legais e princípios digitais", "Gestão, fiscalização e riscos de contratos de TI", "Contratação de TI baseado na Lei nº 14.133/21", "IA Generativa e Grandes Modelos de Linguagem (LLMs)", "LLMs: Capacidades, limitações e aplicações corporativas", "Riscos em IA: Alucinação, viés, vazamentos e segurança"]
+                        subtopicos: ["LGPD: Conceitos, agentes, bases legais e princípios digitais", "Gestão, fiscalização e riscos de contratos de TI", "Contratação de TI baseado na Lei nº 14.133/21", "IA Generativa e Grandes Modelos de Linguagem (LLMs)", "LLMs: Capacidades, limitations e aplicações corporativas", "Riscos em IA: Alucinação, viés, vazamentos e segurança"]
                     }
                 ]
             }
         ];
 
-        // Função auxiliar para gerar IDs limpos e padronizados baseados no texto do subtópico
         function gerarId(texto) {
             return btoa(unescape(encodeURIComponent(texto)))
-                .replace(/=/g, "")
-                .replace(/\+/g, "-")
-                .replace(/\//g, "_")
-                .substring(0, 25);
+                .replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_").substring(0, 25);
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -541,20 +603,81 @@
             document.getElementById("sidebar").classList.toggle("collapsed");
         }
 
-        // Constrói a árvore visual: Matéria -> Tópicos -> Subtópicos com Abas
+        // CONTROLES DE COMPRESSÃO INDIVIDUAL (MATÉRIAS E TÓPICOS)
+        function toggleSubject(id) {
+            const body = document.getElementById(`subject-body-${id}`);
+            const arrow = document.getElementById(`subject-arrow-${id}`);
+            body.classList.toggle("collapsed-node");
+            arrow.textContent = body.classList.contains("collapsed-node") ? "▼" : "▲";
+        }
+
+        function toggleTopic(id) {
+            const body = document.getElementById(`topic-body-${id}`);
+            const arrow = document.getElementById(`topic-arrow-${id}`);
+            body.classList.toggle("collapsed-node");
+            arrow.textContent = body.classList.contains("collapsed-node") ? "▼" : "▲";
+        }
+
+        function toggleSubAccordion(id) {
+            const content = document.getElementById(`content-${id}`);
+            const arrow = document.getElementById(`arrow-${id}`);
+            const isActive = content.classList.contains("active");
+            
+            content.classList.toggle("active", !isActive);
+            arrow.textContent = isActive ? "▼" : "▲";
+        }
+
+        // RESET GERAL - RECOLHE ABSOLUTAMENTE TUDO
+        function globalCollapseAll() {
+            // Nível 3 (Subtópicos)
+            document.querySelectorAll(".subtopic-content").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".subtopic-trigger span:last-child").forEach(el => el.textContent = "▼");
+            // Nível 2 (Tópicos)
+            document.querySelectorAll(".topic-body").forEach(el => el.classList.add("collapsed-node"));
+            document.querySelectorAll(".topic-arrow").forEach(el => el.textContent = "▼");
+            // Nível 1 (Matérias)
+            document.querySelectorAll(".subject-body").forEach(el => el.classList.add("collapsed-node"));
+            document.querySelectorAll(".subject-arrow").forEach(el => el.textContent = "▼");
+        }
+
+        // EXPANDE ABSOLUTAMENTE TUDO
+        function globalExpandAll() {
+            document.querySelectorAll(".subject-body").forEach(el => el.classList.remove("collapsed-node"));
+            document.querySelectorAll(".subject-arrow").forEach(el => el.textContent = "▲");
+            
+            document.querySelectorAll(".topic-body").forEach(el => el.classList.remove("collapsed-node"));
+            document.querySelectorAll(".topic-arrow").forEach(el => el.textContent = "▲");
+
+            document.querySelectorAll(".subtopic-content").forEach(el => el.classList.add("active"));
+            document.querySelectorAll(".subtopic-trigger span:last-child").forEach(el => el.textContent = "▲");
+        }
+
         function renderStructure() {
             const container = document.getElementById("accordion-container");
             container.innerHTML = "";
 
-            editalCompleto.forEach(m => {
+            editalCompleto.forEach((m, mIndex) => {
                 const block = document.createElement("div");
                 block.className = "subject-block";
                 
-                let html = `<div class="subject-header">${m.materia}</div>`;
+                let html = `
+                    <div class="subject-header" onclick="toggleSubject('${mIndex}')">
+                        <span>${m.materia}</span>
+                        <span id="subject-arrow-${mIndex}">▲</span>
+                    </div>
+                    <div class="subject-body" id="subject-body-${mIndex}">
+                `;
                 
-                m.topicos.forEach(t => {
-                    html += `<div class="topic-container">`;
-                    html += `<div class="topic-title">${t.titulo}</div>`;
+                m.topicos.forEach((t, tIndex) => {
+                    const tId = `${mIndex}_${tIndex}`;
+                    html += `
+                        <div class="topic-container">
+                            <div class="topic-header-wrapper" onclick="toggleTopic('${tId}')">
+                                <div class="topic-title">${t.titulo}</div>
+                                <div class="topic-arrow" id="topic-arrow-${tId}">▲</div>
+                            </div>
+                            <div class="topic-body" id="topic-body-${tId}">
+                    `;
                     
                     t.subtopicos.forEach(st => {
                         const subId = gerarId(st);
@@ -580,9 +703,10 @@
                         `;
                     });
                     
-                    html += `</div>`; // fecha topic-container
+                    html += `</div></div>`; // fecha topic-body e topic-container
                 });
                 
+                html += `</div>`; // fecha subject-body
                 block.innerHTML = html;
                 container.appendChild(block);
             });
@@ -603,15 +727,6 @@
                 });
                 select.appendChild(group);
             });
-        }
-
-        function toggleSubAccordion(id) {
-            const content = document.getElementById(`content-${id}`);
-            const arrow = document.getElementById(`arrow-${id}`);
-            const isActive = content.classList.contains("active");
-            
-            content.classList.toggle("active", !isActive);
-            arrow.textContent = isActive ? "▼" : "▲";
         }
 
         function switchTab(id, type) {
@@ -640,7 +755,7 @@
 
             updatePanelDisplay(selectedId, type, text);
 
-            // Abre automaticamente o subtópico atualizado e foca na aba certa
+            // Garante abertura em cascata para ver o item salvo
             document.getElementById(`content-${selectedId}`).classList.add("active");
             document.getElementById(`arrow-${selectedId}`).textContent = "▲";
             switchTab(selectedId, type);
