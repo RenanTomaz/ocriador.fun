@@ -10,8 +10,10 @@
             --panel-bg: #ffffff;
             --primary-color: #2c3e50;
             --accent-color: #3498db;
+            --success-color: #2ecc71;
             --text-color: #333333;
             --border-color: #e0e0e0;
+            --sidebar-width: 350px;
         }
 
         * {
@@ -27,33 +29,74 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            position: relative;
         }
 
-        /* Layout Principal */
+        /* BOTÃO FLUTUANTE PARA EXPANDIR/RECOLHER PAINEL */
+        .toggle-sidebar-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-sidebar-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* PAINEL DE CONTROLE (SIDEBAR) RESPONSIVO */
         .sidebar-admin {
-            width: 350px;
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
             background-color: var(--panel-bg);
             border-right: 1px solid var(--border-color);
-            padding: 20px;
+            padding: 70px 20px 20px 20px; /* Espaço para o botão superior */
             display: flex;
             flex-direction: column;
             gap: 15px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-            z-index: 10;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+            z-index: 90;
+            transition: transform 0.3s ease, margin-left 0.3s ease;
         }
 
+        /* Classe disparada via JS para ocultar a barra */
+        .sidebar-admin.collapsed {
+            transform: translateX(-100%);
+            margin-left: calc(-1px * var(--sidebar-width));
+        }
+
+        /* CONTEÚDO PRINCIPAL RESPONSIVO */
         .main-content {
             flex: 1;
-            padding: 30px;
+            padding: 80px 30px 30px 30px; /* Espaço para o cabeçalho móvel */
             overflow-y: auto;
+            transition: padding-left 0.3s ease;
         }
 
-        h1, h2, h3 {
+        header h1 {
             color: var(--primary-color);
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
         }
 
-        /* Formulário do Painel */
+        header p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* FORMULÁRIO DO PAINEL */
         .form-group {
             display: flex;
             flex-direction: column;
@@ -61,9 +104,11 @@
         }
 
         label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         select, textarea {
@@ -77,12 +122,17 @@
 
         textarea {
             resize: vertical;
-            flex-grow: 1;
-            min-height: 200px;
+            min-height: 120px;
         }
 
-        button {
-            background-color: var(--accent-color);
+        .btn-block {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        button.action-btn {
             color: white;
             border: none;
             padding: 12px;
@@ -92,11 +142,13 @@
             transition: background 0.2s;
         }
 
-        button:hover {
-            background-color: #2980b9;
-        }
+        .btn-save-content { background-color: var(--accent-color); }
+        .btn-save-content:hover { background-color: #2980b9; }
+        
+        .btn-save-questions { background-color: var(--success-color); }
+        .btn-save-questions:hover { background-color: #27ae60; }
 
-        /* Estilização dos Tópicos (Accordions) */
+        /* ACCORDIONS DO EDITAL */
         .subject-block {
             background: var(--panel-bg);
             border-radius: 8px;
@@ -110,7 +162,8 @@
             background-color: var(--primary-color);
             color: white;
             padding: 15px 20px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
         }
 
         .topic-item {
@@ -127,80 +180,164 @@
             background: none;
             color: var(--text-color);
             padding: 15px 20px;
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 0.95rem;
+            font-weight: 600;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: 0;
+            border: none;
+            cursor: pointer;
         }
 
         .topic-trigger:hover {
-            background-color: #f9f9f9;
+            background-color: #fdfdfd;
             color: var(--accent-color);
+        }
+
+        .sub-items {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 4px;
+            font-style: italic;
+            font-weight: normal;
         }
 
         .topic-content {
             display: none;
             padding: 20px;
-            background-color: #fdfdfd;
+            background-color: #fcfcfc;
             border-top: 1px solid var(--border-color);
-            line-height: 1.6;
         }
 
         .topic-content.active {
             display: block;
         }
 
-        .sub-items {
-            font-size: 0.85rem;
+        /* ESTRUTURA DE ABAS INTERNAS (CONTEÚDO VS QUESTÕES) */
+        .tabs-nav {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: bold;
             color: #7f8c8d;
-            margin-top: 5px;
-            font-style: italic;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .tab-btn.questions-tab.active {
+            border-bottom-color: var(--success-color);
+        }
+
+        .tab-panel {
+            display: none;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            padding: 5px 0;
+        }
+
+        .tab-panel.active {
+            display: block;
         }
 
         .empty-notice {
             color: #95a5a6;
             font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        /* ADAPTAÇÃO PARA TELAS MÓVEIS (MEDIA QUERIES) */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar-admin {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+            }
+
+            .main-content {
+                padding: 80px 15px 15px 15px;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .tabs-nav {
+                width: 100%;
+                overflow-x: auto;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- BOTÃO GERAL PARA CONTROLAR A SIDEBAR -->
+    <button class="toggle-sidebar-btn" onclick="toggleSidebar()">
+        <span>☰</span> <span id="btn-text">Painel</span>
+    </button>
+
     <!-- PAINEL DE CONTROLE (ESQUERDA) -->
-    <div class="sidebar-admin">
-        <h2>Painel de Controle</h2>
-        <p style="font-size: 0.85rem; color: #777;">Selecione o tópico do edital para injetar ou atualizar o seu conteúdo estudado/produzido.</p>
+    <div class="sidebar-admin" id="sidebar">
+        <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">Editor de Conteúdo</h3>
         
         <div class="form-group">
-            <label for="topic-select">Selecionar Tópico:</label>
+            <label for="topic-select">1. Selecione o Tópico:</label>
             <select id="topic-select">
-                <!-- Preenchido dinamicamente via JS para evitar duplicar código -->
+                <!-- Preenchido dinamicamente pelo JavaScript -->
             </select>
         </div>
 
-        <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column;">
-            <label for="content-input">Conteúdo Acadêmico / Resumo:</label>
-            <textarea id="content-input" placeholder="Cole aqui seus textos, dicas, questões comentadas ou resumos estruturados..."></textarea>
+        <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label for="content-input">2. Texto Teórico / Resumo:</label>
+                <textarea id="content-input" placeholder="Cole aqui a teoria, conceitos chaves ou dicas..."></textarea>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+                <label for="questions-input">3. Banco de Questões / Comentários:</label>
+                <textarea id="questions-input" placeholder="Cole aqui seus exercícios, simulados e gabaritos comentados para fixação..." style="flex-grow: 1; min-height: 120px;"></textarea>
+            </div>
         </div>
 
-        <button onclick="saveContent()">Salvar Conteúdo no Tópico</button>
+        <div class="btn-block">
+            <button class="action-btn btn-save-content" onclick="saveData('theory')">Salvar Teoria</button>
+            <button class="action-btn btn-save-questions" onclick="saveData('questions')">Salvar Questões</button>
+        </div>
     </div>
 
-    <!-- PÁGINA DE EXIBIÇÃO DO CONTEÚDO (DIREITA) -->
+    <!-- PÁGINA DE EXIBIÇÃO DO EDITAL (DIREITA) -->
     <div class="main-content">
-        <header style="margin-bottom: 30px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">
-            <h1>Plataforma de Conteúdo Dinâmico</h1>
-            <p>Edital: Prefeitura de Vitória/ES (2026) | Organizador de Conteúdo e Estudos</p>
+        <header style="margin-bottom: 25px; border-bottom: 2px solid var(--primary-color); padding-bottom: 12px;">
+            <h1 style="padding-left: 80px;">Plataforma de Estudos Integrada</h1>
+            <p style="padding-left: 80px;">Edital: Vitória/ES | Gestão Dinâmica de Teoria e Questões</p>
         </header>
 
         <div id="accordion-container">
-            <!-- Os tópicos estruturados do edital nascerão aqui via JavaScript -->
+            <!-- Gerado via JavaScript -->
         </div>
     </div>
 
     <script>
-        // Estruturação analítica do conteúdo bruto do edital fornecido
+        // Mapeamento idêntico de todos os blocos do edital original fornecido
         const editalData = [
             {
                 materia: "Língua Portuguesa",
@@ -229,8 +366,8 @@
                     { id: "mat-1", titulo: "Sistemas Numéricos", sub: "Naturais, inteiros, racionais, reais, primos, MMC e MDC, frações." },
                     { id: "mat-2", titulo: "Álgebra", sub: "Expressões numéricas, equações, sistemas e funções de 1º e 2º graus." },
                     { id: "mat-3", titulo: "Proporcionalidade e Matemática Financeira", sub: "Razão, proporção, regra de três, porcentagem, juros simples e compostos." },
-                    { id: "mat-4", titulo: "Grandezas, Medidas e Geometria", sub: "Sistema métrico, ângulos, polígonos, perímetros, áreas e volumes (espacial)." },
-                    { id: "mat-5", titulo: "Trigonometria e Sequências", sub: "Semelhança de triângulos, relações métricas/trigonométricas, Pitágoras e PA/PG." },
+                    { id: "mat-4", titulo: "Grandezas, Medidas e Geometria", sub: "Sistema métrico, ângulos, polígonos, perímetros, áreas e volumes." },
+                    { id: "mat-5", titulo: "Trigonometria e Sequências", sub: "Semelhança de triângulos, relações métricas, Pitágoras e PA/PG." },
                     { id: "mat-6", titulo: "Estatística e Plano Cartesiano", sub: "Média aritmética simples/ponderada e representação de pontos." }
                 ]
             },
@@ -238,19 +375,19 @@
                 materia: "Noções de Direito Constitucional e Administrativo",
                 topicos: [
                     { id: "dir-1", titulo: "Direito Administrativo: Regime Jurídico e Princípios", sub: "Legalidade, impessoalidade, moralidade, publicidade, eficiência, etc." },
-                    { id: "dir-2", titulo: "Organização Administrativa e Poderes", sub: "Desconcentração, descentralização, órgãos e poderes da administração." },
+                    { id: "dir-2", titulo: "Organização Administrativa e Poderes", sub: "Desconcentração, descentralização, órgãos e poderes." },
                     { id: "dir-3", titulo: "Atos Administrativos e Bens Públicos", sub: "Conceitos, requisitos, elementos, atributos e classificações." },
                     { id: "dir-4", titulo: "Legislação Federal Especial", sub: "Lei de Licitações (14.133/21), LAI (12.527/11) e LGPD (13.709/18)." },
-                    { id: "dir-5", titulo: "Direito Constitucional: Princípios e Direitos Fundamentais", sub: "Constituição de 1988, aplicabilidade das normas e direitos individuais/sociais." },
-                    { id: "dir-6", titulo: "Organização do Estado e dos Poderes", sub: "União, estados, DF, municípios, servidores, e os Poderes Legislativo, Executivo e Judiciário." },
-                    { id: "dir-7", titulo: "Tributação, Orçamento e Ordem Econômica", sub: "Fiscalização contábil, finanças públicas e princípios gerais da atividade econômica." }
+                    { id: "dir-5", titulo: "Direito Constitucional: Princípios e Direitos Fundamentais", sub: "Constituição de 1988, aplicabilidade das normas e direitos." },
+                    { id: "dir-6", titulo: "Organização do Estado e dos Poderes", sub: "União, estados, DF, municípios, servidores, e os Três Poderes." },
+                    { id: "dir-7", titulo: "Tributação, Orçamento e Ordem Econômica", sub: "Fiscalização contábil, finanças públicas e princípios econômicos." }
                 ]
             },
             {
                 materia: "Administração Pública",
                 topicos: [
-                    { id: "adm-1", titulo: "Processos Participativos e Planejamento", sub: "Conselhos, orçamento participativo, ciclo PDCA e leis orçamentárias (PPA, LDO, LOA)." },
-                    { id: "adm-2", titulo: "Referencial Estratégico e Indicadores", sub: "Análise SWOT, cenários, matriz GUT, missão, visão, valores e indicadores." },
+                    { id: "adm-1", titulo: "Processos Participativos e Planejamento", sub: "Conselhos, orçamento participativo, PDCA e leis orçamentárias (PPA, LDO, LOA)." },
+                    { id: "adm-2", titulo: "Referencial Estratégico e Indicadores", sub: "Análise SWOT, cenários, matriz GUT, missão e indicadores." },
                     { id: "adm-3", titulo: "Governo Eletrônico e Gestão de Pessoas", sub: "Transparência, controle social, accountability e competências." },
                     { id: "adm-4", titulo: "Modelos de Gestão e Governança", sub: "OS, OSCIP, consórcios, governabilidade, governança e clientelismo." }
                 ]
@@ -266,26 +403,38 @@
             {
                 materia: "Conhecimentos Específicos (TI, Infra e Projetos)",
                 topicos: [
-                    { id: "esp-1", titulo: "Infraestrutura e Operações de Rede", sub: "Arquitetura de redes, protocolos, meios de transmissão e segurança básica." },
-                    { id: "esp-2", titulo: "Armazenamento, Virtualização e Nuvem", sub: "SAN, NAS, RAID, S3, backup, cluster, virtualização de servidores e cloud." },
-                    { id: "esp-3", titulo: "Hospedagem, Serviços e Datacenter", sub: "DNS, Web, Proxy, APM, correio, subsistemas críticos e eficiência energética." },
+                    { id: "esp-1", titulo: "Infraestrutura e Operações de Rede", sub: "Arquitetura de redes, protocolos, meios de transmissão e segurança." },
+                    { id: "esp-2", titulo: "Armazenamento, Virtualização e Nuvem", sub: "SAN, NAS, RAID, S3, backup, virtualização e nuvem." },
+                    { id: "esp-3", titulo: "Hospedagem, Serviços e Datacenter", sub: "DNS, Web, Proxy, APM, subsistemas críticos e eficiência energética." },
                     { id: "esp-4", titulo: "Containers e Automação de Infraestrutura", sub: "Docker, Kubernetes, Podman, Ansible, YAML, PowerShell, Bash e CI/CD." },
-                    { id: "esp-5", titulo: "Sistemas Operacionais e Segurança da Informação", sub: "Windows Server, Linux, Active Directory, GRC, criptografia, Firewall, WAF." },
-                    { id: "esp-6", titulo: "Governança de TI e Gestão de Projetos", sub: "ITIL v4, COBIT, PMBOK, PMO, caminho crítico, escopo e aquisições." },
-                    { id: "esp-7", titulo: "Tópicos Especiais: LGPD, Contratos de TI e IA Generativa", sub: "Rito da Lei 14.133/21 em TI, LLMs, alucinação, viés e segurança corporativa." }
+                    { id: "esp-5", titulo: "Sistemas Operacionais e Segurança da Informação", sub: "Windows Server, Linux, AD, GRC, criptografia, Firewall, WAF." },
+                    { id: "esp-6", titulo: "Governança de TI e Gestão de Projetos", sub: "ITIL v4, COBIT, PMBOK, PMO, caminho crítico e escopo." },
+                    { id: "esp-7", titulo: "Tópicos Especiais: LGPD, Contratos de TI e IA Generativa", sub: "Lei 14.133/21 em TI, LLMs, alucinação, viés e segurança corporativa." }
                 ]
             }
         ];
 
-        // Inicializar a aplicação
         document.addEventListener("DOMContentLoaded", () => {
             renderStructure();
             populateSelect();
-            loadSavedContent();
-            setupSelectListener();
+            loadSavedData();
+            
+            // Ouvinte para carregar conteúdo nos inputs ao trocar o select
+            document.getElementById("topic-select").addEventListener("change", updateInputsFromSelect);
+            
+            // Em dispositivos menores que 768px, inicia com o painel fechado por padrão
+            if(window.innerWidth <= 768) {
+                toggleSidebar();
+            }
         });
 
-        // Monta a estrutura visual do edital na tela
+        // Alterna visibilidade da barra lateral
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("collapsed");
+        }
+
+        // Renderiza a grade de estudos
         function renderStructure() {
             const container = document.getElementById("accordion-container");
             container.innerHTML = "";
@@ -304,10 +453,23 @@
                                     ${t.titulo}
                                     <div class="sub-items">${t.sub}</div>
                                 </div>
-                                <span>▼</span>
+                                <span id="arrow-${t.id}">▼</span>
                             </button>
+                            
                             <div class="topic-content" id="content-${t.id}">
-                                <div class="dynamic-placeholder empty-notice">Nenhum conteúdo adicionado para este tópico ainda. Use o painel lateral para criar!</div>
+                                <!-- Navegação por abas internas -->
+                                <div class="tabs-nav">
+                                    <button class="tab-btn active" id="tab-btn-theory-${t.id}" onclick="switchTab('${t.id}', 'theory')">Teoria</button>
+                                    <button class="tab-btn questions-tab" id="tab-btn-quest-${t.id}" onclick="switchTab('${t.id}', 'questions')">Questões</button>
+                                </div>
+                                
+                                <!-- Painéis das abas -->
+                                <div class="tab-panel active" id="panel-theory-${t.id}">
+                                    <span class="empty-notice">Nenhuma teoria salva neste tópico.</span>
+                                </div>
+                                <div class="tab-panel" id="panel-quest-${t.id}">
+                                    <span class="empty-notice">Nenhuma questão vinculada a este tópico.</span>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -318,13 +480,11 @@
             });
         }
 
-        // Popula as opções do Select do Painel de Controle
         function populateSelect() {
             const select = document.getElementById("topic-select");
             editalData.forEach(m => {
                 const group = document.createElement("optgroup");
                 group.label = m.materia;
-                
                 m.topicos.forEach(t => {
                     const opt = document.createElement("option");
                     opt.value = t.id;
@@ -335,71 +495,85 @@
             });
         }
 
-        // Controla o abrir/fechar dos tópicos
         function toggleAccordion(id) {
             const content = document.getElementById(`content-${id}`);
-            content.classList.toggle("active");
+            const arrow = document.getElementById(`arrow-${id}`);
+            const isTargetActive = content.classList.contains("active");
+            
+            content.classList.toggle("active", !isTargetActive);
+            arrow.textContent = isTargetActive ? "▼" : "▲";
         }
 
-        // Salva o conteúdo no LocalStorage do Navegador
-        function saveContent() {
-            const select = document.getElementById("topic-select");
-            const textarea = document.getElementById("content-input");
-            const selectedId = select.value;
-            const textToSave = textarea.value.trim();
+        // Altera entre as abas de Teoria e Questões na visualização
+        function switchTab(topicId, tabType) {
+            const theoryBtn = document.getElementById(`tab-btn-theory-${topicId}`);
+            const questBtn = document.getElementById(`tab-btn-quest-${topicId}`);
+            const theoryPanel = document.getElementById(`panel-theory-${topicId}`);
+            const questPanel = document.getElementById(`panel-quest-${topicId}`);
 
-            if(!selectedId) return;
-
-            // Salva no LocalStorage
-            localStorage.setItem(`content_vitoria_${selectedId}`, textToSave);
-
-            // Atualiza a visualização imediatamente
-            updateTopicDisplay(selectedId, textToSave);
-
-            // Abre o painel editado para o usuário ver o resultado
-            const targetContent = document.getElementById(`content-${selectedId}`);
-            if (!targetContent.classList.contains("active")) {
-                targetContent.classList.add("active");
-            }
-
-            alert("Conteúdo salvo e atualizado com sucesso!");
-        }
-
-        // Atualiza o container de texto do tópico alvo
-        function updateTopicDisplay(id, text) {
-            const displayDiv = document.getElementById(`content-${id}`);
-            if (text) {
-                // Substitui quebras de linha por tags <br> para manter a formatação visual do usuário
-                displayDiv.innerHTML = text.replace(/\n/g, '<br>');
-                displayDiv.classList.remove("empty-notice");
+            if(tabType === 'theory') {
+                theoryBtn.classList.add("active");
+                questBtn.classList.remove("active");
+                theoryPanel.classList.add("active");
+                questPanel.classList.remove("active");
             } else {
-                displayDiv.innerHTML = `<div class="dynamic-placeholder empty-notice">Nenhum conteúdo adicionado para este tópico ainda. Use o painel lateral para criar!</div>`;
+                questBtn.classList.add("active");
+                theoryBtn.classList.remove("active");
+                questPanel.classList.add("active");
+                theoryPanel.classList.remove("active");
             }
         }
 
-        // Carrega as informações previamente salvas ao abrir a página
-        function loadSavedContent() {
+        // Salva dados (pode ser teoria ou questões) no LocalStorage
+        function saveData(type) {
+            const select = document.getElementById("topic-select");
+            const selectedId = select.value;
+            
+            let inputElement = (type === 'theory') ? document.getElementById("content-input") : document.getElementById("questions-input");
+            let storageKey = (type === 'theory') ? `theory_${selectedId}` : `questions_${selectedId}`;
+            
+            const textToSave = inputElement.value.trim();
+            localStorage.setItem(storageKey, textToSave);
+
+            updateDisplayPanel(selectedId, type, textToSave);
+
+            // Abre o painel automaticamente para conferência
+            document.getElementById(`content-${selectedId}`).classList.add("active");
+            document.getElementById(`arrow-${selectedId}`).textContent = "▲";
+            switchTab(selectedId, type);
+
+            alert("Item salvo com sucesso!");
+        }
+
+        function updateDisplayPanel(topicId, type, text) {
+            const panel = (type === 'theory') ? document.getElementById(`panel-theory-${topicId}`) : document.getElementById(`panel-quest-${topicId}`);
+            
+            if(text) {
+                panel.innerHTML = text.replace(/\n/g, '<br>');
+                panel.style.fontStyle = "normal";
+                panel.style.color = "inherit";
+            } else {
+                panel.innerHTML = (type === 'theory') ? `<span class="empty-notice">Nenhuma teoria salva neste tópico.</span>` : `<span class="empty-notice">Nenhuma questão vinculada a este tópico.</span>`;
+            }
+        }
+
+        function loadSavedData() {
             editalData.forEach(m => {
                 m.topicos.forEach(t => {
-                    const savedText = localStorage.getItem(`content_vitoria_${t.id}`);
-                    if (savedText) {
-                        updateTopicDisplay(t.id, savedText);
-                    }
+                    const savedTheory = localStorage.getItem(`theory_${t.id}`);
+                    const savedQuestions = localStorage.getItem(`questions_${t.id}`);
+                    
+                    if(savedTheory) updateDisplayPanel(t.id, 'theory', savedTheory);
+                    if(savedQuestions) updateDisplayPanel(t.id, 'questions', savedQuestions);
                 });
             });
-            // Carrega no campo de texto o valor do primeiro item do select
-            updateTextareaFromSelect();
+            updateInputsFromSelect();
         }
 
-        // Atualiza a área de texto quando o usuário muda o select (para ele ver o que já escreveu antes)
-        function setupSelectListener() {
-            document.getElementById("topic-select").addEventListener("change", updateTextareaFromSelect);
-        }
-
-        function updateTextareaFromSelect() {
+        function updateInputsFromSelect() {
             const currentId = document.getElementById("topic-select").value;
-            const savedText = localStorage.getItem(`content_vitoria_${currentId}`) || "";
-            document.getElementById("content-input").value = savedText;
+            document.getElementById("content-input").value = localStorage.getItem(`theory_${currentId}`) || "";
+            document.getElementById("questions-input").value = localStorage.getItem(`questions_${currentId}`) || "";
         }
     </script>
 </body>
