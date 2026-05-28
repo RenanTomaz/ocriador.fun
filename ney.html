@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Força Neymar! Rumo à Recuperação</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Background Dinâmico com Transição Suave */
+        #bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('ney1.png');
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.8s ease-in-out;
+            z-index: 1;
+        }
+
+        /* Overlay escura para dar legibilidade aos textos */
+        #bg-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Banner de Anúncio / Monetização no Topo */
+        .ad-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(90px, #1c1c1c, #2d2d2d);
+            border-bottom: 3px solid #ffdf00; /* Amarelo Seleção */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .ad-placeholder {
+            width: 728px;
+            height: 90px;
+            background: #333;
+            border: 1px dashed #666;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* Conteúdo Principal */
+        .container {
+            position: relative;
+            z-index: 5;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 100px; /* Desconto do banner de anúncio */
+            color: #fff;
+            text-align: center;
+        }
+
+        .meta-box {
+            background: rgba(0, 0, 0, 0.75);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #009c3b; /* Verde Seleção */
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Cronômetro */
+        #countdown {
+            font-size: 18px;
+            color: #ffdf00;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Barra de Progresso */
+        .progress-container {
+            background: #444;
+            border-radius: 20px;
+            height: 25px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%; /* Começa em 0% e vai até 100% */
+            background: linear-gradient(90deg, #009c3b, #ffdf00);
+            border-radius: 20px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 13px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .valores {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 25px;
+            color: #ccc;
+        }
+
+        /* Botão de Apoio */
+        .btn-apoiar {
+            background: #ffdf00;
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(255, 223, 0, 0.4);
+            transition: transform 0.1s ease, background 0.2s ease;
+        }
+
+        .btn-apoiar:hover {
+            background: #ffe74c;
+            transform: scale(1.03);
+        }
+
+        .btn-apoiar:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bg-overlay"></div>
+
+    <div class="ad-banner">
+        <div class="ad-placeholder">
+            [Espaço para Anúncio Monetizado - Banner 728x90]
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="meta-box">
+            <h1>Operação 12 de Junho</h1>
+            <div id="countdown">Carregando cronômetro...</div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="myBar"></div>
+                <div class="progress-text" id="progressPct">0% Recuperado</div>
+            </div>
+
+            <div class="valores">
+                <span>Arrecadado: <strong id="txtArrecadado">R$ 0</strong></span>
+                <span>Meta: <strong>R$ 100.000</strong></span>
+            </div>
+
+            <button class="btn-apoiar" onclick="enviarApoio()">Enviar Energia ⚡</button>
+        </div>
+    </div>
+
+    <script>
+        // Configurações Iniciais
+        const metaFinanceira = 100000;
+        let progressoAtual = 0; // Exemplo inicial (em Reais). Mude para testar.
+        
+        // Mapeamento das imagens de acordo com a porcentagem do progresso
+        const backgrounds = [
+            { max: 25, img: 'ney1.png' },
+            { max: 50, img: 'ney2.png' },
+            { max: 75, img: 'ney3.png' },
+            { max: 99, img: 'ney4.png' },
+            { max: 100, img: 'ney5.png' }
+        ];
+
+        // Atualiza a interface (Barra, Valores e Background)
+        function atualizarPainel() {
+            let porcentagem = (progressoAtual / metaFinanceira) * 100;
+            if (porcentagem > 100) porcentagem = 100;
+
+            // Atualiza a barra visualmente
+            document.getElementById('myBar').style.width = porcentagem.toFixed(2) + '%';
+            document.getElementById('progressPct').innerText = porcentagem.toFixed(1) + '% Recuperado';
+            document.getElementById('txtArrecadado').innerText = 'R$ ' + progressoAtual.toLocaleString('pt-BR');
+
+            // Troca o background baseado na evolução
+            const bgOverlay = document.getElementById('bg-overlay');
+            for (let bg of backgrounds) {
+                if (porcentagem <= bg.max) {
+                    bgOverlay.style.backgroundImage = `url('${bg.img}')`;
+                    break;
+                }
+            }
+        }
+
+        // Ação do Botão de Apoio (Simulação)
+        // Dica: No ambiente real, aqui você pode abrir um modal de PIX ou contar cliques por tráfego.
+        function enviarApoio() {
+            if (progressoAtual < metaFinanceira) {
+                // Simulação: cada clique gera entre R$ 5 e R$ 20 fictícios para ver o efeito rodar
+                progressoAtual += Math.floor(Math.random() * 15) + 5; 
+                if (progressoAtual > metaFinanceira) progressoAtual = metaFinanceira;
+                atualizarPainel();
+            }
+        }
+
+        // Lógica do Cronômetro até 12 de Junho
+        const dataLimite = new Date("June 12, 2026 00:00:00").getTime();
+
+        const x = setInterval(function() {
+            const agora = new Date().getTime();
+            const distancia = dataLimite - agora;
+
+            const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerHTML = `Tempo restante: ${dias}d ${horas}h ${minutos}m ${segundos}s`;
+
+            if (distancia < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").innerHTML = "Prazo Encerrado!";
+            }
+        }, 1000);
+
+        // Inicializa o painel ao carregar a página
+        atualizarPainel();
+    </script>
+</body>
+</html>
