@@ -94,12 +94,38 @@
             width: 100%;
         }
 
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
         h1 {
             font-size: 22px;
-            margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 1px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Botão de Informação ⓘ */
+        .info-btn {
+            background: none;
+            border: none;
+            color: #ffdf00;
+            font-size: 20px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .info-btn:hover {
+            transform: scale(1.2);
+            color: #fff;
         }
 
         /* Cronômetro */
@@ -129,10 +155,9 @@
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.5);
         }
 
-        /* A barra interna que vai encher */
         .progress-bar {
             height: 100%;
-            width: 0%; /* Cresce de 0% a 100% */
+            width: 0%;
             background: linear-gradient(90deg, #009c3b, #ffdf00);
             border-radius: 20px;
             transition: width 0.6s ease;
@@ -204,6 +229,70 @@
             box-shadow: none;
         }
 
+        /* Overlay / Modal de Informações */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1e1e1e;
+            border: 2px solid #ffdf00;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            color: #fff;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h2 {
+            color: #ffdf00;
+            margin-bottom: 15px;
+            font-size: 22px;
+            text-transform: uppercase;
+        }
+
+        .modal-content p {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .close-modal-btn {
+            background: #009c3b;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            background: #00c84b;
+        }
+
         /* Ajustes para Celular */
         @media (max-width: 650px) {
             .interaction-row {
@@ -232,7 +321,10 @@
 
     <div class="bottom-panel">
         <div class="meta-box">
-            <h1>Operação 12 de Junho: Apoie o Adulto Ney</h1>
+            <div class="title-container">
+                <h1>Operação 12 de Junho: Apoie o Adulto Ney</h1>
+                <button class="info-btn" onclick="toggleModal(true)">ⓘ</button>
+            </div>
             <div id="countdown">Carregando cronômetro...</div>
 
             <div class="interaction-row">
@@ -244,7 +336,7 @@
                     <div class="level-marker marker-3"></div>
                     <div class="level-marker marker-4"></div>
 
-                    <div class="progress-text" id="progressPct">Buscando apoios...</div>
+                    <div class="progress-text" id="progressPct">Buscando energias...</div>
                 </div>
 
                 <button class="btn-apoiar" id="btnApoiar" onclick="enviarApoio()">Enviar Energia ⚡</button>
@@ -252,9 +344,17 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="infoModal" onclick="fecharModalFora(event)">
+        <div class="modal-content">
+            <h2>Engajamento Adulto Ney</h2>
+            <p>Este espaço foi criado para centralizar a energia positiva de toda a torcida pela recuperação do nosso camisa 10 até o dia 12 de junho!</p>
+            <p>Cada clique único envia um sinal de apoio que ajuda a preencher a barra coletiva. À medida que alcançamos novos patamares de acessos e engajamento, o cenário do Adulto Ney evolui visualmente, simbolizando sua transição do departamento médico de volta aos gramados!</p>
+            <button class="close-modal-btn" onclick="toggleModal(false)">Entendido!</button>
+        </div>
+    </div>
+
     <script>
         // CONFIGURAÇÕES DO SUPABASE
-        // Substitua com as credenciais reais do seu projeto do Supabase
         const SUPABASE_URL = 'https://SEU_PROJETO_ID.supabase.co';
         const SUPABASE_ANON_KEY = 'SUA_ANON_KEY_AQUI';
         
@@ -268,21 +368,35 @@
             return supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
 
-        // DEFINIÇÃO DA META DE CLIQUES
-        // Defina aqui a quantidade total de cliques para atingir os 100% (Nível 5)
-        const metaCliquesTotal = 10000000; // Exemplo: 10 Milhões de cliques/apoios unicos
+        // META DE CLIQUES / ENERGIAS
+        const metaCliquesTotal = 10000000; // 10 Milhões de energias totais
         let totalApoiosGlobais = 0;
         let ipUsuario = '';
 
-        // Mapeamento exato dos 5 Níveis (Fases da Barra de Progresso)
-        // Cada nível ocupa exatamente 20% da meta total
+        // Mapeamento dos 5 Níveis
         const niveisMeta = [
-            { limitePct: 20,  img: 'ney1.png', nome: 'Nível 1: DM' },
-            { limitePct: 40,  img: 'ney2.png', nome: 'Nível 2: Transição' },
-            { limitePct: 60,  img: 'ney3.png', nome: 'Nível 3: Academia' },
-            { limitePct: 80,  img: 'ney4.png', nome: 'Nível 4: Gramado' },
-            { limitePct: 100, img: 'ney5.png', nome: 'Nível 5: Pronto pro Jogo!' }
+            { limitePct: 20,  img: 'ney1.png' },
+            { limitePct: 40,  img: 'ney2.png' },
+            { limitePct: 60,  img: 'ney3.png' },
+            { limitePct: 80,  img: 'ney4.png' },
+            { limitePct: 100, img: 'ney5.png' }
         ];
+
+        // Lógica do Modal (Overlay de Informações)
+        function toggleModal(abrir) {
+            const modal = document.getElementById('infoModal');
+            if (abrir) {
+                modal.classList.add('active');
+            } else {
+                modal.classList.remove('active');
+            }
+        }
+
+        function fecharModalFora(event) {
+            if (event.target.id === 'infoModal') {
+                toggleModal(false);
+            }
+        }
 
         // Obtém o IP público do visitante
         async function obterIp() {
@@ -309,11 +423,10 @@
             if (data) desabilitarBotao();
         }
 
-        // Puxa a contagem total de registros unicos salvos no Supabase
+        // Puxa a contagem total do Supabase
         async function buscarTotalApoios() {
             if (!supabase) {
-                // Modo simulação caso o Supabase não esteja conectado ainda
-                totalApoiosGlobais = 3500000; // Simula 35% de progresso (Nível 2)
+                totalApoiosGlobais = 3500000; // Simulação offline (3.5M de cliques)
                 atualizarInterface();
                 return;
             }
@@ -328,16 +441,19 @@
             }
         }
 
-        // Controla o preenchimento da barra e a mudança das 5 imagens de fundo
+        // Controla o preenchimento da barra, textos de energia e background
         function atualizarInterface() {
             let porcentagem = (totalApoiosGlobais / metaCliquesTotal) * 100;
             if (porcentagem > 100) porcentagem = 100;
 
-            // Aplica a largura na barra verde/amarela
             document.getElementById('myBar').style.width = porcentagem.toFixed(2) + '%';
-            document.getElementById('progressPct').innerText = `${totalApoiosGlobais.toLocaleString('pt-BR')} Apoios (${porcentagem.toFixed(1)}%)`;
+            
+            // Exibe o formato "[Energia Atual] / [Meta Total] ([Porcentagem]%)"
+            const atualFormatado = totalApoiosGlobais.toLocaleString('pt-BR');
+            const metaFormatada = metaCliquesTotal.toLocaleString('pt-BR');
+            document.getElementById('progressPct').innerText = `${atualFormatado} / ${metaFormatada} Energias (${porcentagem.toFixed(1)}%)`;
 
-            // Lógica de níveis: Altera o background de acordo com o quadrante atingido
+            // Altera o background conforme o nível atingido
             const bgOverlay = document.getElementById('bg-overlay');
             for (let nivel of niveisMeta) {
                 if (porcentagem <= nivel.limitePct) {
@@ -355,8 +471,7 @@
             }
 
             if (!supabase) {
-                // Simulação local offline
-                totalApoiosGlobais += 1000000; // Pula de nível no clique para teste
+                totalApoiosGlobais += 1500000; // Salto de teste offline
                 atualizarInterface();
                 desabilitarBotao();
                 return;
@@ -386,7 +501,7 @@
             btn.innerText = "Energia Enviada! ✔";
         }
 
-        // Cronômetro regressivo até 12 de Junho
+        // Cronômetro regressivo ajustado para 12 de Junho de 2026
         const dataLimite = new Date("June 12, 2026 00:00:00").getTime();
 
         const x = setInterval(function() {
@@ -410,9 +525,7 @@
         window.onload = async () => {
             await obterIp();
             await buscarTotalApoios();
-            
-            // Sincroniza os cliques com o banco a cada 30 segundos
-            setInterval(buscarTotalApoios, 30000);
+            setInterval(buscarTotalApoios, 30000); // Sincroniza a cada 30s
         };
     </script>
 </body>
